@@ -39,7 +39,7 @@ export default function Home() {
         return;
       }
 
-      router.push("/dashboard");
+      router.replace("/dashboard");
       router.refresh();
     } catch {
       setError("Could not connect to the server. Please try again.");
