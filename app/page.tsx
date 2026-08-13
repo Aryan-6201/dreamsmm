@@ -1,69 +1,282 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 
 export default function Home() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen grid lg:grid-cols-2 bg-white">
+
+      {/* LEFT SIDE */}
+      <section className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-[#5148e8] via-[#635bff] to-[#925cf6] text-white p-14">
+
+        {/* Background circles */}
+        <div className="absolute -right-40 -top-40 w-[500px] h-[500px] rounded-full bg-white/10" />
+        <div className="absolute -left-40 -bottom-40 w-[450px] h-[450px] rounded-full bg-white/10" />
+
+        <div className="relative z-10 w-full">
+
+          {/* LOGO */}
+          <div className="flex items-center gap-3">
+
+            <div className="w-11 h-11 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center font-bold text-xl">
+              D
+            </div>
+
+            <div>
+              <div className="font-extrabold text-xl">
+                DreamSMM
+              </div>
+
+              <div className="text-[9px] tracking-widest opacity-70">
+                SOCIAL MEDIA PANEL
+              </div>
+            </div>
+
+          </div>
+
+
+          {/* HERO */}
+          <div className="mt-32 max-w-xl">
+
+            <h1 className="text-5xl font-extrabold leading-tight tracking-tight">
+              Grow smarter.
+              <br />
+              Manage everything.
+            </h1>
+
+            <p className="mt-6 text-sm leading-7 text-white/75 max-w-lg">
+              One modern dashboard for your social media services,
+              orders, balance and support. Fast, simple and built for scale.
+            </p>
+
+
+            {/* FEATURES */}
+            <div className="grid grid-cols-2 gap-3 mt-9 max-w-lg">
+
+              <Feature
+                title="⚡ Fast Orders"
+                description="Place and track orders from one clean dashboard."
+              />
+
+              <Feature
+                title="◈ 1,000+ Services"
+                description="Organized services with clear rates and limits."
+              />
+
+              <Feature
+                title="🔒 Secure Account"
+                description="Keep your account and API access protected."
+              />
+
+              <Feature
+                title="◉ 24/7 Support"
+                description="Get help whenever you need it."
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* RIGHT SIDE */}
+      <section className="flex items-center justify-center px-6 py-12">
+
+        <div className="w-full max-w-md">
+
+          {/* MOBILE LOGO */}
+          <div className="lg:hidden flex items-center gap-3 mb-14">
+
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#635bff] to-[#925cf6] text-white flex items-center justify-center font-bold">
+              D
+            </div>
+
+            <div>
+              <div className="font-extrabold text-lg">
+                DreamSMM
+              </div>
+
+              <div className="text-[9px] text-gray-400 tracking-widest">
+                SOCIAL MEDIA PANEL
+              </div>
+            </div>
+
+          </div>
+
+
+          {/* HEADING */}
+          <h2 className="text-3xl font-extrabold tracking-tight">
+            Welcome back 👋
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-2">
+            Sign in to continue to your dashboard.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+
+
+          {/* SOCIAL LOGIN */}
+          <div className="grid grid-cols-2 gap-3 mt-7">
+
+            <button
+              type="button"
+              className="h-11 border border-gray-200 rounded-xl text-sm font-semibold hover:bg-gray-50 transition"
+            >
+              G&nbsp; Google
+            </button>
+
+            <button
+              type="button"
+              className="h-11 border border-gray-200 rounded-xl text-sm font-semibold hover:bg-gray-50 transition"
+            >
+              &nbsp; Apple
+            </button>
+
+          </div>
+
+
+          {/* DIVIDER */}
+          <div className="flex items-center gap-3 my-6 text-[10px] text-gray-400">
+
+            <div className="h-px bg-gray-200 flex-1" />
+
+            OR CONTINUE WITH EMAIL
+
+            <div className="h-px bg-gray-200 flex-1" />
+
+          </div>
+
+
+          {/* EMAIL */}
+          <div className="mb-5">
+
+            <label className="block text-xs font-bold mb-2">
+              Email address
+            </label>
+
+            <input
+              type="email"
+              placeholder="you@example.com"
+              className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 outline-none text-sm focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          </div>
+
+
+          {/* PASSWORD */}
+          <div className="mb-4">
+
+            <label className="block text-xs font-bold mb-2">
+              Password
+            </label>
+
+            <div className="relative">
+
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="w-full h-12 px-4 pr-16 rounded-xl border border-gray-200 bg-gray-50 outline-none text-sm focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3.5 text-gray-400 text-xs font-semibold"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+
+            </div>
+
+          </div>
+
+
+          {/* REMEMBER + FORGOT */}
+          <div className="flex items-center justify-between mb-6 text-xs">
+
+            <label className="flex items-center gap-2 text-gray-500">
+
+              <input
+                type="checkbox"
+                className="accent-[#635bff]"
+              />
+
+              Remember me
+
+            </label>
+
+            <button
+              type="button"
+              className="text-[#635bff] font-bold"
+            >
+              Forgot password?
+            </button>
+
+          </div>
+
+
+          {/* SIGN IN */}
+          <button
+            type="button"
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-[#635bff] to-[#8b5cf6] text-white text-sm font-bold shadow-lg shadow-[#635bff]/20 hover:-translate-y-0.5 transition"
           >
-            Documentation
-          </a>
+            Sign in →
+          </button>
+
+
+          {/* REGISTER */}
+          <p className="text-center text-xs text-gray-400 mt-6">
+
+            Don't have an account?
+
+            <button
+              type="button"
+              className="text-[#635bff] font-bold ml-1"
+            >
+              Create account
+            </button>
+
+          </p>
+
+
+          {/* SECURITY */}
+          <p className="text-center text-[10px] text-gray-400 mt-9">
+            🔒 Your connection is protected · DreamSMM
+          </p>
+
         </div>
-      </main>
+
+      </section>
+
+    </main>
+  );
+}
+
+
+/* FEATURE COMPONENT */
+
+function Feature({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-sm">
+
+      <div className="text-xs font-bold">
+        {title}
+      </div>
+
+      <div className="text-[10px] text-white/60 mt-1.5 leading-4">
+        {description}
+      </div>
+
     </div>
   );
 }

@@ -1,0 +1,326 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: "USER" | "ADMIN";
+  status: "ACTIVE" | "SUSPENDED" | "BANNED";
+  balance: string;
+  totalSpent: string;
+  lastSeenAt: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+  _count: {
+    orders: number;
+    transactions: number;
+  };
+};
+
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [message, setMessage] = useState("");
+
+  async function loadUsers() {
+    try {
+      setLoading(true);
+
+      const response = await fetch("/api/admin/users", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.error || "Could not load users.");
+        return;
+      }
+
+      setUsers(data.users || []);
+    } catch {
+      setMessage("Could not connect to the server.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const filteredUsers = users.filter((user) => {
+    const query = search.toLowerCase().trim();
+
+    if (!query) return true;
+
+    return (
+      user.name?.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query) ||
+      user.id.toLowerCase().includes(query)
+    );
+  });
+
+  function formatLastSeen(date: string | null) {
+    if (!date) return "Never";
+
+    const time = new Date(date).getTime();
+    const now = Date.now();
+    const minutes = Math.floor((now - time) / 60000);
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes / 60);
+
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24);
+
+    if (days < 30) return `${days}d ago`;
+
+    return new Date(date).toLocaleDateString();
+  }
+
+  return (
+    <main className="min-h-screen bg-[#070a11] text-white">
+      {/* Header */}
+      <header className="border-b border-white/[0.07] bg-[#090c14]/90">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div>
+            <h1 className="text-lg font-bold">
+              Dream<span className="text-blue-500">SMM</span>
+            </h1>
+
+            <p className="text-[11px] text-gray-500">
+              Administration Panel
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden text-right sm:block">
+              <p className="text-sm font-medium">Administrator</p>
+              <p className="text-xs text-gray-500">
+                User Management
+              </p>
+            </div>
+
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/10 font-bold text-blue-400">
+              A
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        {/* Heading */}
+        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+          <div>
+            <div className="mb-3 inline-flex rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
+              User Management
+            </div>
+
+            <h2 className="text-3xl font-bold">
+              Users
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Manage users, balances, activity and account status.
+            </p>
+          </div>
+
+          <button
+            onClick={loadUsers}
+            className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-gray-300 hover:bg-white/[0.08]"
+          >
+            ↻ Refresh
+          </button>
+        </div>
+
+        {/* Stats */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+            <p className="text-sm text-gray-500">
+              Total Users
+            </p>
+
+            <p className="mt-3 text-3xl font-bold">
+              {users.length}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+            <p className="text-sm text-gray-500">
+              Active Users
+            </p>
+
+            <p className="mt-3 text-3xl font-bold text-green-400">
+              {
+                users.filter(
+                  (user) => user.status === "ACTIVE"
+                ).length
+              }
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+            <p className="text-sm text-gray-500">
+              Admins
+            </p>
+
+            <p className="mt-3 text-3xl font-bold text-blue-400">
+              {
+                users.filter(
+                  (user) => user.role === "ADMIN"
+                ).length
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="mt-8">
+          <div className="relative">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, email or user ID..."
+              className="w-full rounded-xl border border-white/10 bg-[#0c1019] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 focus:border-blue-500/50"
+            />
+          </div>
+        </div>
+
+        {/* Message */}
+        {message && (
+          <div className="mt-5 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">
+            {message}
+          </div>
+        )}
+
+        {/* Users */}
+        <section className="mt-6">
+          {loading ? (
+            <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-12 text-center text-gray-500">
+              Loading users...
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-[#0c1019] p-12 text-center">
+              <p className="font-medium">
+                No users found
+              </p>
+
+              <p className="mt-2 text-sm text-gray-600">
+                Try a different search.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 transition hover:border-white/[0.12]"
+                >
+                  <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
+                    {/* User */}
+                    <div className="flex min-w-0 flex-1 items-center gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 font-bold text-blue-400">
+                        {(user.name || user.email || "U")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-semibold">
+                            {user.name || "Unnamed User"}
+                          </p>
+
+                          {user.role === "ADMIN" && (
+                            <span className="rounded-md bg-blue-500/10 px-2 py-1 text-[10px] font-medium text-blue-400">
+                              ADMIN
+                            </span>
+                          )}
+
+                          <span
+                            className={`rounded-md px-2 py-1 text-[10px] font-medium ${
+                              user.status === "ACTIVE"
+                                ? "bg-green-500/10 text-green-400"
+                                : user.status === "SUSPENDED"
+                                ? "bg-yellow-500/10 text-yellow-400"
+                                : "bg-red-500/10 text-red-400"
+                            }`}
+                          >
+                            {user.status}
+                          </span>
+                        </div>
+
+                        <p className="mt-1 truncate text-sm text-gray-500">
+                          {user.email}
+                        </p>
+
+                        <p className="mt-1 text-xs text-gray-700">
+                          ID: {user.id}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Balance */}
+                    <div className="min-w-[130px]">
+                      <p className="text-xs text-gray-600">
+                        Balance
+                      </p>
+
+                      <p className="mt-1 text-lg font-bold">
+                        ₹{user.balance}
+                      </p>
+                    </div>
+
+                    {/* Spent */}
+                    <div className="min-w-[130px]">
+                      <p className="text-xs text-gray-600">
+                        Total Spent
+                      </p>
+
+                      <p className="mt-1 text-lg font-semibold text-gray-300">
+                        ₹{user.totalSpent}
+                      </p>
+                    </div>
+
+                    {/* Activity */}
+                    <div className="min-w-[150px]">
+                      <p className="text-xs text-gray-600">
+                        Last Seen
+                      </p>
+
+                      <p className="mt-1 text-sm text-gray-300">
+                        {formatLastSeen(user.lastSeenAt)}
+                      </p>
+
+                      <p className="mt-1 text-xs text-gray-600">
+                        {user._count.orders} orders
+                      </p>
+                    </div>
+
+                    {/* Action */}
+                    <button
+                      onClick={() => {
+                        window.location.href =
+                          `/admin/users/${user.id}`;
+                      }}
+                      className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-white/[0.08] hover:text-white"
+                    >
+                      Manage →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
