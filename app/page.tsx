@@ -10,12 +10,14 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [socialMessage, setSocialMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setError("");
+    setSocialMessage("");
     setLoading(true);
 
     try {
@@ -44,6 +46,13 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleSocialLogin(provider: "Google" | "Apple") {
+    setError("");
+    setSocialMessage(
+      `${provider} sign-in is not configured yet. Please use email and password.`
+    );
   }
 
   return (
@@ -76,6 +85,7 @@ export default function Home() {
 
           {/* HERO */}
           <div className="mt-32 max-w-xl">
+
             <h1 className="text-5xl font-extrabold leading-tight tracking-tight">
               Grow smarter.
               <br />
@@ -115,7 +125,7 @@ export default function Home() {
       </section>
 
       {/* RIGHT SIDE */}
-      <section className="flex items-center justify-center px-6 py-12">
+      <section className="flex items-center justify-center px-6 py-12 bg-white">
 
         <div className="w-full max-w-md">
 
@@ -139,7 +149,7 @@ export default function Home() {
           </div>
 
           {/* HEADING */}
-          <h2 className="text-3xl font-extrabold tracking-tight">
+          <h2 className="text-3xl font-extrabold tracking-tight text-gray-950">
             Welcome back 👋
           </h2>
 
@@ -152,27 +162,40 @@ export default function Home() {
 
             <button
               type="button"
-              disabled
-              className="h-11 border border-gray-200 rounded-xl text-sm font-semibold text-gray-400 cursor-not-allowed"
+              onClick={() => handleSocialLogin("Google")}
+              disabled={loading}
+              className="h-11 border border-gray-300 bg-white rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition disabled:opacity-50"
             >
-              G&nbsp; Google
+              <span className="font-bold">G</span>&nbsp; Google
             </button>
 
             <button
               type="button"
-              disabled
-              className="h-11 border border-gray-200 rounded-xl text-sm font-semibold text-gray-400 cursor-not-allowed"
+              onClick={() => handleSocialLogin("Apple")}
+              disabled={loading}
+              className="h-11 border border-gray-300 bg-white rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-50 hover:border-gray-400 transition disabled:opacity-50"
             >
               &nbsp; Apple
             </button>
 
           </div>
 
+          {/* SOCIAL MESSAGE */}
+          {socialMessage && (
+            <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-xs font-medium text-purple-700">
+              {socialMessage}
+            </div>
+          )}
+
           {/* DIVIDER */}
           <div className="flex items-center gap-3 my-6 text-[10px] text-gray-400">
+
             <div className="h-px bg-gray-200 flex-1" />
+
             OR CONTINUE WITH EMAIL
+
             <div className="h-px bg-gray-200 flex-1" />
+
           </div>
 
           <form onSubmit={handleLogin}>
@@ -182,7 +205,7 @@ export default function Home() {
 
               <label
                 htmlFor="email"
-                className="block text-xs font-bold mb-2"
+                className="block text-xs font-bold mb-2 text-gray-800"
               >
                 Email address
               </label>
@@ -196,7 +219,7 @@ export default function Home() {
                 autoComplete="email"
                 required
                 disabled={loading}
-                className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 outline-none text-sm focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition disabled:opacity-60"
+                className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-gray-100 text-gray-900 placeholder:text-gray-500 outline-none text-sm focus:bg-white focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition disabled:opacity-60"
               />
 
             </div>
@@ -206,7 +229,7 @@ export default function Home() {
 
               <label
                 htmlFor="password"
-                className="block text-xs font-bold mb-2"
+                className="block text-xs font-bold mb-2 text-gray-800"
               >
                 Password
               </label>
@@ -222,13 +245,14 @@ export default function Home() {
                   autoComplete="current-password"
                   required
                   disabled={loading}
-                  className="w-full h-12 px-4 pr-16 rounded-xl border border-gray-200 bg-gray-50 outline-none text-sm focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition disabled:opacity-60"
+                  className="w-full h-12 px-4 pr-16 rounded-xl border border-gray-300 bg-gray-100 text-gray-900 placeholder:text-gray-500 outline-none text-sm focus:bg-white focus:border-[#635bff] focus:ring-4 focus:ring-[#635bff]/10 transition disabled:opacity-60"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-3.5 text-gray-400 text-xs font-semibold"
+                  disabled={loading}
+                  className="absolute right-4 top-3.5 text-gray-500 text-xs font-semibold hover:text-gray-800"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -236,21 +260,24 @@ export default function Home() {
               </div>
             </div>
 
-            {/* REMEMBER */}
+            {/* REMEMBER + FORGOT */}
             <div className="flex items-center justify-between mb-4 text-xs">
 
               <label className="flex items-center gap-2 text-gray-500">
+
                 <input
                   type="checkbox"
                   className="accent-[#635bff]"
                 />
+
                 Remember me
+
               </label>
 
               <button
                 type="button"
-                disabled
-                className="text-[#635bff] font-bold opacity-50 cursor-not-allowed"
+                onClick={() => setError("Password reset is not configured yet.")}
+                className="text-[#635bff] font-bold hover:text-[#5148e8]"
               >
                 Forgot password?
               </button>
@@ -277,15 +304,17 @@ export default function Home() {
 
           {/* REGISTER */}
           <p className="text-center text-xs text-gray-400 mt-6">
+
             Don't have an account?
 
             <button
               type="button"
               onClick={() => router.push("/register")}
-              className="text-[#635bff] font-bold ml-1"
+              className="text-[#635bff] font-bold ml-1 hover:text-[#5148e8]"
             >
               Create account
             </button>
+
           </p>
 
           {/* SECURITY */}
