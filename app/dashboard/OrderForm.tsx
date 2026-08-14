@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 
@@ -29,7 +29,6 @@ export default function OrderForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   const platforms = useMemo(() => {
     const map = new Map<string, string>();
@@ -131,7 +130,6 @@ export default function OrderForm({
     setSearch("");
     setError("");
     setSuccess("");
-    setStep(2);
   }
 
   function selectCategory(value: string) {
@@ -140,22 +138,18 @@ export default function OrderForm({
     setSearch("");
     setError("");
     setSuccess("");
-    setStep(3);
   }
 
   function selectService(id: number) {
     setServiceId(id);
     setError("");
     setSuccess("");
-    setStep(4);
   }
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
-
-    if (submitting) return;
 
     setError("");
     setSuccess("");
@@ -238,52 +232,11 @@ export default function OrderForm({
   return (
     <form
       onSubmit={handleSubmit}
-      noValidate
       className="space-y-8"
     >
-      {/* PREMIUM STEP NAV */}
-      <div className="mb-7 rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm">
-        <div className="grid grid-cols-4 gap-1">
-          {[
-            [1, "Platform"],
-            [2, "Category"],
-            [3, "Service"],
-            [4, "Order"],
-          ].map(([number, label]) => {
-            const current = Number(number);
-            const active = step === current;
-            const complete = step > current;
-
-            return (
-              <button
-                key={current}
-                type="button"
-                onClick={() => {
-                  if (current <= step) setStep(current as 1 | 2 | 3 | 4);
-                }}
-                className={`rounded-xl px-2 py-3 text-center transition ${
-                  active
-                    ? "bg-violet-600 text-white shadow-md shadow-violet-200"
-                    : complete
-                      ? "bg-violet-50 text-violet-700 hover:bg-violet-100"
-                      : "text-slate-400"
-                }`}
-              >
-                <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">
-                  0{current}
-                </span>
-                <span className="mt-0.5 block text-[10px] font-black sm:text-xs">
-                  {label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* SEARCH */}
 
-      {step === 3 && <section>
+      <section>
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <p className="text-sm font-black text-slate-900">
@@ -302,7 +255,7 @@ export default function OrderForm({
 
         <div className="relative">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">
-            âŒ•
+            ⌕
           </span>
 
           <input
@@ -320,20 +273,17 @@ export default function OrderForm({
               onClick={() => setSearch("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 hover:text-slate-800"
             >
-              Ã—
+              ×
             </button>
           )}
         </div>
-      </section>}
+      </section>
 
       {/* PLATFORM */}
 
-      {step === 1 && <section>
+      <section>
         <div className="mb-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
-            Step 01
-          </p>
-          <p className="mt-1 text-xl font-black text-slate-900">
+          <p className="text-sm font-black text-slate-900">
             Choose platform
           </p>
 
@@ -369,7 +319,7 @@ export default function OrderForm({
               >
                 {active && (
                   <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-black text-white">
-                    âœ“
+                    ✓
                   </span>
                 )}
 
@@ -400,20 +350,12 @@ export default function OrderForm({
             );
           })}
         </div>
-        </section>}
+      </section>
 
       {/* CATEGORY */}
 
-      {step === 2 && platform && (
+      {platform && (
         <section>
-          <button
-            type="button"
-            onClick={() => setStep(2)}
-            className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
-          >
-            â† Back to category
-          </button>
-
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
               <p className="text-sm font-black text-slate-900">
@@ -429,14 +371,6 @@ export default function OrderForm({
               {platform}
             </span>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setStep(1)}
-            className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
-          >
-            â† Back to platforms
-          </button>
 
           {categories.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -503,7 +437,7 @@ export default function OrderForm({
                           : "text-slate-200 group-hover:text-violet-400"
                       }`}
                     >
-                      {active ? "âœ“" : "â†’"}
+                      {active ? "✓" : "→"}
                     </span>
                   </button>
                 );
@@ -520,7 +454,7 @@ export default function OrderForm({
 
       {/* SERVICES */}
 
-      {step === 3 && platform && category && (
+      {platform && category && (
         <section>
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
@@ -565,7 +499,7 @@ export default function OrderForm({
                       }`}
                     >
                       {active
-                        ? "âœ“"
+                        ? "✓"
                         : platformIcon(
                             service.platform
                           )}
@@ -607,7 +541,7 @@ export default function OrderForm({
 
                     <div className="hidden shrink-0 text-right sm:block">
                       <p className="text-base font-black text-violet-700">
-                        â‚¹{service.rate}
+                        ₹{service.rate}
                       </p>
 
                       <p className="mt-1 text-[10px] font-bold text-slate-400">
@@ -640,19 +574,11 @@ export default function OrderForm({
 
       {/* ORDER DETAILS */}
 
-      {step === 4 && selectedService && (
+      {selectedService && (
         <section className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 sm:p-7">
-          <button
-            type="button"
-            onClick={() => setStep(3)}
-            className="mb-5 text-xs font-black text-slate-500 hover:text-violet-700"
-          >
-            â† Back to services
-          </button>
-
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
-              âœ“
+              ✓
             </div>
 
             <div className="min-w-0 flex-1">
@@ -671,17 +597,9 @@ export default function OrderForm({
               </h3>
 
               <p className="mt-1 text-xs font-medium text-slate-500">
-                â‚¹{selectedService.rate} per 1,000
+                ₹{selectedService.rate} per 1,000
               </p>
             </div>
-          </div>
-
-          <div className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
-            Step 04 Â· Final details
-          </div>
-
-          <div className="mb-5 text-sm font-medium text-slate-500">
-            Add your target link and quantity, then place the order.
           </div>
 
           {/* LINK */}
@@ -692,8 +610,7 @@ export default function OrderForm({
             </label>
 
             <input
-              type="text"
-              inputMode="url"
+              type="url"
               value={link}
               onChange={(event) =>
                 setLink(event.target.value)
@@ -713,7 +630,7 @@ export default function OrderForm({
 
               <span className="text-[11px] font-bold text-slate-400">
                 {selectedService.min.toLocaleString()}
-                {" â€” "}
+                {" — "}
                 {selectedService.max.toLocaleString()}
               </span>
             </div>
@@ -754,12 +671,12 @@ export default function OrderForm({
 
             <Summary
               label="Rate"
-              value={`â‚¹${selectedService.rate} / 1K`}
+              value={`₹${selectedService.rate} / 1K`}
             />
 
             <Summary
               label="Total"
-              value={`â‚¹${total.toFixed(2)}`}
+              value={`₹${total.toFixed(2)}`}
               highlight
             />
           </div>
@@ -779,7 +696,7 @@ export default function OrderForm({
           {success && (
             <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
               <p className="text-sm font-bold text-emerald-700">
-                âœ“ {success}
+                ✓ {success}
               </p>
             </div>
           )}
@@ -801,7 +718,7 @@ export default function OrderForm({
                 Place Order
 
                 <span className="text-lg transition-transform group-hover:translate-x-1">
-                  â†’
+                  →
                 </span>
               </>
             )}
@@ -811,10 +728,10 @@ export default function OrderForm({
 
       {/* INITIAL STATE */}
 
-      {step === 1 && !platform && (
+      {!selectedService && (
         <div className="rounded-[26px] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm">
-            âœ¦
+            ✦
           </div>
 
           <h3 className="mt-4 text-base font-black text-slate-800">
@@ -838,18 +755,18 @@ export default function OrderForm({
 function platformIcon(platform: string) {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "â—Ž";
-  if (value.includes("youtube")) return "â–¶";
+  if (value.includes("instagram")) return "◎";
+  if (value.includes("youtube")) return "▶";
   if (value.includes("facebook")) return "f";
-  if (value.includes("tiktok")) return "â™ª";
-  if (value.includes("telegram")) return "âž¤";
-  if (value.includes("twitter")) return "ð•";
-  if (value === "x") return "ð•";
-  if (value.includes("spotify")) return "â—";
+  if (value.includes("tiktok")) return "♪";
+  if (value.includes("telegram")) return "➤";
+  if (value.includes("twitter")) return "𝕏";
+  if (value === "x") return "𝕏";
+  if (value.includes("spotify")) return "●";
   if (value.includes("linkedin")) return "in";
-  if (value.includes("reddit")) return "â—";
+  if (value.includes("reddit")) return "●";
 
-  return "âœ¦";
+  return "✦";
 }
 
 /* =========================================================
@@ -859,19 +776,19 @@ function platformIcon(platform: string) {
 function categoryIcon(category: string) {
   const value = category.toLowerCase();
 
-  if (value.includes("follower")) return "â™™";
-  if (value.includes("like")) return "â™¡";
-  if (value.includes("view")) return "â—‰";
-  if (value.includes("comment")) return "â—Œ";
-  if (value.includes("share")) return "âŒ";
-  if (value.includes("save")) return "â–±";
-  if (value.includes("story")) return "â—Œ";
-  if (value.includes("subscriber")) return "â™™";
-  if (value.includes("watch")) return "â—‰";
-  if (value.includes("traffic")) return "â†—";
-  if (value.includes("member")) return "â™™";
+  if (value.includes("follower")) return "♙";
+  if (value.includes("like")) return "♡";
+  if (value.includes("view")) return "◉";
+  if (value.includes("comment")) return "◌";
+  if (value.includes("share")) return "⌁";
+  if (value.includes("save")) return "▱";
+  if (value.includes("story")) return "◌";
+  if (value.includes("subscriber")) return "♙";
+  if (value.includes("watch")) return "◉";
+  if (value.includes("traffic")) return "↗";
+  if (value.includes("member")) return "♙";
 
-  return "â—‡";
+  return "◇";
 }
 
 /* =========================================================
@@ -888,7 +805,7 @@ function EmptyState({
   return (
     <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
-        â—‡
+        ◇
       </div>
 
       <p className="mt-3 text-sm font-black text-slate-800">
