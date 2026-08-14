@@ -9,15 +9,11 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
 
-  if (!token) {
-    redirect("/login");
-  }
+  if (!token) redirect("/login");
 
   const session = await verifySession(token);
 
-  if (!session) {
-    redirect("/login");
-  }
+  if (!session) redirect("/login");
 
   const user = await prisma.user.findUnique({
     where: {
@@ -30,9 +26,7 @@ export default async function DashboardPage() {
     },
   });
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
   const services = await prisma.service.findMany({
     where: {
@@ -55,108 +49,211 @@ export default async function DashboardPage() {
   }));
 
   const firstName =
-    user.name?.split(" ")[0] || "there";
+    user.name?.trim().split(" ")[0] || "there";
 
   const initials = (
-    user.name || user.email
+    user.name?.trim() ||
+    user.email ||
+    "US"
   )
     .slice(0, 2)
     .toUpperCase();
 
   return (
-    <main className="min-h-screen bg-[#f6f7fb] text-slate-900">
+    <main className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-slate-900">
       <Sidebar />
 
       <div className="lg:ml-[250px]">
-        <div className="mx-auto max-w-[1450px] px-4 py-5 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[1500px] px-4 py-5 sm:px-6 sm:py-7 lg:px-10 lg:py-8">
 
-          {/* TOP NAV */}
-          <header className="flex items-center justify-between py-2">
+          {/* ================= HEADER ================= */}
 
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                Dashboard
+          <header className="relative z-50 flex items-center justify-between gap-4">
+
+            <div className="min-w-0">
+
+              <div className="flex items-center gap-2">
+
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                </span>
+
+                <span className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 sm:text-[11px]">
+                  DreamSMM Dashboard
+                </span>
+
+              </div>
+
+              <p className="mt-1.5 hidden text-sm font-medium text-slate-500 sm:block">
+                Your social growth command center
               </p>
 
-              <p className="mt-1 text-sm font-semibold text-slate-500">
-                Your growth workspace
-              </p>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex shrink-0 items-center gap-2">
+
+              {/* OUTSIDE ADD FUNDS */}
 
               <a
                 href="/funds"
-                className="group flex h-11 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-bold text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-800"
+                className="group inline-flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-200 sm:px-5"
               >
-                <span className="text-lg leading-none">
+                <span className="text-lg font-black leading-none transition-transform group-hover:rotate-90">
                   +
                 </span>
 
-                <span className="hidden sm:inline">
+                <span>
                   Add Funds
                 </span>
               </a>
 
-              <div className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 shadow-sm">
+              {/* THREE DOT MENU */}
 
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-[11px] font-black text-white">
+              <details className="group relative">
+
+                <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-slate-200 bg-white text-xl font-black leading-none text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 [&::-webkit-details-marker]:hidden">
+                  <span className="mb-1">
+                    ⋮
+                  </span>
+                </summary>
+
+                <div className="absolute right-0 top-[calc(100%+10px)] w-[285px] overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 shadow-[0_25px_70px_rgba(15,23,42,0.16)]">
+
+                  <div className="px-3 pb-3 pt-2">
+
+                    <div className="flex items-center justify-between">
+
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                          Quick Actions
+                        </p>
+
+                        <p className="mt-1 text-xs font-medium text-slate-500">
+                          Manage your workspace
+                        </p>
+                      </div>
+
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-sm font-black text-violet-700">
+                        ✦
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div className="h-px bg-slate-100" />
+
+                  <MenuItem
+                    href="/services"
+                    icon="✦"
+                    title="Browse Services"
+                    description="Explore the service catalog"
+                    iconClass="bg-violet-50 text-violet-700"
+                  />
+
+                  <MenuItem
+                    href="/orders"
+                    icon="▣"
+                    title="Order History"
+                    description="Track all your orders"
+                    iconClass="bg-blue-50 text-blue-700"
+                  />
+
+                  <MenuItem
+                    href="/tickets"
+                    icon="?"
+                    title="Create Ticket"
+                    description="Contact support"
+                    iconClass="bg-amber-50 text-amber-700"
+                  />
+
+                  <MenuItem
+                    href="/funds"
+                    icon="₹"
+                    title="Add Funds"
+                    description="Add money to your balance"
+                    iconClass="bg-emerald-50 text-emerald-700"
+                  />
+
+                  <div className="my-1 h-px bg-slate-100" />
+
+                  <MenuItem
+                    href="/profile"
+                    icon="◉"
+                    title="My Profile"
+                    description={user.email}
+                    iconClass="bg-slate-100 text-slate-600"
+                  />
+
+                </div>
+              </details>
+
+              {/* PROFILE */}
+
+              <div className="hidden h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 shadow-sm sm:flex sm:px-3">
+
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-[10px] font-black text-white">
                   {initials}
                 </div>
 
-                <div className="hidden max-w-[140px] sm:block">
-                  <p className="truncate text-xs font-bold text-slate-800">
+                <div className="max-w-[145px]">
+
+                  <p className="truncate text-xs font-black text-slate-800">
                     {user.name || "User"}
                   </p>
 
-                  <p className="truncate text-[10px] text-slate-400">
+                  <p className="truncate text-[10px] font-medium text-slate-400">
                     {user.email}
                   </p>
+
                 </div>
 
               </div>
+
             </div>
           </header>
 
-          {/* PREMIUM HERO */}
-          <section className="relative mt-5 overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
+          {/* ================= HERO ================= */}
 
-            <div className="absolute right-[-100px] top-[-130px] h-[330px] w-[330px] rounded-full bg-violet-200/40 blur-[80px]" />
+          <section className="relative mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.07)]">
 
-            <div className="absolute bottom-[-120px] left-[35%] h-[280px] w-[280px] rounded-full bg-indigo-100/60 blur-[80px]" />
+            <div className="pointer-events-none absolute -right-32 -top-36 h-[440px] w-[440px] rounded-full bg-violet-200/40 blur-[100px]" />
 
-            <div className="relative px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-12">
+            <div className="pointer-events-none absolute -bottom-40 left-[32%] h-[400px] w-[400px] rounded-full bg-blue-100/50 blur-[100px]" />
+
+            <div className="relative px-6 py-9 sm:px-10 sm:py-11 lg:px-12 lg:py-14">
 
               <div className="flex flex-wrap items-center gap-2">
 
-                <span className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700">
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-[11px] font-black text-emerald-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   All systems operational
                 </span>
 
-                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-bold text-slate-500">
-                  {services.length} services available
+                <span className="rounded-full border border-violet-100 bg-violet-50 px-3.5 py-2 text-[11px] font-black text-violet-700">
+                  {services.length} services live
                 </span>
 
               </div>
 
-              <div className="mt-7 max-w-4xl">
+              <div className="mt-7 max-w-5xl">
 
-                <p className="text-sm font-bold text-violet-600">
+                <p className="text-sm font-black text-violet-600">
                   Welcome back, {firstName}
                 </p>
 
-                <h1 className="mt-2 text-4xl font-black leading-[1.05] tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-6xl">
-                  Grow your social presence
+                <h1 className="mt-2 text-[42px] font-black leading-[0.98] tracking-[-0.055em] text-slate-950 sm:text-5xl lg:text-[64px]">
+                  Everything you need
                   <span className="block bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                    without the busywork.
+                    to grow online.
                   </span>
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base sm:leading-7">
-                  Browse premium social media services, configure
-                  your order and launch your campaign from one
-                  simple workspace.
+                <p className="mt-6 max-w-2xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+                  Discover high-quality social media services,
+                  configure your order and launch your campaign
+                  from one clean workspace.
                 </p>
 
               </div>
@@ -164,20 +261,21 @@ export default async function DashboardPage() {
               <div className="mt-8 flex flex-wrap gap-3">
 
                 <a
-                  href="#order"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                  href="#new-order"
+                  className="group inline-flex h-12 items-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
                 >
-                  Start an Order
-                  <span className="text-base">
+                  Create New Order
+
+                  <span className="transition-transform group-hover:translate-x-1">
                     →
                   </span>
                 </a>
 
                 <a
                   href="/services"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50"
+                  className="inline-flex h-12 items-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-800"
                 >
-                  Browse Services
+                  Explore Services
                 </a>
 
               </div>
@@ -185,13 +283,14 @@ export default async function DashboardPage() {
             </div>
           </section>
 
-          {/* STATS */}
+          {/* ================= STATS ================= */}
+
           <section className="mt-5 grid gap-4 sm:grid-cols-2">
 
             <StatCard
               label="Available Balance"
               value={`₹${user.balance.toString()}`}
-              caption="Ready for your next order"
+              description="Ready to use"
               icon="₹"
               variant="violet"
             />
@@ -199,36 +298,37 @@ export default async function DashboardPage() {
             <StatCard
               label="Active Services"
               value={String(services.length)}
-              caption="Services currently available"
+              description="Live services in your catalog"
               icon="✦"
               variant="blue"
             />
 
           </section>
 
-          {/* MAIN WORKSPACE */}
+          {/* ================= ORDER AREA ================= */}
+
           <section
-            id="order"
-            className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_310px]"
+            id="new-order"
+            className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]"
           >
 
-            {/* ORDER BUILDER */}
-            <div className="overflow-visible rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_50px_rgba(15,23,42,0.06)]">
+            <div className="overflow-visible rounded-[30px] border border-slate-200 bg-white shadow-[0_20px_65px_rgba(15,23,42,0.06)]">
 
-              <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
+              <div className="border-b border-slate-100 px-5 py-6 sm:px-7">
 
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-5">
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
 
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-xl font-black text-white shadow-lg shadow-violet-200">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
                       +
                     </div>
 
                     <div>
+
                       <div className="flex flex-wrap items-center gap-2">
 
-                        <h2 className="text-lg font-black text-slate-900 sm:text-xl">
+                        <h2 className="text-xl font-black tracking-tight text-slate-900">
                           Create New Order
                         </h2>
 
@@ -238,16 +338,17 @@ export default async function DashboardPage() {
 
                       </div>
 
-                      <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-                        Select a service and configure your campaign.
+                      <p className="mt-1 text-xs font-medium text-slate-500 sm:text-sm">
+                        Search, select and configure your service.
                       </p>
+
                     </div>
 
                   </div>
 
                   <div className="hidden text-right sm:block">
 
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
                       Catalog
                     </p>
 
@@ -260,79 +361,127 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="p-5 sm:p-7">
+              <div className="p-5 sm:p-7 lg:p-8">
                 <OrderForm services={formattedServices} />
               </div>
 
             </div>
 
-            {/* SIDE PANEL */}
+            {/* ================= RIGHT PANEL ================= */}
+
             <aside className="space-y-4">
 
-              <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
 
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                  Quick access
-                </p>
+                <div className="flex items-center justify-between">
 
-                <h3 className="mt-2 text-lg font-black text-slate-900">
-                  Everything you need
-                </h3>
+                  <div>
 
-                <div className="mt-5 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                      Services
+                    </p>
 
-                  <QuickLink
-                    href="/services"
-                    icon="✦"
-                    title="Browse Services"
-                    description="Explore the full catalog"
-                  />
+                    <p className="mt-1 text-2xl font-black text-slate-900">
+                      {services.length}
+                    </p>
 
-                  <QuickLink
-                    href="/orders"
-                    icon="▣"
-                    title="My Orders"
-                    description="Track your campaigns"
-                  />
+                  </div>
 
-                  <QuickLink
-                    href="/tickets"
-                    icon="?"
-                    title="Support"
-                    description="Get help when you need it"
-                  />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                    ✦
+                  </div>
 
                 </div>
-              </div>
 
-              <div className="overflow-hidden rounded-[24px] bg-gradient-to-br from-violet-600 to-indigo-700 p-6 text-white shadow-xl shadow-violet-200">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg">
-                  ⚡
-                </div>
-
-                <h3 className="mt-5 text-xl font-black">
-                  Ready to grow?
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-violet-100">
-                  Choose a service, enter your target and let
-                  DreamSMM handle the rest.
+                <p className="mt-4 text-xs font-medium leading-5 text-slate-500">
+                  Active services are ready to use from
+                  your order workspace.
                 </p>
 
                 <a
-                  href="#order"
-                  className="mt-5 flex h-11 items-center justify-center rounded-xl bg-white text-sm font-black text-violet-700 transition hover:bg-violet-50"
+                  href="/services"
+                  className="mt-4 flex h-11 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-800 transition hover:bg-violet-100"
                 >
-                  Create Order →
+                  Browse Services →
+                </a>
+
+              </div>
+
+              <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 p-6 text-white shadow-xl">
+
+                <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/30 blur-3xl" />
+
+                <div className="relative">
+
+                  <div className="flex items-center justify-between">
+
+                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-200/70">
+                      Wallet
+                    </span>
+
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+                      ₹
+                    </span>
+
+                  </div>
+
+                  <p className="mt-5 text-xs font-medium text-violet-200/70">
+                    Available balance
+                  </p>
+
+                  <p className="mt-1 text-3xl font-black tracking-tight">
+                    ₹{user.balance.toString()}
+                  </p>
+
+                  <a
+                    href="/funds"
+                    className="mt-5 flex h-11 items-center justify-center rounded-xl bg-white text-sm font-black text-slate-900 transition hover:bg-violet-50"
+                  >
+                    + Add Funds
+                  </a>
+
+                </div>
+
+              </div>
+
+              <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
+
+                <div className="flex gap-3">
+
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-black text-blue-700">
+                    ?
+                  </div>
+
+                  <div>
+
+                    <h3 className="text-sm font-black text-slate-900">
+                      Need assistance?
+                    </h3>
+
+                    <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                      Need help with an order or account?
+                      Create a support ticket.
+                    </p>
+
+                  </div>
+
+                </div>
+
+                <a
+                  href="/tickets"
+                  className="mt-4 flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                >
+                  Create Ticket →
                 </a>
 
               </div>
 
             </aside>
+
           </section>
 
-          {/* FEATURES */}
+          {/* ================= FEATURES ================= */}
+
           <section className="mt-5 grid gap-4 md:grid-cols-3">
 
             <Feature
@@ -343,19 +492,20 @@ export default async function DashboardPage() {
 
             <Feature
               icon="⚡"
-              title="Fast"
-              description="Fast processing across supported services."
+              title="Fast Processing"
+              description="Designed for quick and reliable ordering."
             />
 
             <Feature
               icon="✦"
               title="Large Catalog"
-              description={`${services.length} active services available.`}
+              description={`${services.length} active services ready to explore.`}
             />
 
           </section>
 
-          {/* FOOTER */}
+          {/* ================= FOOTER ================= */}
+
           <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-6 text-xs text-slate-400 sm:flex-row">
 
             <p>
@@ -372,6 +522,13 @@ export default async function DashboardPage() {
               </a>
 
               <a
+                href="/orders"
+                className="transition hover:text-slate-700"
+              >
+                Orders
+              </a>
+
+              <a
                 href="/tickets"
                 className="transition hover:text-slate-700"
               >
@@ -384,6 +541,7 @@ export default async function DashboardPage() {
               </span>
 
             </div>
+
           </footer>
 
         </div>
@@ -392,90 +550,111 @@ export default async function DashboardPage() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  caption,
-  icon,
-  variant,
-}: {
-  label: string;
-  value: string;
-  caption: string;
-  icon: string;
-  variant: "violet" | "blue";
-}) {
-  const iconStyle =
-    variant === "violet"
-      ? "bg-violet-50 text-violet-700"
-      : "bg-blue-50 text-blue-700";
+/* =========================================================
+   MENU ITEM
+========================================================= */
 
-  return (
-    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-
-      <div className="flex items-start justify-between gap-4">
-
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-            {label}
-          </p>
-
-          <p className="mt-3 text-3xl font-black tracking-tight text-slate-950">
-            {value}
-          </p>
-
-          <p className="mt-2 text-xs font-medium text-slate-500">
-            {caption}
-          </p>
-        </div>
-
-        <div
-          className={`flex h-11 w-11 items-center justify-center rounded-xl text-base font-black ${iconStyle}`}
-        >
-          {icon}
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-function QuickLink({
+function MenuItem({
   href,
   icon,
   title,
   description,
+  iconClass,
 }: {
   href: string;
   icon: string;
   title: string;
   description: string;
+  iconClass: string;
 }) {
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:border-violet-100 hover:bg-violet-50"
+      className="group/item flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-slate-50"
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm">
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black ${iconClass}`}
+      >
         {icon}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-black text-slate-800">
+
+        <p className="text-sm font-black text-slate-800">
           {title}
         </p>
 
-        <p className="mt-0.5 truncate text-[10px] text-slate-400">
+        <p className="mt-0.5 truncate text-[10px] font-medium text-slate-400">
           {description}
         </p>
+
       </div>
 
-      <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600">
+      <span className="text-slate-300 transition group-hover/item:translate-x-1 group-hover/item:text-slate-700">
         →
       </span>
     </a>
   );
 }
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+function StatCard({
+  label,
+  value,
+  description,
+  icon,
+  variant,
+}: {
+  label: string;
+  value: string;
+  description: string;
+  icon: string;
+  variant: "violet" | "blue";
+}) {
+  const iconClass =
+    variant === "violet"
+      ? "bg-violet-50 text-violet-700"
+      : "bg-blue-50 text-blue-700";
+
+  return (
+    <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+
+      <div className="flex items-start justify-between gap-5">
+
+        <div>
+
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+            {label}
+          </p>
+
+          <p className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950">
+            {value}
+          </p>
+
+          <p className="mt-2 text-xs font-medium text-slate-500">
+            {description}
+          </p>
+
+        </div>
+
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-base font-black ${iconClass}`}
+        >
+          {icon}
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
+/* =========================================================
+   FEATURE
+========================================================= */
 
 function Feature({
   icon,
@@ -487,7 +666,7 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="rounded-[20px] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
 
       <div className="flex items-center gap-3">
 
@@ -496,16 +675,19 @@ function Feature({
         </div>
 
         <div>
+
           <h3 className="text-sm font-black text-slate-800">
             {title}
           </h3>
 
-          <p className="mt-1 text-xs leading-5 text-slate-500">
+          <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
             {description}
           </p>
+
         </div>
 
       </div>
+
     </div>
   );
 }
