@@ -64,36 +64,32 @@ export default async function DashboardPage() {
     .toUpperCase();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f7f8fc] text-gray-900">
+    <main className="min-h-screen bg-[#f6f7fb] text-slate-900">
       <Sidebar />
 
-      <div className="relative lg:ml-[250px]">
-        <div className="mx-auto max-w-[1500px] px-4 py-5 sm:px-6 sm:py-7 lg:px-10 lg:py-9">
+      <div className="lg:ml-[250px]">
+        <div className="mx-auto max-w-[1450px] px-4 py-5 sm:px-6 lg:px-10">
 
-          {/* TOP BAR */}
-          <header className="flex items-center justify-between gap-4">
+          {/* TOP NAV */}
+          <header className="flex items-center justify-between py-2">
+
             <div>
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                Dashboard
+              </p>
 
-                <span className="text-xs font-bold uppercase tracking-[0.16em] text-gray-500">
-                  System operational
-                </span>
-              </div>
-
-              <p className="mt-2 text-sm text-gray-500">
-                Your workspace
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                Your growth workspace
               </p>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
 
-              {/* ONLY ADD FUNDS BUTTON */}
               <a
                 href="/funds"
-                className="flex h-11 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-bold text-violet-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100"
+                className="group flex h-11 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-bold text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-800"
               >
-                <span className="text-lg font-black">
+                <span className="text-lg leading-none">
                   +
                 </span>
 
@@ -102,141 +98,163 @@ export default async function DashboardPage() {
                 </span>
               </a>
 
-              {/* PROFILE */}
-              <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-3 py-2.5 shadow-sm">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-700 to-indigo-700 text-sm font-black text-white">
+              <div className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 shadow-sm">
+
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-[11px] font-black text-white">
                   {initials}
                 </div>
 
-                <div className="hidden sm:block">
-                  <p className="max-w-[180px] truncate text-sm font-bold text-gray-900">
+                <div className="hidden max-w-[140px] sm:block">
+                  <p className="truncate text-xs font-bold text-slate-800">
                     {user.name || "User"}
                   </p>
 
-                  <p className="max-w-[180px] truncate text-xs text-gray-500">
+                  <p className="truncate text-[10px] text-slate-400">
                     {user.email}
                   </p>
                 </div>
-              </div>
 
+              </div>
             </div>
           </header>
 
-          {/* HERO */}
-          <section className="relative mt-6 overflow-hidden rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm sm:p-9 lg:p-11">
+          {/* PREMIUM HERO */}
+          <section className="relative mt-5 overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
 
-            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-100 blur-3xl" />
+            <div className="absolute right-[-100px] top-[-130px] h-[330px] w-[330px] rounded-full bg-violet-200/40 blur-[80px]" />
 
-            <div className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-indigo-50 blur-3xl" />
+            <div className="absolute bottom-[-120px] left-[35%] h-[280px] w-[280px] rounded-full bg-indigo-100/60 blur-[80px]" />
 
-            <div className="relative">
+            <div className="relative px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-12">
 
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <div className="flex flex-wrap items-center gap-2">
 
-                <span className="text-xs font-bold text-emerald-700">
-                  Everything is running smoothly
+                <span className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  All systems operational
                 </span>
+
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-bold text-slate-500">
+                  {services.length} services available
+                </span>
+
               </div>
 
-              <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.045em] text-gray-950 sm:text-5xl lg:text-6xl">
-                Welcome back,
-                <br />
+              <div className="mt-7 max-w-4xl">
 
-                <span className="bg-gradient-to-r from-violet-700 to-indigo-700 bg-clip-text text-transparent">
-                  {firstName}.
-                </span>
-              </h1>
+                <p className="text-sm font-bold text-violet-600">
+                  Welcome back, {firstName}
+                </p>
 
-              <p className="mt-5 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg">
-                Your social media growth workspace is ready.
-                Search the catalog, choose a package, and place
-                your order in seconds.
-              </p>
+                <h1 className="mt-2 text-4xl font-black leading-[1.05] tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-6xl">
+                  Grow your social presence
+                  <span className="block bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                    without the busywork.
+                  </span>
+                </h1>
 
-              <div className="mt-7">
+                <p className="mt-5 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base sm:leading-7">
+                  Browse premium social media services, configure
+                  your order and launch your campaign from one
+                  simple workspace.
+                </p>
+
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+
                 <a
-                  href="#new-order"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-gray-950 px-6 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-gray-800"
+                  href="#order"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
                 >
-                  Create New Order
+                  Start an Order
                   <span className="text-base">
                     →
                   </span>
                 </a>
+
+                <a
+                  href="/services"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50"
+                >
+                  Browse Services
+                </a>
+
               </div>
 
             </div>
           </section>
 
-          {/* METRICS */}
+          {/* STATS */}
           <section className="mt-5 grid gap-4 sm:grid-cols-2">
 
-            <MetricCard
+            <StatCard
               label="Available Balance"
               value={`₹${user.balance.toString()}`}
-              note="Ready to use"
+              caption="Ready for your next order"
               icon="₹"
-              tone="violet"
+              variant="violet"
             />
 
-            <MetricCard
-              label="Services"
+            <StatCard
+              label="Active Services"
               value={String(services.length)}
-              note="Active services"
-              icon="◈"
-              tone="blue"
+              caption="Services currently available"
+              icon="✦"
+              variant="blue"
             />
 
           </section>
 
-          {/* ORDER AREA */}
+          {/* MAIN WORKSPACE */}
           <section
-            id="new-order"
-            className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]"
+            id="order"
+            className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_310px]"
           >
 
-            {/* ORDER FORM */}
-            <div className="overflow-visible rounded-[26px] border border-gray-200 bg-white shadow-sm">
+            {/* ORDER BUILDER */}
+            <div className="overflow-visible rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_50px_rgba(15,23,42,0.06)]">
 
-              <div className="border-b border-gray-100 px-6 py-6 sm:px-7">
+              <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
 
-                <div className="flex items-center justify-between gap-5">
+                <div className="flex items-center justify-between gap-4">
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
 
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-xl font-black text-violet-700">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-xl font-black text-white shadow-lg shadow-violet-200">
                       +
                     </div>
 
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
 
-                        <h2 className="text-xl font-black text-gray-900">
+                        <h2 className="text-lg font-black text-slate-900 sm:text-xl">
                           Create New Order
                         </h2>
 
-                        <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-bold uppercase tracking-wider text-emerald-700">
+                        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-700">
                           Live
                         </span>
 
                       </div>
 
-                      <p className="mt-1 text-sm text-gray-500">
-                        Search services, select a package, then enter your target.
+                      <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                        Select a service and configure your campaign.
                       </p>
                     </div>
 
                   </div>
 
                   <div className="hidden text-right sm:block">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
-                      Available
+
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Catalog
                     </p>
 
-                    <p className="mt-1 text-sm font-bold text-gray-700">
+                    <p className="mt-1 text-sm font-black text-slate-700">
                       {services.length} services
                     </p>
+
                   </div>
 
                 </div>
@@ -248,107 +266,65 @@ export default async function DashboardPage() {
 
             </div>
 
-            {/* RIGHT SIDE */}
-            <aside className="space-y-5">
+            {/* SIDE PANEL */}
+            <aside className="space-y-4">
 
-              {/* QUICK ACTIONS */}
-              <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
 
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-500">
-                  Quick Actions
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                  Quick access
                 </p>
 
-                <h3 className="mt-1 text-lg font-black text-gray-900">
-                  Manage your account
+                <h3 className="mt-2 text-lg font-black text-slate-900">
+                  Everything you need
                 </h3>
 
                 <div className="mt-5 space-y-2">
 
                   <QuickLink
                     href="/services"
+                    icon="✦"
                     title="Browse Services"
-                    description="Explore available services"
-                    icon="◈"
+                    description="Explore the full catalog"
                   />
 
                   <QuickLink
                     href="/orders"
-                    title="My Orders"
-                    description="Track your orders"
                     icon="▣"
+                    title="My Orders"
+                    description="Track your campaigns"
                   />
 
                   <QuickLink
                     href="/tickets"
-                    title="Support"
-                    description="Get help with your account"
                     icon="?"
+                    title="Support"
+                    description="Get help when you need it"
                   />
 
                 </div>
               </div>
 
-              {/* SUPPORT */}
-              <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="overflow-hidden rounded-[24px] bg-gradient-to-br from-violet-600 to-indigo-700 p-6 text-white shadow-xl shadow-violet-200">
 
-                <div className="flex gap-3">
-
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                    ?
-                  </div>
-
-                  <div>
-                    <h3 className="text-base font-bold text-gray-900">
-                      Need assistance?
-                    </h3>
-
-                    <p className="mt-1 text-sm leading-6 text-gray-500">
-                      Get help with your account, payments or orders.
-                    </p>
-                  </div>
-
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg">
+                  ⚡
                 </div>
 
-                <a
-                  href="/tickets"
-                  className="mt-4 flex h-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-700 transition hover:bg-gray-50"
-                >
-                  Open Support →
-                </a>
+                <h3 className="mt-5 text-xl font-black">
+                  Ready to grow?
+                </h3>
 
-              </div>
-
-              {/* SERVICE SUMMARY */}
-              <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
-
-                <div className="flex items-center gap-3">
-
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                    ◈
-                  </div>
-
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-gray-400">
-                      Catalog
-                    </p>
-
-                    <p className="mt-1 text-lg font-black text-gray-900">
-                      {services.length} Services
-                    </p>
-                  </div>
-
-                </div>
-
-                <p className="mt-4 text-sm leading-6 text-gray-500">
-                  Browse the available catalog and choose the package
-                  that fits your campaign.
+                <p className="mt-2 text-sm leading-6 text-violet-100">
+                  Choose a service, enter your target and let
+                  DreamSMM handle the rest.
                 </p>
 
                 <a
-                  href="/services"
-                  className="mt-4 flex h-11 items-center justify-center rounded-xl bg-violet-50 text-sm font-bold text-violet-800 transition hover:bg-violet-100"
+                  href="#order"
+                  className="mt-5 flex h-11 items-center justify-center rounded-xl bg-white text-sm font-black text-violet-700 transition hover:bg-violet-50"
                 >
-                  Browse Catalog →
+                  Create Order →
                 </a>
 
               </div>
@@ -361,50 +337,50 @@ export default async function DashboardPage() {
 
             <Feature
               icon="✓"
-              title="Secure Account"
-              description="Your account stays protected."
+              title="Secure"
+              description="Protected account and order flow."
             />
 
             <Feature
               icon="⚡"
-              title="Fast Processing"
-              description="Orders are processed efficiently."
+              title="Fast"
+              description="Fast processing across supported services."
             />
 
             <Feature
-              icon="◉"
-              title={`${services.length}+ Services`}
-              description="Multiple services available."
+              icon="✦"
+              title="Large Catalog"
+              description={`${services.length} active services available.`}
             />
 
           </section>
 
           {/* FOOTER */}
-          <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-gray-200 py-6 text-sm text-gray-400 sm:flex-row">
+          <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-6 text-xs text-slate-400 sm:flex-row">
 
             <p>
-              © {new Date().getFullYear()} DreamSMM. All rights reserved.
+              © {new Date().getFullYear()} DreamSMM
             </p>
 
             <div className="flex items-center gap-5">
 
               <a
                 href="/services"
-                className="hover:text-gray-700"
+                className="transition hover:text-slate-700"
               >
                 Services
               </a>
 
               <a
                 href="/tickets"
-                className="hover:text-gray-700"
+                className="transition hover:text-slate-700"
               >
                 Support
               </a>
 
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Systems operational
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Operational
               </span>
 
             </div>
@@ -416,45 +392,45 @@ export default async function DashboardPage() {
   );
 }
 
-function MetricCard({
+function StatCard({
   label,
   value,
-  note,
+  caption,
   icon,
-  tone,
+  variant,
 }: {
   label: string;
   value: string;
-  note: string;
+  caption: string;
   icon: string;
-  tone: "violet" | "blue";
+  variant: "violet" | "blue";
 }) {
-  const iconClass =
-    tone === "violet"
-      ? "bg-violet-50 text-violet-800"
+  const iconStyle =
+    variant === "violet"
+      ? "bg-violet-50 text-violet-700"
       : "bg-blue-50 text-blue-700";
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
       <div className="flex items-start justify-between gap-4">
 
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-500">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
             {label}
           </p>
 
-          <p className="mt-4 text-3xl font-black tracking-tight text-gray-950">
+          <p className="mt-3 text-3xl font-black tracking-tight text-slate-950">
             {value}
           </p>
 
-          <p className="mt-3 text-sm text-gray-500">
-            {note}
+          <p className="mt-2 text-xs font-medium text-slate-500">
+            {caption}
           </p>
         </div>
 
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-base font-black ${iconClass}`}
+          className={`flex h-11 w-11 items-center justify-center rounded-xl text-base font-black ${iconStyle}`}
         >
           {icon}
         </div>
@@ -466,35 +442,35 @@ function MetricCard({
 
 function QuickLink({
   href,
+  icon,
   title,
   description,
-  icon,
 }: {
   href: string;
+  icon: string;
   title: string;
   description: string;
-  icon: string;
 }) {
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 transition hover:border-violet-200 hover:bg-violet-50"
+      className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:border-violet-100 hover:bg-violet-50"
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm">
         {icon}
       </div>
 
-      <div className="flex-1">
-        <p className="text-sm font-bold text-gray-900">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-black text-slate-800">
           {title}
         </p>
 
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-0.5 truncate text-[10px] text-slate-400">
           {description}
         </p>
       </div>
 
-      <span className="text-gray-400 transition group-hover:translate-x-1 group-hover:text-violet-700">
+      <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600">
         →
       </span>
     </a>
@@ -511,20 +487,20 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="rounded-[20px] border border-slate-200 bg-white p-5 shadow-sm">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-700">
           {icon}
         </div>
 
         <div>
-          <h3 className="text-base font-bold text-gray-900">
+          <h3 className="text-sm font-black text-slate-800">
             {title}
           </h3>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-xs leading-5 text-slate-500">
             {description}
           </p>
         </div>
