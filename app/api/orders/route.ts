@@ -2,16 +2,16 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
-import { getMicoSmmOrderStatus } from "@/lib/providers/micosmm";
+import { addMicoSmmOrder } from "@/lib/providers/micosmm";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("session")?.value;
 
     if (!token) {
       return NextResponse.json(
-        { error: "Admin access required." },
+        { error: "You must be logged in." },
         { status: 401 }
       );
     }
@@ -20,183 +20,301 @@ export async function POST() {
 
     if (!session) {
       return NextResponse.json(
-        { error: "Session expired." },
+        { error: "Your session has expired. Please log in again." },
         { status: 401 }
       );
     }
 
-    const admin = await prisma.user.findUnique({
-      where: {
-        id: session.userId,
-      },
-      select: {
-        role: true,
-      },
-    });
+    const body = await request.json();
 
-    if (!admin || admin.role !== "ADMIN") {
+    const serviceId = Number(body.serviceId);
+    const quantity = Number(body.quantity);
+    const link =
+      typeof body.link === "string" ? body.link.trim() : "";
+
+    if (
+      !Number.isInteger(serviceId) ||
+      serviceId <= 0 ||
+      !Number.isInteger(quantity) ||
+      quantity <= 0 ||
+      !link
+    ) {
       return NextResponse.json(
-        { error: "Admin access required." },
-        { status: 403 }
+        { error: "Service, link and valid quantity are required." },
+        { status: 400 }
       );
     }
 
-    const orders = await prisma.order.findMany({
+    if (link.length > 2048) {
+      return NextResponse.json(
+        { error: "Target link is too long." },
+        { status: 400 }
+      );
+    }
+
+    const service = await prisma.service.findFirst({
       where: {
-        providerId: {
-          not: null,
-        },
-        status: {
-          in: ["PENDING", "PROCESSING", "PARTIAL"],
-        },
+        id: serviceId,
+        enabled: true,
       },
       select: {
         id: true,
-        userId: true,
+        name: true,
+        rate: true,
+        min: true,
+        max: true,
         providerId: true,
-        charge: true,
       },
-      take: 50,
     });
 
-    let updated = 0;
-    let failed = 0;
-    let refunded = 0;
+    if (!service) {
+      return NextResponse.json(
+        { error: "This service is not available." },
+        { status: 404 }
+      );
+    }
 
-    for (const order of orders) {
-      if (!order.providerId) {
-        continue;
-      }
+    if (quantity < service.min || quantity > service.max) {
+      return NextResponse.json(
+        {
+          error: `Quantity must be between ${service.min} and ${service.max}.`,
+        },
+        { status: 400 }
+      );
+    }
 
-      try {
-        const provider = await getMicoSmmOrderStatus(
-          order.providerId
-        );
+    if (!service.providerId) {
+      return NextResponse.json(
+        { error: "This service is not connected to a provider yet." },
+        { status: 400 }
+      );
+    }
 
-        const status = provider.status.toUpperCase();
+    const charge = service.rate.mul(quantity).div(1000);
 
-        let newStatus:
-          | "PENDING"
-          | "PROCESSING"
-          | "COMPLETED"
-          | "PARTIAL"
-          | "CANCELLED" = "PROCESSING";
+    if (charge.lte(0)) {
+      return NextResponse.json(
+        { error: "Invalid service price." },
+        { status: 400 }
+      );
+    }
 
-        if (status === "COMPLETED") {
-          newStatus = "COMPLETED";
-        } else if (status === "PARTIAL") {
-          newStatus = "PARTIAL";
-        } else if (
-          status === "CANCELLED" ||
-          status === "CANCELED"
-        ) {
-          newStatus = "CANCELLED";
-        } else if (status === "PENDING") {
-          newStatus = "PENDING";
-        }
-
-        if (newStatus === "CANCELLED") {
-          /*
-           * Cancellation + refund happen in ONE transaction.
-           *
-           * updateMany is intentional:
-           * only an order that is still active can enter this block.
-           * This prevents a second sync from refunding the same order again.
-           */
-          const refundResult = await prisma.$transaction(
-            async (tx) => {
-              const cancelled = await tx.order.updateMany({
-                where: {
-                  id: order.id,
-                  status: {
-                    in: [
-                      "PENDING",
-                      "PROCESSING",
-                      "PARTIAL",
-                    ],
-                  },
-                },
-                data: {
-                  status: "CANCELLED",
-                  startCount: provider.startCount,
-                  remains: provider.remains,
-                },
-              });
-
-              if (cancelled.count !== 1) {
-                return false;
-              }
-
-              await tx.user.update({
-                where: {
-                  id: order.userId,
-                },
-                data: {
-                  balance: {
-                    increment: order.charge,
-                  },
-                  totalSpent: {
-                    decrement: order.charge,
-                  },
-                },
-              });
-
-              await tx.transaction.create({
-                data: {
-                  userId: order.userId,
-                  type: "REFUND",
-                  amount: order.charge,
-                  note: `Refund for cancelled order #${order.id}`,
-                },
-              });
-
-              return true;
-            }
-          );
-
-          if (refundResult) {
-            refunded++;
-          }
-
-          updated++;
-          continue;
-        }
-
-        await prisma.order.update({
-          where: {
-            id: order.id,
+    const result = await prisma.$transaction(async (tx) => {
+      const balanceUpdate = await tx.user.updateMany({
+        where: {
+          id: session.userId,
+          status: "ACTIVE",
+          balance: {
+            gte: charge,
           },
-          data: {
-            status: newStatus,
-            startCount: provider.startCount,
-            remains: provider.remains,
+        },
+        data: {
+          balance: {
+            decrement: charge,
+          },
+          totalSpent: {
+            increment: charge,
+          },
+        },
+      });
+
+      if (balanceUpdate.count !== 1) {
+        const user = await tx.user.findUnique({
+          where: {
+            id: session.userId,
+          },
+          select: {
+            status: true,
           },
         });
 
-        updated++;
-      } catch (error) {
-        failed++;
+        if (!user) {
+          throw new Error("USER_NOT_FOUND");
+        }
 
-        console.error(
-          `Failed to sync order #${order.id}:`,
-          error
+        if (user.status !== "ACTIVE") {
+          throw new Error("ACCOUNT_NOT_ACTIVE");
+        }
+
+        throw new Error("INSUFFICIENT_BALANCE");
+      }
+
+      const order = await tx.order.create({
+        data: {
+          userId: session.userId,
+          serviceId: service.id,
+          link,
+          quantity,
+          charge,
+          status: "PENDING",
+        },
+        select: {
+          id: true,
+          serviceId: true,
+          quantity: true,
+          charge: true,
+          status: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.transaction.create({
+        data: {
+          userId: session.userId,
+          type: "ORDER",
+          amount: charge,
+          note: `Order #${order.id} - ${service.name}`,
+        },
+      });
+
+      const updatedUser = await tx.user.findUnique({
+        where: {
+          id: session.userId,
+        },
+        select: {
+          balance: true,
+          totalSpent: true,
+        },
+      });
+
+      if (!updatedUser) {
+        throw new Error("USER_NOT_FOUND");
+      }
+
+      return {
+        order,
+        balance: updatedUser.balance,
+        totalSpent: updatedUser.totalSpent,
+      };
+    });
+
+    let providerOrderId: string;
+
+    try {
+      const providerResult = await addMicoSmmOrder({
+        serviceId: service.providerId,
+        link,
+        quantity,
+      });
+
+      providerOrderId = providerResult.providerOrderId;
+    } catch (providerError) {
+      console.error("MicoSMM order error:", providerError);
+
+      await prisma.$transaction(async (tx) => {
+        await tx.user.update({
+          where: {
+            id: session.userId,
+          },
+          data: {
+            balance: {
+              increment: result.order.charge,
+            },
+            totalSpent: {
+              decrement: result.order.charge,
+            },
+          },
+        });
+
+        await tx.transaction.create({
+          data: {
+            userId: session.userId,
+            type: "REFUND",
+            amount: result.order.charge,
+            note: `Refund for failed MicoSMM order #${result.order.id}`,
+          },
+        });
+
+        await tx.order.update({
+          where: {
+            id: result.order.id,
+          },
+          data: {
+            status: "REFUNDED",
+          },
+        });
+      });
+
+      return NextResponse.json(
+        {
+          error:
+            providerError instanceof Error
+              ? providerError.message
+              : "MicoSMM rejected the order. Your balance has been refunded.",
+        },
+        { status: 502 }
+      );
+    }
+
+    const finalOrder = await prisma.order.update({
+      where: {
+        id: result.order.id,
+      },
+      data: {
+        providerId: providerOrderId,
+        status: "PROCESSING",
+      },
+      select: {
+        id: true,
+        serviceId: true,
+        quantity: true,
+        charge: true,
+        status: true,
+        providerId: true,
+        createdAt: true,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Order placed successfully.",
+        order: {
+          id: finalOrder.id,
+          serviceId: finalOrder.serviceId,
+          quantity: finalOrder.quantity,
+          charge: finalOrder.charge.toString(),
+          status: finalOrder.status,
+          providerId: finalOrder.providerId,
+          createdAt: finalOrder.createdAt,
+        },
+        balance: result.balance.toString(),
+        totalSpent: result.totalSpent.toString(),
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "USER_NOT_FOUND") {
+        return NextResponse.json(
+          { error: "User account not found." },
+          { status: 404 }
+        );
+      }
+
+      if (error.message === "ACCOUNT_NOT_ACTIVE") {
+        return NextResponse.json(
+          { error: "Your account is not active." },
+          { status: 403 }
+        );
+      }
+
+      if (error.message === "INSUFFICIENT_BALANCE") {
+        return NextResponse.json(
+          {
+            error:
+              "Insufficient balance. Please add funds before placing this order.",
+          },
+          { status: 400 }
         );
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      checked: orders.length,
-      updated,
-      refunded,
-      failed,
-    });
-  } catch (error) {
-    console.error("Order sync error:", error);
+    console.error("Order creation error:", error);
 
     return NextResponse.json(
       {
-        error: "Unable to sync orders.",
+        error: "Something went wrong while processing your request.",
       },
       { status: 500 }
     );
