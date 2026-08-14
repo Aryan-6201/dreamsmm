@@ -13,6 +13,15 @@ type Service = {
   max: number;
 };
 
+const platformOrder = [
+  "Instagram",
+  "YouTube",
+  "TikTok",
+  "Facebook",
+  "Telegram",
+  "X",
+];
+
 const platformIcons: Record<string, string> = {
   instagram: "◎",
   youtube: "▶",
@@ -23,14 +32,17 @@ const platformIcons: Record<string, string> = {
   x: "𝕏",
 };
 
-const platformOrder = [
-  "Instagram",
-  "YouTube",
-  "TikTok",
-  "Facebook",
-  "Telegram",
-  "X",
-];
+function normalize(value: string | null | undefined) {
+  return (value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function displayCategory(value: string | null | undefined) {
+  const clean = (value || "").trim().replace(/\s+/g, " ");
+  if (!clean) return "Other";
+  return clean
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
 
 export default function OrderForm({ services }: { services: Service[] }) {
   const [platform, setPlatform] = useState("");
@@ -39,24 +51,42 @@ export default function OrderForm({ services }: { services: Service[] }) {
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+
+  const uniqueServices = useMemo(() => {
+    const seen = new Set<string>();
+
+    return services.filter((service) => {
+      const key = [
+        normalize(service.platform),
+        normalize(service.category) || "other",
+        normalize(service.name),
+      ].join("|");
+
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [services]);
 
   const platforms = useMemo(() => {
     const unique = Array.from(
-      new Set(services.map((s) => s.platform).filter(Boolean))
+      new Map(
+        uniqueServices
+          .filter((service) => service.platform?.trim())
+          .map((service) => [normalize(service.platform), service.platform.trim()])
+      ).values()
     );
 
     return unique.sort((a, b) => {
       const ai = platformOrder.findIndex(
-        (p) => p.toLowerCase() === a.toLowerCase()
+        (item) => normalize(item) === normalize(a)
       );
       const bi = platformOrder.findIndex(
-        (p) => p.toLowerCase() === b.toLowerCase()
+        (item) => normalize(item) === normalize(b)
       );
 
       if (ai === -1 && bi === -1) return a.localeCompare(b);
@@ -64,61 +94,64 @@ export default function OrderForm({ services }: { services: Service[] }) {
       if (bi === -1) return -1;
       return ai - bi;
     });
-  }, [services]);
+  }, [uniqueServices]);
 
   const platformServices = useMemo(() => {
     if (!platform) return [];
-    return services.filter(
-      (s) => s.platform.toLowerCase() === platform.toLowerCase()
+    return uniqueServices.filter(
+      (service) => normalize(service.platform) === normalize(platform)
     );
-  }, [services, platform]);
+  }, [uniqueServices, platform]);
 
-  // Categories come directly from the Service.category field in Prisma.
   const categoryGroups = useMemo(() => {
-    const groups: Record<string, Service[]> = {};
+    const groups = new Map<string, Service[]>();
 
-    platformServices.forEach((service) => {
-      const name = service.category?.trim() || "Other";
+    for (const service of platformServices) {
+      const label = displayCategory(service.category);
+      const key = normalize(label);
 
-      if (!groups[name]) groups[name] = [];
-      groups[name].push(service);
-    });
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(service);
+    }
 
     return groups;
   }, [platformServices]);
 
-  const categories = useMemo(
-    () => Object.keys(categoryGroups).sort((a, b) => {
-      if (a === "Other") return 1;
-      if (b === "Other") return -1;
-      return a.localeCompare(b);
-    }),
-    [categoryGroups]
-  );
+  const categories = useMemo(() => {
+    return Array.from(categoryGroups.entries())
+      .map(([key, items]) => ({
+        key,
+        label: displayCategory(items[0]?.category),
+        services: items,
+      }))
+      .sort((a, b) => {
+        if (a.key === "other") return 1;
+        if (b.key === "other") return -1;
+        return a.label.localeCompare(b.label);
+      });
+  }, [categoryGroups]);
 
-  const categoryServices = category
-    ? categoryGroups[category] ?? []
-    : [];
+  const categoryServices = useMemo(() => {
+    return category ? categoryGroups.get(normalize(category)) || [] : [];
+  }, [category, categoryGroups]);
 
   const filteredServices = useMemo(() => {
     const q = search.trim().toLowerCase();
-
     if (!q) return categoryServices;
 
     return categoryServices.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.description?.toLowerCase().includes(q)
+      (service) =>
+        service.name.toLowerCase().includes(q) ||
+        service.description?.toLowerCase().includes(q)
     );
   }, [categoryServices, search]);
 
   const selected = useMemo(
-    () => services.find((s) => s.id === serviceId),
-    [services, serviceId]
+    () => uniqueServices.find((service) => service.id === serviceId),
+    [uniqueServices, serviceId]
   );
 
   const qty = Number(quantity) || 0;
-
   const quantityValid =
     !!selected && qty >= selected.min && qty <= selected.max;
 
@@ -126,14 +159,15 @@ export default function OrderForm({ services }: { services: Service[] }) {
     ? (qty / 1000) * Number(selected.rate)
     : 0;
 
-  const icon =
-    platformIcons[platform.toLowerCase()] ?? "✦";
+  const icon = platformIcons[normalize(platform)] ?? "✦";
 
   function choosePlatform(value: string) {
     setPlatform(value);
     setCategory("");
     setServiceId("");
     setSearch("");
+    setError("");
+    setSuccess("");
     setStep(2);
   }
 
@@ -141,11 +175,15 @@ export default function OrderForm({ services }: { services: Service[] }) {
     setCategory(value);
     setServiceId("");
     setSearch("");
+    setError("");
+    setSuccess("");
     setStep(3);
   }
 
   function chooseService(id: number) {
     setServiceId(id);
+    setError("");
+    setSuccess("");
     setStep(4);
   }
 
@@ -161,59 +199,54 @@ export default function OrderForm({ services }: { services: Service[] }) {
     setStep(1);
   }
 
-async function submit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  if (!selected || !link.trim() || !quantityValid || submitting) {
-    return;
-  }
-
-  setSubmitting(true);
-  setError("");
-  setSuccess("");
-
-  try {
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        serviceId: selected.id,
-        link: link.trim(),
-        quantity: qty,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      setError(data.error || "Unable to place order.");
+    if (!selected || !link.trim() || !quantityValid || submitting) {
       return;
     }
 
-    setSuccess(
-      `Order #${data.order.id} placed successfully. ₹${data.order.charge} charged.`
-    );
+    setSubmitting(true);
+    setError("");
+    setSuccess("");
 
-    setLink("");
-    setQuantity("");
-  } catch (error) {
-    console.error("Order request failed:", error);
-    setError("Network error. Please try again.");
-  } finally {
-    setSubmitting(false);
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          serviceId: selected.id,
+          link: link.trim(),
+          quantity: qty,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Unable to place order.");
+        return;
+      }
+
+      setSuccess(
+        `Order #${data.order.id} placed successfully. ₹${data.order.charge} charged.`
+      );
+
+      setLink("");
+      setQuantity("");
+    } catch (requestError) {
+      console.error("Order request failed:", requestError);
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
-}
 
   return (
     <form onSubmit={submit} className="relative">
-
-      {/* =========================================================
-          PROGRESS
-      ========================================================= */}
-
-      <div className="mb-7 rounded-2xl border border-white/[0.06] bg-black/20 p-3 backdrop-blur-xl">
+      <div className="mb-7 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
         <div className="flex items-center gap-1">
           {[
             ["01", "Platform"],
@@ -231,29 +264,29 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
                   type="button"
                   disabled={current > step}
                   onClick={() => {
-                    if (current < step) setStep(current as 1 | 2 | 3 | 4);
+                    if (current < step) {
+                      setStep(current as 1 | 2 | 3 | 4);
+                    }
                   }}
-                  className={`flex min-w-0 items-center gap-2 rounded-xl px-2 py-2 text-left transition ${
-                    active
-                      ? "bg-violet-500/[0.10]"
-                      : "hover:bg-white/[0.025]"
+                  className={`flex min-w-0 items-center gap-2 rounded-xl px-2.5 py-2.5 text-left transition ${
+                    active ? "bg-violet-50" : "hover:bg-gray-50"
                   }`}
                 >
                   <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[7px] font-black ${
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-xs font-black ${
                       active
-                        ? "border-violet-400/30 bg-violet-400/10 text-violet-200"
+                        ? "border-violet-200 bg-violet-100 text-violet-700"
                         : done
-                          ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
-                          : "border-white/[0.07] bg-white/[0.02] text-gray-700"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                          : "border-gray-200 bg-gray-50 text-gray-400"
                     }`}
                   >
                     {done ? "✓" : number}
                   </span>
 
                   <span
-                    className={`hidden truncate text-[8px] font-bold sm:block ${
-                      active ? "text-gray-200" : "text-gray-600"
+                    className={`hidden truncate text-sm font-bold sm:block ${
+                      active ? "text-gray-900" : "text-gray-400"
                     }`}
                   >
                     {label}
@@ -263,7 +296,7 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
                 {current < 4 && (
                   <span
                     className={`mx-1 h-px flex-1 ${
-                      done ? "bg-emerald-400/20" : "bg-white/[0.05]"
+                      done ? "bg-emerald-200" : "bg-gray-200"
                     }`}
                   />
                 )}
@@ -273,22 +306,16 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
         </div>
       </div>
 
-      {/* =========================================================
-          STEP 1 — PLATFORM
-      ========================================================= */}
-
       {step === 1 && (
         <section>
           <div className="mb-6">
-            <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-violet-300/60">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
               Step 01
             </p>
-
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.035em]">
+            <h2 className="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
               Choose your platform
             </h2>
-
-            <p className="mt-2 max-w-xl text-[10px] leading-5 text-gray-600">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-gray-500">
               Start by selecting where you want to grow. We&apos;ll only show
               services relevant to that platform.
             </p>
@@ -296,14 +323,10 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {platforms.map((item) => {
-              const active =
-                item.toLowerCase() === platform.toLowerCase();
-
-              const itemIcon =
-                platformIcons[item.toLowerCase()] ?? "✦";
-
-              const count = services.filter(
-                (s) => s.platform.toLowerCase() === item.toLowerCase()
+              const active = normalize(item) === normalize(platform);
+              const itemIcon = platformIcons[normalize(item)] ?? "✦";
+              const count = uniqueServices.filter(
+                (service) => normalize(service.platform) === normalize(item)
               ).length;
 
               return (
@@ -311,36 +334,32 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
                   key={item}
                   type="button"
                   onClick={() => choosePlatform(item)}
-                  className={`group relative overflow-hidden rounded-[22px] border p-5 text-left transition duration-300 ${
+                  className={`group rounded-2xl border p-5 text-left shadow-sm transition ${
                     active
-                      ? "border-violet-400/25 bg-gradient-to-br from-violet-500/[0.12] to-indigo-500/[0.04] shadow-[0_18px_50px_rgba(99,102,241,.10)]"
-                      : "border-white/[0.07] bg-white/[0.025] hover:-translate-y-1 hover:border-white/[0.14] hover:bg-white/[0.045]"
+                      ? "border-violet-300 bg-violet-50"
+                      : "border-gray-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50/50"
                   }`}
                 >
-                  {active && (
-                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
-                  )}
-
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl border text-lg font-black ${
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl border text-lg font-black ${
                       active
-                        ? "border-violet-300/15 bg-violet-400/10 text-violet-200"
-                        : "border-white/[0.07] bg-black/20 text-gray-500"
+                        ? "border-violet-200 bg-violet-100 text-violet-700"
+                        : "border-gray-200 bg-gray-50 text-gray-500"
                     }`}
                   >
                     {itemIcon}
                   </div>
 
-                  <p className="mt-4 text-xs font-black">
+                  <p className="mt-4 text-base font-black text-gray-900">
                     {item}
                   </p>
 
-                  <p className="mt-1 text-[8px] text-gray-600">
+                  <p className="mt-1 text-sm text-gray-500">
                     {count} services available
                   </p>
 
-                  <span className="absolute bottom-5 right-5 text-gray-700 transition group-hover:translate-x-1 group-hover:text-gray-300">
-                    →
+                  <span className="mt-4 block text-sm font-bold text-violet-600">
+                    Continue →
                   </span>
                 </button>
               );
@@ -356,87 +375,76 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
         </section>
       )}
 
-      {/* =========================================================
-          STEP 2 — CATEGORY
-      ========================================================= */}
-
       {step === 2 && (
         <section>
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-violet-300/60">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
                 Step 02
               </p>
-
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.035em]">
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
                 What do you need?
               </h2>
-
-              <p className="mt-2 max-w-xl text-[10px] leading-5 text-gray-600">
-                Pick a category to narrow down the service list.
+              <p className="mt-2 max-w-xl text-sm leading-6 text-gray-500">
+                Pick one category to narrow down the service list.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-[8px] font-bold text-gray-500 hover:text-white"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50"
             >
               Change platform
             </button>
           </div>
 
-          <div className="mb-5 flex items-center gap-3 rounded-2xl border border-violet-400/10 bg-violet-400/[0.045] p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-400/10 text-violet-200">
+          <div className="mb-5 flex items-center gap-3 rounded-2xl border border-violet-100 bg-violet-50 p-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
               {icon}
             </div>
-
             <div>
-              <p className="text-[7px] font-bold uppercase tracking-[0.18em] text-violet-300/60">
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-500">
                 Selected platform
               </p>
-
-              <p className="mt-1 text-xs font-black">
+              <p className="mt-1 text-base font-black text-gray-900">
                 {platform}
               </p>
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((item) => {
-              const count = categoryGroups[item]?.length ?? 0;
-
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => chooseCategory(item)}
-                  className="group relative rounded-[22px] border border-white/[0.07] bg-white/[0.025] p-5 text-left transition duration-300 hover:-translate-y-1 hover:border-violet-400/20 hover:bg-violet-400/[0.045]"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.06] bg-black/20 text-violet-300">
-                      {categoryIcon(item)}
-                    </div>
-
-                    <span className="rounded-full border border-white/[0.06] bg-black/20 px-2 py-1 text-[7px] font-bold text-gray-600">
-                      {count}
-                    </span>
+            {categories.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => chooseCategory(item.label)}
+                className="group rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50/40"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-600">
+                    {categoryIcon(item.label)}
                   </div>
 
-                  <h3 className="mt-5 text-sm font-black">
-                    {item}
-                  </h3>
-
-                  <p className="mt-1 text-[8px] text-gray-600">
-                    Browse {count} {item.toLowerCase()} services
-                  </p>
-
-                  <span className="mt-5 block text-[8px] font-bold text-gray-700 transition group-hover:text-violet-300">
-                    View services →
+                  <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-bold text-gray-500">
+                    {item.services.length}
                   </span>
-                </button>
-              );
-            })}
+                </div>
+
+                <h3 className="mt-5 text-lg font-black text-gray-900">
+                  {item.label}
+                </h3>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Browse {item.services.length}{" "}
+                  {item.label.toLowerCase()} services
+                </p>
+
+                <span className="mt-5 block text-sm font-bold text-violet-600">
+                  View services →
+                </span>
+              </button>
+            ))}
           </div>
 
           {categories.length === 0 && (
@@ -448,23 +456,17 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
         </section>
       )}
 
-      {/* =========================================================
-          STEP 3 — SERVICE
-      ========================================================= */}
-
       {step === 3 && (
         <section>
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-violet-300/60">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
                 Step 03
               </p>
-
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.035em]">
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
                 Select a service
               </h2>
-
-              <p className="mt-2 text-[10px] text-gray-600">
+              <p className="mt-2 text-sm text-gray-500">
                 {platform} · {category}
               </p>
             </div>
@@ -472,30 +474,26 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-[8px] font-bold text-gray-500 hover:text-white"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50"
             >
               Change category
             </button>
           </div>
 
           <div className="relative mb-4">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-600">
-              ⌕
-            </span>
-
             <input
               autoFocus
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
               placeholder={`Search ${category.toLowerCase()} services...`}
-              className="h-12 w-full rounded-2xl border border-white/[0.08] bg-black/20 pl-11 pr-10 text-xs text-white outline-none backdrop-blur-xl transition placeholder:text-gray-700 focus:border-violet-400/30 focus:ring-4 focus:ring-violet-500/[0.05]"
+              className="h-13 w-full rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
             />
 
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-white"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
               >
                 ×
               </button>
@@ -503,16 +501,15 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
           </div>
 
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-[8px] text-gray-700">
+            <span className="text-sm text-gray-500">
               Showing {filteredServices.length} services
             </span>
-
-            <span className="text-[8px] text-gray-700">
-              Sorted for {platform}
+            <span className="text-sm text-gray-400">
+              {platform}
             </span>
           </div>
 
-          <div className="max-h-[450px] space-y-2 overflow-y-auto pr-1">
+          <div className="max-h-[500px] space-y-3 overflow-y-auto pr-1">
             {filteredServices.map((service) => {
               const active = service.id === serviceId;
 
@@ -521,60 +518,55 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
                   key={service.id}
                   type="button"
                   onClick={() => chooseService(service.id)}
-                  className={`group relative w-full overflow-hidden rounded-[20px] border p-4 text-left transition duration-300 ${
+                  className={`group relative w-full overflow-hidden rounded-2xl border p-4 text-left shadow-sm transition ${
                     active
-                      ? "border-violet-400/25 bg-violet-500/[0.08]"
-                      : "border-white/[0.06] bg-white/[0.018] hover:border-white/[0.13] hover:bg-white/[0.035]"
+                      ? "border-violet-300 bg-violet-50"
+                      : "border-gray-200 bg-white hover:border-violet-200 hover:bg-gray-50"
                   }`}
                 >
                   {active && (
-                    <div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-violet-400 to-indigo-500" />
+                    <div className="absolute left-0 top-0 h-full w-1 bg-violet-500" />
                   )}
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <div
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${
                         active
-                          ? "border-violet-300/15 bg-violet-400/10 text-violet-200"
-                          : "border-white/[0.06] bg-black/20 text-gray-600"
+                          ? "border-violet-200 bg-violet-100 text-violet-700"
+                          : "border-gray-200 bg-gray-50 text-gray-500"
                       }`}
                     >
                       {icon}
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-[10px] font-bold text-gray-200">
+                      <p className="line-clamp-2 text-sm font-bold text-gray-900 sm:text-base">
                         {service.name}
                       </p>
 
                       <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                        <span className="text-[8px] text-gray-600">
+                        <span className="text-xs text-gray-500">
                           Min {service.min.toLocaleString()}
                         </span>
-
-                        <span className="h-0.5 w-0.5 rounded-full bg-gray-700" />
-
-                        <span className="text-[8px] text-gray-600">
+                        <span className="h-1 w-1 rounded-full bg-gray-300" />
+                        <span className="text-xs text-gray-500">
                           Max {service.max.toLocaleString()}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xs font-black text-violet-300">
+                      <p className="text-sm font-black text-violet-700 sm:text-base">
                         ₹{service.rate}
                       </p>
-
-                      <p className="mt-1 text-[7px] text-gray-700">
-                        per 1K
-                      </p>
+                      <p className="mt-1 text-xs text-gray-400">per 1K</p>
                     </div>
 
                     <span
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[7px] ${
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs ${
                         active
-                          ? "border-violet-300/30 bg-violet-400/10 text-violet-200"
-                          : "border-white/[0.07] text-transparent"
+                          ? "border-violet-300 bg-violet-100 text-violet-700"
+                          : "border-gray-200 text-transparent"
                       }`}
                     >
                       ✓
@@ -594,23 +586,17 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
         </section>
       )}
 
-      {/* =========================================================
-          STEP 4 — ORDER
-      ========================================================= */}
-
       {step === 4 && selected && (
         <section>
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-violet-300/60">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
                 Step 04
               </p>
-
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.035em]">
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
                 Build your order
               </h2>
-
-              <p className="mt-2 text-[10px] text-gray-600">
+              <p className="mt-2 text-sm text-gray-500">
                 Add the target and quantity, then review your total.
               </p>
             </div>
@@ -618,77 +604,55 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-[8px] font-bold text-gray-500 hover:text-white"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50"
             >
               Change service
             </button>
           </div>
 
-          {/* Selected service */}
-          <div className="relative overflow-hidden rounded-[24px] border border-violet-400/10 bg-gradient-to-br from-violet-500/[0.10] via-white/[0.025] to-transparent p-5">
-            <div className="absolute -right-20 -top-20 h-44 w-44 rounded-full bg-violet-500/[0.10] blur-[75px]" />
-
-            <div className="relative flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-violet-300/10 bg-violet-400/[0.08] text-lg text-violet-200">
+          <div className="rounded-2xl border border-violet-100 bg-violet-50 p-5">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
                 {icon}
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-[7px] font-bold uppercase tracking-[0.18em] text-violet-300/60">
+                <p className="text-xs font-bold uppercase tracking-wider text-violet-600">
                   {platform} · {category}
                 </p>
-
-                <p className="mt-1 text-sm font-black">
+                <p className="mt-1 text-base font-black text-gray-900">
                   {selected.name}
                 </p>
-
-                <p className="mt-1 text-[8px] text-gray-600">
-                  ₹{selected.rate} / 1K · {selected.min.toLocaleString()}–
+                <p className="mt-1 text-sm text-gray-500">
+                  ₹{selected.rate} / 1K ·{" "}
+                  {selected.min.toLocaleString()}–
                   {selected.max.toLocaleString()}
                 </p>
               </div>
-
-              <div className="hidden rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2 text-right sm:block">
-                <p className="text-[7px] uppercase tracking-[0.15em] text-gray-700">
-                  Rate
-                </p>
-
-                <p className="mt-1 text-xs font-black text-violet-300">
-                  ₹{selected.rate}
-                </p>
-              </div>
             </div>
           </div>
 
-          {/* Target */}
           <div className="mt-5">
-            <label className="mb-2 block text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
+            <label className="mb-2 block text-sm font-bold text-gray-700">
               Target URL
             </label>
 
-            <div className="relative">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-600">
-                ↗
-              </span>
-
-              <input
-                type="url"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-                placeholder="https://instagram.com/your-profile"
-                className="h-14 w-full rounded-2xl border border-white/[0.08] bg-black/20 pl-11 pr-4 text-xs text-white outline-none backdrop-blur-xl transition placeholder:text-gray-700 focus:border-violet-400/30 focus:ring-4 focus:ring-violet-500/[0.05]"
-              />
-            </div>
+            <input
+              type="url"
+              value={link}
+              onChange={(event) => setLink(event.target.value)}
+              placeholder="https://instagram.com/your-profile"
+              className="h-14 w-full rounded-2xl border border-gray-200 bg-white px-4 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+            />
           </div>
 
-          {/* Quantity */}
           <div className="mt-5">
             <div className="mb-2 flex items-center justify-between">
-              <label className="text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
+              <label className="text-sm font-bold text-gray-700">
                 Quantity
               </label>
 
-              <span className="text-[8px] text-gray-700">
+              <span className="text-sm text-gray-500">
                 {selected.min.toLocaleString()} –{" "}
                 {selected.max.toLocaleString()}
               </span>
@@ -699,17 +663,17 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
               min={selected.min}
               max={selected.max}
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={(event) => setQuantity(event.target.value)}
               placeholder="Enter quantity"
-              className={`h-14 w-full rounded-2xl border bg-black/20 px-4 text-sm font-black text-white outline-none backdrop-blur-xl transition placeholder:text-gray-700 ${
+              className={`h-14 w-full rounded-2xl border bg-white px-4 text-base font-bold text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 ${
                 quantity && !quantityValid
-                  ? "border-red-400/25 focus:ring-4 focus:ring-red-500/[0.05]"
-                  : "border-white/[0.08] focus:border-violet-400/30 focus:ring-4 focus:ring-violet-500/[0.05]"
+                  ? "border-red-300 focus:ring-4 focus:ring-red-100"
+                  : "border-gray-200 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
               }`}
             />
 
             {quantity && !quantityValid && (
-              <p className="mt-2 text-[8px] font-semibold text-red-400">
+              <p className="mt-2 text-sm font-semibold text-red-500">
                 Enter a quantity between{" "}
                 {selected.min.toLocaleString()} and{" "}
                 {selected.max.toLocaleString()}.
@@ -717,56 +681,47 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
             )}
           </div>
 
-          {/* Summary */}
-          <div className="mt-5 rounded-[24px] border border-white/[0.08] bg-white/[0.025] p-5">
+          <div className="mt-5 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-gray-600">
+                <p className="text-sm font-bold text-gray-600">
                   Estimated total
                 </p>
-
-                <p className="mt-1 text-[9px] text-gray-700">
+                <p className="mt-1 text-sm text-gray-400">
                   {qty ? qty.toLocaleString() : "0"} units
                 </p>
               </div>
 
-              <p className="text-3xl font-black tracking-[-0.04em]">
+              <p className="text-3xl font-black tracking-tight text-gray-900">
                 ₹{total.toFixed(2)}
               </p>
             </div>
 
-            <div className="my-4 h-px bg-white/[0.06]" />
+            <div className="my-4 h-px bg-gray-100" />
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Summary label="Platform" value={platform} />
               <Summary label="Category" value={category} />
               <Summary label="Service" value={selected.name} />
-              <Summary
-                label="Rate"
-                value={`₹${selected.rate} / 1K`}
-              />
+              <Summary label="Rate" value={`₹${selected.rate} / 1K`} />
             </div>
 
             {link && (
-              <div className="mt-4 rounded-xl border border-white/[0.05] bg-black/20 p-3">
-                <p className="truncate text-[8px] text-gray-600">
-                  {link}
-                </p>
+              <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <p className="truncate text-sm text-gray-500">{link}</p>
               </div>
             )}
           </div>
 
           {error && (
-            <div className="mb-3 rounded-2xl border border-red-400/15 bg-red-400/[0.06] px-4 py-3">
-              <p className="text-[9px] font-semibold text-red-300">
-                {error}
-              </p>
+            <div className="mb-3 mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+              <p className="text-sm font-semibold text-red-600">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="mb-3 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.06] px-4 py-3">
-              <p className="text-[9px] font-semibold text-emerald-300">
+            <div className="mb-3 mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+              <p className="text-sm font-semibold text-emerald-600">
                 ✓ {success}
               </p>
             </div>
@@ -775,29 +730,15 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
           <button
             type="submit"
             disabled={!link.trim() || !quantityValid || submitting}
-            className="group relative mt-5 h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-violet-500 via-indigo-500 to-blue-500 text-[9px] font-black uppercase tracking-[0.14em] text-white shadow-[0_18px_55px_rgba(99,102,241,.22)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_65px_rgba(99,102,241,.32)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:translate-y-0"
+            className="mt-5 h-14 w-full rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <span className="relative">
-              {submitting ? (
-                <>
-                  <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Placing Order...
-                </>
-              ) : (
-                <>
-                  Place Order
-                  <span className="ml-3 text-sm transition group-hover:translate-x-1">
-                    →
-                  </span>
-                </>
-              )}
-            </span>
+            {submitting ? "Placing Order..." : "Place Order →"}
           </button>
 
           <button
             type="button"
             onClick={resetAll}
-            className="mt-3 w-full text-center text-[8px] font-bold text-gray-700 transition hover:text-gray-400"
+            className="mt-3 w-full py-2 text-sm font-bold text-gray-400 transition hover:text-gray-700"
           >
             Start over
           </button>
@@ -808,19 +749,21 @@ async function submit(event: React.FormEvent<HTMLFormElement>) {
 }
 
 function categoryIcon(category: string) {
+  const key = normalize(category);
+
   const icons: Record<string, string> = {
-    Followers: "♙",
-    Likes: "♡",
-    Views: "◉",
-    Comments: "◌",
-    Engagement: "✦",
-    Saves: "▱",
-    Shares: "⌁",
-    Story: "◌",
-    Other: "◇",
+    followers: "♙",
+    likes: "♡",
+    views: "◉",
+    comments: "◌",
+    engagement: "✦",
+    saves: "▱",
+    shares: "⌁",
+    story: "◌",
+    other: "◇",
   };
 
-  return icons[category] ?? "◇";
+  return icons[key] ?? "◇";
 }
 
 function Summary({
@@ -832,11 +775,10 @@ function Summary({
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-[7px] font-bold uppercase tracking-[0.15em] text-gray-700">
+      <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
         {label}
       </p>
-
-      <p className="mt-1 truncate text-[9px] font-semibold text-gray-400">
+      <p className="mt-1 truncate text-sm font-semibold text-gray-800">
         {value}
       </p>
     </div>
@@ -851,18 +793,12 @@ function EmptyState({
   text: string;
 }) {
   return (
-    <div className="mt-3 rounded-[22px] border border-white/[0.06] bg-white/[0.02] p-10 text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.06] bg-black/20 text-gray-600">
+    <div className="mt-3 rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-gray-400 shadow-sm">
         ◇
       </div>
-
-      <p className="mt-4 text-xs font-bold text-gray-400">
-        {title}
-      </p>
-
-      <p className="mt-1 text-[9px] text-gray-700">
-        {text}
-      </p>
+      <p className="mt-4 text-base font-bold text-gray-700">{title}</p>
+      <p className="mt-1 text-sm text-gray-500">{text}</p>
     </div>
   );
 }
