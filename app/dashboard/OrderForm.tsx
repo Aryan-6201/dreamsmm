@@ -29,6 +29,7 @@ export default function OrderForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   const platforms = useMemo(() => {
     const map = new Map<string, string>();
@@ -130,6 +131,7 @@ export default function OrderForm({
     setSearch("");
     setError("");
     setSuccess("");
+    setStep(2);
   }
 
   function selectCategory(value: string) {
@@ -138,12 +140,14 @@ export default function OrderForm({
     setSearch("");
     setError("");
     setSuccess("");
+    setStep(3);
   }
 
   function selectService(id: number) {
     setServiceId(id);
     setError("");
     setSuccess("");
+    setStep(4);
   }
 
   async function handleSubmit(
@@ -237,9 +241,49 @@ export default function OrderForm({
       noValidate
       className="space-y-8"
     >
+      {/* PREMIUM STEP NAV */}
+      <div className="mb-7 rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm">
+        <div className="grid grid-cols-4 gap-1">
+          {[
+            [1, "Platform"],
+            [2, "Category"],
+            [3, "Service"],
+            [4, "Order"],
+          ].map(([number, label]) => {
+            const current = Number(number);
+            const active = step === current;
+            const complete = step > current;
+
+            return (
+              <button
+                key={current}
+                type="button"
+                onClick={() => {
+                  if (current <= step) setStep(current as 1 | 2 | 3 | 4);
+                }}
+                className={`rounded-xl px-2 py-3 text-center transition ${
+                  active
+                    ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                    : complete
+                      ? "bg-violet-50 text-violet-700 hover:bg-violet-100"
+                      : "text-slate-400"
+                }`}
+              >
+                <span className="block text-[9px] font-black uppercase tracking-widest opacity-70">
+                  0{current}
+                </span>
+                <span className="mt-0.5 block text-[10px] font-black sm:text-xs">
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* SEARCH */}
 
-      <section>
+      {step === 3 && <section>
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <p className="text-sm font-black text-slate-900">
@@ -280,13 +324,16 @@ export default function OrderForm({
             </button>
           )}
         </div>
-      </section>
+      </section>}
 
       {/* PLATFORM */}
 
-      <section>
+      {step === 1 && <section>
         <div className="mb-4">
-          <p className="text-sm font-black text-slate-900">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
+            Step 01
+          </p>
+          <p className="mt-1 text-xl font-black text-slate-900">
             Choose platform
           </p>
 
@@ -353,12 +400,21 @@ export default function OrderForm({
             );
           })}
         </div>
-      </section>
+        </section>
+      )}
 
       {/* CATEGORY */}
 
-      {platform && (
+      {step === 2 && platform && (
         <section>
+          <button
+            type="button"
+            onClick={() => setStep(2)}
+            className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
+          >
+            ← Back to category
+          </button>
+
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
               <p className="text-sm font-black text-slate-900">
@@ -374,6 +430,14 @@ export default function OrderForm({
               {platform}
             </span>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
+          >
+            ← Back to platforms
+          </button>
 
           {categories.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -457,7 +521,7 @@ export default function OrderForm({
 
       {/* SERVICES */}
 
-      {platform && category && (
+      {step === 3 && platform && category && (
         <section>
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
@@ -577,8 +641,16 @@ export default function OrderForm({
 
       {/* ORDER DETAILS */}
 
-      {selectedService && (
+      {step === 4 && selectedService && (
         <section className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 sm:p-7">
+          <button
+            type="button"
+            onClick={() => setStep(3)}
+            className="mb-5 text-xs font-black text-slate-500 hover:text-violet-700"
+          >
+            ← Back to services
+          </button>
+
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
               ✓
@@ -603,6 +675,14 @@ export default function OrderForm({
                 ₹{selectedService.rate} per 1,000
               </p>
             </div>
+          </div>
+
+          <div className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
+            Step 04 · Final details
+          </div>
+
+          <div className="mb-5 text-sm font-medium text-slate-500">
+            Add your target link and quantity, then place the order.
           </div>
 
           {/* LINK */}
@@ -732,7 +812,7 @@ export default function OrderForm({
 
       {/* INITIAL STATE */}
 
-      {!selectedService && (
+      {step === 1 && !platform && (
         <div className="rounded-[26px] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm">
             ✦
