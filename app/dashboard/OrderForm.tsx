@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 
@@ -302,7 +302,7 @@ export default function OrderForm({
 
         <div className="relative">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">
-            ⌕
+            âŒ•
           </span>
 
           <input
@@ -320,7 +320,7 @@ export default function OrderForm({
               onClick={() => setSearch("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 hover:text-slate-800"
             >
-              ×
+              Ã—
             </button>
           )}
         </div>
@@ -369,7 +369,7 @@ export default function OrderForm({
               >
                 {active && (
                   <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-black text-white">
-                    ✓
+                    âœ“
                   </span>
                 )}
 
@@ -400,8 +400,7 @@ export default function OrderForm({
             );
           })}
         </div>
-        </section>
-      )}
+        </section>}
 
       {/* CATEGORY */}
 
@@ -412,7 +411,7 @@ export default function OrderForm({
             onClick={() => setStep(2)}
             className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
           >
-            ← Back to category
+            â† Back to category
           </button>
 
           <div className="mb-4 flex items-end justify-between gap-3">
@@ -436,7 +435,7 @@ export default function OrderForm({
             onClick={() => setStep(1)}
             className="mb-4 text-xs font-black text-slate-500 hover:text-violet-700"
           >
-            ← Back to platforms
+            â† Back to platforms
           </button>
 
           {categories.length > 0 ? (
@@ -504,7 +503,7 @@ export default function OrderForm({
                           : "text-slate-200 group-hover:text-violet-400"
                       }`}
                     >
-                      {active ? "✓" : "→"}
+                      {active ? "âœ“" : "â†’"}
                     </span>
                   </button>
                 );
@@ -566,7 +565,7 @@ export default function OrderForm({
                       }`}
                     >
                       {active
-                        ? "✓"
+                        ? "âœ“"
                         : platformIcon(
                             service.platform
                           )}
@@ -608,7 +607,7 @@ export default function OrderForm({
 
                     <div className="hidden shrink-0 text-right sm:block">
                       <p className="text-base font-black text-violet-700">
-                        ₹{service.rate}
+                        â‚¹{service.rate}
                       </p>
 
                       <p className="mt-1 text-[10px] font-bold text-slate-400">
@@ -648,12 +647,12 @@ export default function OrderForm({
             onClick={() => setStep(3)}
             className="mb-5 text-xs font-black text-slate-500 hover:text-violet-700"
           >
-            ← Back to services
+            â† Back to services
           </button>
 
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
-              ✓
+              âœ“
             </div>
 
             <div className="min-w-0 flex-1">
@@ -672,13 +671,13 @@ export default function OrderForm({
               </h3>
 
               <p className="mt-1 text-xs font-medium text-slate-500">
-                ₹{selectedService.rate} per 1,000
+                â‚¹{selectedService.rate} per 1,000
               </p>
             </div>
           </div>
 
           <div className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
-            Step 04 · Final details
+            Step 04 Â· Final details
           </div>
 
           <div className="mb-5 text-sm font-medium text-slate-500">
@@ -714,7 +713,7 @@ export default function OrderForm({
 
               <span className="text-[11px] font-bold text-slate-400">
                 {selectedService.min.toLocaleString()}
-                {" — "}
+                {" â€” "}
                 {selectedService.max.toLocaleString()}
               </span>
             </div>
@@ -755,12 +754,12 @@ export default function OrderForm({
 
             <Summary
               label="Rate"
-              value={`₹${selectedService.rate} / 1K`}
+              value={`â‚¹${selectedService.rate} / 1K`}
             />
 
             <Summary
               label="Total"
-              value={`₹${total.toFixed(2)}`}
+              value={`â‚¹${total.toFixed(2)}`}
               highlight
             />
           </div>
@@ -780,7 +779,7 @@ export default function OrderForm({
           {success && (
             <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
               <p className="text-sm font-bold text-emerald-700">
-                ✓ {success}
+                âœ“ {success}
               </p>
             </div>
           )}
@@ -802,7 +801,7 @@ export default function OrderForm({
                 Place Order
 
                 <span className="text-lg transition-transform group-hover:translate-x-1">
-                  →
+                  â†’
                 </span>
               </>
             )}
@@ -815,7 +814,7 @@ export default function OrderForm({
       {step === 1 && !platform && (
         <div className="rounded-[26px] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm">
-            ✦
+            âœ¦
           </div>
 
           <h3 className="mt-4 text-base font-black text-slate-800">
@@ -839,18 +838,18 @@ export default function OrderForm({
 function platformIcon(platform: string) {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "◎";
-  if (value.includes("youtube")) return "▶";
+  if (value.includes("instagram")) return "â—Ž";
+  if (value.includes("youtube")) return "â–¶";
   if (value.includes("facebook")) return "f";
-  if (value.includes("tiktok")) return "♪";
-  if (value.includes("telegram")) return "➤";
-  if (value.includes("twitter")) return "𝕏";
-  if (value === "x") return "𝕏";
-  if (value.includes("spotify")) return "●";
+  if (value.includes("tiktok")) return "â™ª";
+  if (value.includes("telegram")) return "âž¤";
+  if (value.includes("twitter")) return "ð•";
+  if (value === "x") return "ð•";
+  if (value.includes("spotify")) return "â—";
   if (value.includes("linkedin")) return "in";
-  if (value.includes("reddit")) return "●";
+  if (value.includes("reddit")) return "â—";
 
-  return "✦";
+  return "âœ¦";
 }
 
 /* =========================================================
@@ -860,19 +859,19 @@ function platformIcon(platform: string) {
 function categoryIcon(category: string) {
   const value = category.toLowerCase();
 
-  if (value.includes("follower")) return "♙";
-  if (value.includes("like")) return "♡";
-  if (value.includes("view")) return "◉";
-  if (value.includes("comment")) return "◌";
-  if (value.includes("share")) return "⌁";
-  if (value.includes("save")) return "▱";
-  if (value.includes("story")) return "◌";
-  if (value.includes("subscriber")) return "♙";
-  if (value.includes("watch")) return "◉";
-  if (value.includes("traffic")) return "↗";
-  if (value.includes("member")) return "♙";
+  if (value.includes("follower")) return "â™™";
+  if (value.includes("like")) return "â™¡";
+  if (value.includes("view")) return "â—‰";
+  if (value.includes("comment")) return "â—Œ";
+  if (value.includes("share")) return "âŒ";
+  if (value.includes("save")) return "â–±";
+  if (value.includes("story")) return "â—Œ";
+  if (value.includes("subscriber")) return "â™™";
+  if (value.includes("watch")) return "â—‰";
+  if (value.includes("traffic")) return "â†—";
+  if (value.includes("member")) return "â™™";
 
-  return "◇";
+  return "â—‡";
 }
 
 /* =========================================================
@@ -889,7 +888,7 @@ function EmptyState({
   return (
     <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
-        ◇
+        â—‡
       </div>
 
       <p className="mt-3 text-sm font-black text-slate-800">
