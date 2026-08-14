@@ -1,4 +1,3 @@
-
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/auth";
@@ -10,13 +9,20 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
 
-  if (!token) redirect("/login");
+  if (!token) {
+    redirect("/login");
+  }
 
   const session = await verifySession(token);
-  if (!session) redirect("/login");
+
+  if (!session) {
+    redirect("/login");
+  }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.userId },
+    where: {
+      id: session.userId,
+    },
     select: {
       name: true,
       email: true,
@@ -24,7 +30,9 @@ export default async function DashboardPage() {
     },
   });
 
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
 
   const services = await prisma.service.findMany({
     where: {
@@ -46,8 +54,14 @@ export default async function DashboardPage() {
     max: service.max,
   }));
 
-  const firstName = user.name?.split(" ")[0] || "there";
-  const initials = (user.name || user.email).slice(0, 2).toUpperCase();
+  const firstName =
+    user.name?.split(" ")[0] || "there";
+
+  const initials = (
+    user.name || user.email
+  )
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#f7f8fc] text-gray-900">
@@ -131,7 +145,10 @@ export default async function DashboardPage() {
                   href="/funds"
                   className="flex h-12 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-6 text-sm font-bold text-violet-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100"
                 >
-                  <span className="text-violet-900">+</span>
+                  <span className="text-violet-900">
+                    +
+                  </span>
+
                   Add Funds
                 </a>
               </div>
@@ -139,8 +156,9 @@ export default async function DashboardPage() {
           </section>
 
           {/* METRICS */}
-          <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
 
+            {/* BALANCE */}
             <MetricCard
               label="Available Balance"
               value={`₹${user.balance.toString()}`}
@@ -149,6 +167,7 @@ export default async function DashboardPage() {
               tone="violet"
             />
 
+            {/* SERVICES */}
             <MetricCard
               label="Services"
               value={String(services.length)}
@@ -157,14 +176,7 @@ export default async function DashboardPage() {
               tone="blue"
             />
 
-            <MetricCard
-              label="Account"
-              value="Active"
-              note="Account in good standing"
-              icon="✓"
-              tone="green"
-            />
-
+            {/* WALLET */}
             <a
               href="/funds"
               className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50/40"
@@ -196,6 +208,7 @@ export default async function DashboardPage() {
             id="new-order"
             className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_350px]"
           >
+            {/* ORDER FORM */}
             <div className="overflow-hidden rounded-[26px] border border-gray-200 bg-white shadow-sm">
 
               <div className="border-b border-gray-100 px-6 py-6 sm:px-7">
@@ -244,6 +257,7 @@ export default async function DashboardPage() {
             {/* RIGHT SIDEBAR */}
             <aside className="space-y-5">
 
+              {/* QUICK ACTIONS */}
               <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-500">
                   Quick Actions
@@ -279,6 +293,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
+              {/* ACCOUNT */}
               <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center gap-3">
 
@@ -315,6 +330,7 @@ export default async function DashboardPage() {
                 </a>
               </div>
 
+              {/* SUPPORT */}
               <div className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-sm">
                 <div className="flex gap-3">
 
@@ -413,14 +429,12 @@ function MetricCard({
   value: string;
   note: string;
   icon: string;
-  tone: "violet" | "blue" | "green";
+  tone: "violet" | "blue";
 }) {
   const iconClass =
     tone === "violet"
       ? "bg-violet-50 text-violet-800"
-      : tone === "blue"
-        ? "bg-blue-50 text-blue-700"
-        : "bg-emerald-50 text-emerald-700";
+      : "bg-blue-50 text-blue-700";
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
