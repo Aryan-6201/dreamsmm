@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 
@@ -13,12 +13,12 @@ type Service = {
   max: number;
 };
 
+
 export default function OrderForm({
   services,
 }: {
   services: Service[];
 }) {
-  const [platform, setPlatform] = useState("");
   const [category, setCategory] = useState("");
   const [serviceId, setServiceId] = useState<number | "">("");
 
@@ -26,57 +26,26 @@ export default function OrderForm({
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
 
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   /* =========================================================
-     PLATFORMS
-  ========================================================= */
-
-  const platforms = useMemo(() => {
-    const map = new Map<string, string>();
-
-    services.forEach((service) => {
-      const value = service.platform?.trim();
-
-      if (!value) return;
-
-      const key = value.toLowerCase();
-
-      if (!map.has(key)) {
-        map.set(key, value);
-      }
-    });
-
-    return Array.from(map.values());
-  }, [services]);
-
-  /* =========================================================
-     PLATFORM SERVICES
-  ========================================================= */
-
-  const platformServices = useMemo(() => {
-    if (!platform) return [];
-
-    return services.filter(
-      (service) =>
-        service.platform.toLowerCase() ===
-        platform.toLowerCase()
-    );
-  }, [services, platform]);
-
-  /* =========================================================
-     UNIQUE CATEGORIES
+     CATEGORIES
+     ---------------------------------------------------------
+     Categories are intentionally independent of platform.
+     This matches the reference UI: the user chooses the
+     service category first, then chooses a service.
   ========================================================= */
 
   const categories = useMemo(() => {
     const map = new Map<string, string>();
 
-    platformServices.forEach((service) => {
-      const value =
-        service.category?.trim() || "Other";
-
+    services.forEach((service) => {
+      const value = service.category?.trim() || "Other";
       const key = value.toLowerCase();
 
       if (!map.has(key)) {
@@ -84,17 +53,92 @@ export default function OrderForm({
       }
     });
 
-    return Array.from(map.values());
-  }, [platformServices]);
+    return Array.from(map.values()).sort((a, b) =>
+      a.localeCompare(b)
+    );
+  }, [services]);
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    services.forEach((service) => {
+      const value = service.category?.trim() || "Other";
+      const key = value.toLowerCase();
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+
+    return counts;
+  }, [services]);
+
+  const categoryIcons = useMemo(() => {
+    const icons = new Map<string, string>();
+
+    services.forEach((service) => {
+      const categoryName =
+        service.category?.trim() || "Other";
+      const key = categoryName.toLowerCase();
+
+      if (!icons.has(key)) {
+        icons.set(
+          key,
+          platformIcon(service.platform)
+        );
+      }
+    });
+
+    return icons;
+  }, [services]);
+
+  const categoryQuery = search.trim().toLowerCase();
+
+  const filteredCategories = useMemo(() => {
+    if (!categoryQuery) {
+      return categories;
+    }
+
+    return categories.filter((item) => {
+      if (item.toLowerCase().includes(categoryQuery)) {
+        return true;
+      }
+
+      return services.some((service) => {
+        const categoryName =
+          service.category?.trim() || "Other";
+
+        if (
+          categoryName.toLowerCase() !==
+          item.toLowerCase()
+        ) {
+          return false;
+        }
+
+        return (
+          service.name
+            .toLowerCase()
+            .includes(categoryQuery) ||
+          String(service.id).includes(categoryQuery) ||
+          service.platform
+            .toLowerCase()
+            .includes(categoryQuery)
+        );
+      });
+    });
+  }, [
+    categories,
+    categoryQuery,
+    services,
+  ]);
 
   /* =========================================================
-     CATEGORY SERVICES
+     SERVICES FOR CATEGORY
   ========================================================= */
 
   const categoryServices = useMemo(() => {
-    if (!category) return [];
+    if (!category) {
+      return [];
+    }
 
-    return platformServices.filter((service) => {
+    return services.filter((service) => {
       const value =
         service.category?.trim() || "Other";
 
@@ -103,31 +147,32 @@ export default function OrderForm({
         category.toLowerCase()
       );
     });
-  }, [platformServices, category]);
-
-  /* =========================================================
-     SEARCH
-  ========================================================= */
+  }, [services, category]);
 
   const filteredServices = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    if (!query) return categoryServices;
+    if (!categoryQuery) {
+      return categoryServices;
+    }
 
     return categoryServices.filter((service) => {
       return (
-        service.name.toLowerCase().includes(query) ||
-        String(service.id).includes(query) ||
-        service.description
-          ?.toLowerCase()
-          .includes(query)
+        service.name
+          .toLowerCase()
+          .includes(categoryQuery) ||
+        String(service.id)
+          .includes(categoryQuery) ||
+        service.platform
+          .toLowerCase()
+          .includes(categoryQuery) ||
+        (service.description || "")
+          .toLowerCase()
+          .includes(categoryQuery)
       );
     });
-  }, [categoryServices, search]);
-
-  /* =========================================================
-     SELECTED SERVICE
-  ========================================================= */
+  }, [
+    categoryServices,
+    categoryQuery,
+  ]);
 
   const selectedService = useMemo(() => {
     return services.find(
@@ -135,35 +180,20 @@ export default function OrderForm({
     );
   }, [services, serviceId]);
 
-  /* =========================================================
-     TOTAL
-  ========================================================= */
-
-  const quantityNumber = Number(quantity) || 0;
+  const quantityNumber =
+    Number(quantity) || 0;
 
   const validQuantity =
-    selectedService &&
+    !!selectedService &&
     quantityNumber >= selectedService.min &&
     quantityNumber <= selectedService.max;
 
   const total =
-    selectedService && quantityNumber > 0
+    selectedService &&
+    quantityNumber > 0
       ? (quantityNumber / 1000) *
         Number(selectedService.rate)
       : 0;
-
-  /* =========================================================
-     SELECT PLATFORM
-  ========================================================= */
-
-  function selectPlatform(value: string) {
-    setPlatform(value);
-    setCategory("");
-    setServiceId("");
-    setSearch("");
-    setError("");
-    setSuccess("");
-  }
 
   /* =========================================================
      SELECT CATEGORY
@@ -175,6 +205,8 @@ export default function OrderForm({
     setSearch("");
     setError("");
     setSuccess("");
+    setCategoryOpen(false);
+    setServiceOpen(false);
   }
 
   /* =========================================================
@@ -185,10 +217,12 @@ export default function OrderForm({
     setServiceId(id);
     setError("");
     setSuccess("");
+    setServiceOpen(false);
+    setSearch("");
   }
 
   /* =========================================================
-     PLACE ORDER
+     EXISTING ORDER SUBMIT LOGIC
   ========================================================= */
 
   async function handleSubmit(
@@ -258,605 +292,511 @@ export default function OrderForm({
     }
   }
 
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-8"
+      className="space-y-5"
     >
-
       {/* =====================================================
           SEARCH
       ===================================================== */}
 
-      <section>
+      <div className="relative">
+        <span
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-500"
+          aria-hidden="true"
+        >
+          ⌕
+        </span>
 
-        <div className="mb-3 flex items-end justify-between gap-3">
+        <input
+          value={search}
+          onChange={(event) =>
+            setSearch(event.target.value)
+          }
+          placeholder="Search"
+          aria-label="Search services"
+          className="h-12 w-full rounded-xl border border-slate-200 bg-[#eaf6f6] pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+        />
 
-          <div>
-            <p className="text-sm font-black text-slate-900">
-              Find a service
-            </p>
-
-            <p className="mt-1 text-xs font-medium text-slate-400">
-              Search by name, description or service ID
-            </p>
-          </div>
-
-          <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black text-slate-500">
-            {services.length} total
-          </span>
-
-        </div>
-
-        <div className="relative">
-
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">
-            ⌕
-          </span>
-
-          <input
-            value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
-            placeholder="Search services..."
-            className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-12 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
-          />
-
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 transition hover:text-slate-800"
-            >
-              ×
-            </button>
-          )}
-
-        </div>
-
-      </section>
-
-      {/* =====================================================
-          PLATFORM
-      ===================================================== */}
-
-      <section>
-
-        <div className="mb-4">
-
-          <p className="text-sm font-black text-slate-900">
-            Choose platform
-          </p>
-
-          <p className="mt-1 text-xs font-medium text-slate-400">
-            Click directly on the platform you want
-          </p>
-
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-
-          {platforms.map((item) => {
-            const active =
-              platform.toLowerCase() ===
-              item.toLowerCase();
-
-            const count = services.filter(
-              (service) =>
-                service.platform.toLowerCase() ===
-                item.toLowerCase()
-            ).length;
-
-            return (
-              <button
-                key={item}
-                type="button"
-                onClick={() =>
-                  selectPlatform(item)
-                }
-                className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-200 ${
-                  active
-                    ? "border-violet-300 bg-violet-50 shadow-lg shadow-violet-100"
-                    : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
-                }`}
-              >
-
-                {active && (
-                  <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-black text-white">
-                    ✓
-                  </span>
-                )}
-
-                <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl text-lg font-black ${
-                    active
-                      ? "bg-violet-600 text-white"
-                      : "bg-slate-100 text-slate-600"
-                  }`}
-                >
-                  {platformIcon(item)}
-                </div>
-
-                <p
-                  className={`mt-3 text-sm font-black ${
-                    active
-                      ? "text-violet-900"
-                      : "text-slate-800"
-                  }`}
-                >
-                  {item}
-                </p>
-
-                <p className="mt-1 text-[10px] font-medium text-slate-400">
-                  {count} services
-                </p>
-
-              </button>
-            );
-          })}
-
-        </div>
-
-      </section>
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            aria-label="Clear search"
+            className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-lg font-bold text-slate-400 hover:bg-white hover:text-slate-700"
+          >
+            ×
+          </button>
+        )}
+      </div>
 
       {/* =====================================================
           CATEGORY
       ===================================================== */}
 
-      {platform && (
-        <section>
+      <section>
+        <label className="mb-2 block text-sm font-black text-slate-700">
+          Category
+        </label>
 
-          <div className="mb-4 flex items-end justify-between gap-3">
-
-            <div>
-              <p className="text-sm font-black text-slate-900">
-                Choose category
-              </p>
-
-              <p className="mt-1 text-xs font-medium text-slate-400">
-                Select what you want to order
-              </p>
-            </div>
-
-            <span className="rounded-full bg-violet-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-violet-700">
-              {platform}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {
+              setCategoryOpen((open) => !open);
+              setServiceOpen(false);
+            }}
+            aria-expanded={categoryOpen}
+            className="flex min-h-[50px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm">
+              {category
+                ? categoryIcon(category)
+                : "+"}
             </span>
 
-          </div>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
+              {category || "Select category"}
+            </span>
 
-          {categories.length > 0 ? (
-            <div className="max-h-[280px] overflow-y-auto overscroll-contain pr-1 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <span
+              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
+                categoryOpen
+                  ? "rotate-180"
+                  : ""
+              }`}
+            >
+              ▼
+            </span>
+          </button>
 
-              {categories.map((item) => {
-                const active =
-                  category.toLowerCase() ===
-                  item.toLowerCase();
+          {categoryOpen && (
+            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+              <div className="max-h-[320px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
+                {filteredCategories.map(
+                  (item) => {
+                    const key =
+                      item.toLowerCase();
+                    const active =
+                      key ===
+                      category.toLowerCase();
 
-                const count =
-                  platformServices.filter(
-                    (service) =>
-                      (
-                        service.category?.trim() ||
-                        "Other"
-                      ).toLowerCase() ===
-                      item.toLowerCase()
-                  ).length;
-
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() =>
-                      selectCategory(item)
-                    }
-                    className={`group flex items-center justify-between rounded-2xl border p-4 text-left transition-all ${
-                      active
-                        ? "border-violet-300 bg-violet-50 shadow-lg shadow-violet-100"
-                        : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
-                    }`}
-                  >
-
-                    <div className="flex items-center gap-3">
-
-                      <div
-                        className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-black ${
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() =>
+                          selectCategory(item)
+                        }
+                        className={`flex min-h-[44px] w-full items-center gap-2.5 px-3 text-left transition ${
                           active
-                            ? "bg-violet-600 text-white"
-                            : "bg-slate-100 text-slate-600"
+                            ? "bg-[#63c9d0] text-white"
+                            : "text-slate-700 hover:bg-[#edf9f9]"
                         }`}
                       >
-                        {categoryIcon(item)}
-                      </div>
-
-                      <div>
-
-                        <p
-                          className={`text-sm font-black ${
+                        <span
+                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
                             active
-                              ? "text-violet-900"
-                              : "text-slate-800"
+                              ? "bg-white/20 text-white"
+                              : "bg-[#eaf6f6] text-cyan-700"
                           }`}
                         >
+                          {categoryIcons.get(
+                            key
+                          ) ||
+                            categoryIcon(
+                              item
+                            )}
+                        </span>
+
+                        <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                           {item}
-                        </p>
+                        </span>
 
-                        <p className="mt-1 text-[10px] font-medium text-slate-400">
-                          {count} services
-                        </p>
+                        <span
+                          className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
+                            active
+                              ? "bg-white/15 text-white"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          {categoryCounts.get(
+                            key
+                          ) || 0}
+                        </span>
+                      </button>
+                    );
+                  }
+                )}
 
-                      </div>
-
-                    </div>
-
-                    <span
-                      className={`text-lg font-black ${
-                        active
-                          ? "text-violet-600"
-                          : "text-slate-200 group-hover:text-violet-400"
-                      }`}
-                    >
-                      {active ? "✓" : "→"}
-                    </span>
-
-                  </button>
-                );
-              })}
-
+                {filteredCategories.length ===
+                  0 && (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-sm font-bold text-slate-600">
+                      No category found
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Try another search.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <EmptyState
-              title="No categories available"
-              description="There are currently no active services for this platform."
-            />
           )}
-
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* =====================================================
-          SERVICES
+          SERVICE
       ===================================================== */}
 
-      {platform && category && (
-        <section>
+      <section>
+        <label className="mb-2 block text-sm font-black text-slate-700">
+          Service
+        </label>
 
-          <div className="mb-4 flex items-end justify-between gap-3">
+        <div className="relative">
+          <button
+            type="button"
+            disabled={!category}
+            onClick={() => {
+              if (!category) return;
 
-            <div>
-              <p className="text-sm font-black text-slate-900">
-                Choose service
-              </p>
-
-              <p className="mt-1 text-xs font-medium text-slate-400">
-                Click once to select your service
-              </p>
-            </div>
-
-            <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-black text-slate-500">
-              {filteredServices.length} results
+              setServiceOpen(
+                (open) => !open
+              );
+              setCategoryOpen(false);
+            }}
+            aria-expanded={serviceOpen}
+            className={`flex min-h-[50px] w-full items-center gap-3 rounded-xl border px-3 text-left transition ${
+              category
+                ? "border-cyan-100 bg-[#dff1f1] hover:bg-[#d8eeee]"
+                : "cursor-not-allowed border-slate-200 bg-slate-100"
+            }`}
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-cyan-700 shadow-sm">
+              {selectedService
+                ? platformIcon(
+                    selectedService.platform
+                  )
+                : "+"}
             </span>
 
-          </div>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium text-slate-700">
+                {selectedService
+                  ? selectedService.name
+                  : category
+                    ? "Select service"
+                    : "Select category first"}
+              </span>
 
-          <div className="max-h-[360px] overflow-y-auto overscroll-contain space-y-3 pr-1">
+              {selectedService && (
+                <span className="mt-0.5 block truncate text-[9px] font-medium text-slate-400">
+                  #{selectedService.id}
+                  {" · "}
+                  {selectedService.platform}
+                </span>
+              )}
+            </span>
 
-            {filteredServices.map((service) => {
-              const active =
-                service.id === serviceId;
+            <span
+              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
+                serviceOpen
+                  ? "rotate-180"
+                  : ""
+              }`}
+            >
+              ▼
+            </span>
+          </button>
 
-              return (
-                <button
-                  key={service.id}
-                  type="button"
-                  onClick={() =>
-                    selectService(service.id)
-                  }
-                  className={`group w-full rounded-2xl border p-4 text-left transition-all duration-200 ${
-                    active
-                      ? "border-violet-300 bg-violet-50 shadow-lg shadow-violet-100"
-                      : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
-                  }`}
-                >
+          {serviceOpen &&
+            category && (
+              <div className="absolute left-0 right-0 z-40 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+                <div className="max-h-[360px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
+                  {filteredServices.map(
+                    (service) => {
+                      const active =
+                        service.id ===
+                        serviceId;
 
-                  <div className="flex items-center gap-4">
-
-                    <div
-                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg font-black ${
-                        active
-                          ? "bg-violet-600 text-white"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {active
-                        ? "✓"
-                        : platformIcon(
-                            service.platform
-                          )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-
-                      <div className="flex flex-wrap items-center gap-2">
-
-                        <p
-                          className={`text-sm font-black leading-5 ${
+                      return (
+                        <button
+                          key={service.id}
+                          type="button"
+                          onClick={() =>
+                            selectService(
+                              service.id
+                            )
+                          }
+                          className={`w-full border-b border-slate-100 px-3 py-2.5 text-left transition last:border-b-0 ${
                             active
-                              ? "text-violet-950"
-                              : "text-slate-800"
+                              ? "bg-[#63c9d0] text-white"
+                              : "text-slate-700 hover:bg-[#edf9f9]"
                           }`}
                         >
-                          {service.name}
-                        </p>
+                          <div className="flex items-start gap-2.5">
+                            <span
+                              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
+                                active
+                                  ? "bg-white/20 text-white"
+                                  : "bg-[#eaf6f6] text-cyan-700"
+                              }`}
+                            >
+                              {active
+                                ? "✓"
+                                : platformIcon(
+                                    service.platform
+                                  )}
+                            </span>
 
-                        <span className="rounded-md bg-slate-100 px-2 py-1 text-[9px] font-black text-slate-500">
-                          #{service.id}
-                        </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="flex items-start gap-2">
+                                <span
+                                  className={`min-w-0 flex-1 text-[12px] font-medium leading-5 ${
+                                    active
+                                      ? "text-white"
+                                      : "text-slate-700"
+                                  }`}
+                                >
+                                  {service.name}
+                                </span>
 
-                      </div>
+                                <span
+                                  className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
+                                    active
+                                      ? "bg-white/15 text-white"
+                                      : "bg-slate-100 text-slate-500"
+                                  }`}
+                                >
+                                  #{service.id}
+                                </span>
+                              </span>
 
-                      <div className="mt-2 flex flex-wrap gap-2">
+                              <span className="mt-1.5 flex flex-wrap gap-1.5">
+                                <span
+                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
+                                    active
+                                      ? "bg-white/15 text-white/80"
+                                      : "bg-slate-50 text-slate-400"
+                                  }`}
+                                >
+                                  Min{" "}
+                                  {service.min.toLocaleString()}
+                                </span>
 
-                        <span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                          Min {service.min.toLocaleString()}
-                        </span>
+                                <span
+                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
+                                    active
+                                      ? "bg-white/15 text-white/80"
+                                      : "bg-slate-50 text-slate-400"
+                                  }`}
+                                >
+                                  Max{" "}
+                                  {service.max.toLocaleString()}
+                                </span>
 
-                        <span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                          Max {service.max.toLocaleString()}
-                        </span>
-
-                        <span className="rounded-lg bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-600">
-                          Available
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                    <div className="hidden shrink-0 text-right sm:block">
-
-                      <p className="text-base font-black text-violet-700">
-                        ₹{service.rate}
-                      </p>
-
-                      <p className="mt-1 text-[10px] font-bold text-slate-400">
-                        per 1K
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  {active && (
-                    <div className="mt-4 rounded-xl border border-violet-100 bg-white p-3">
-
-                      <p className="text-xs font-medium leading-5 text-slate-500">
-                        {service.description ||
-                          "High-quality service with fast processing."}
-                      </p>
-
-                    </div>
+                                <span
+                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
+                                    active
+                                      ? "bg-white/15 text-white"
+                                      : "bg-emerald-50 text-emerald-600"
+                                  }`}
+                                >
+                                  &#8377;{service.rate}/1K
+                                </span>
+                              </span>
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    }
                   )}
 
-                </button>
-              );
-            })}
-
-          </div>
-
-          {filteredServices.length === 0 && (
-            <EmptyState
-              title="No matching services"
-              description="Try another search or choose a different category."
-            />
-          )}
-
-        </section>
-      )}
+                  {filteredServices.length ===
+                    0 && (
+                    <div className="px-4 py-8 text-center">
+                      <p className="text-sm font-bold text-slate-600">
+                        No service found
+                      </p>
+                      <p className="mt-1 text-xs text-slate-400">
+                        Try another search or category.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+        </div>
+      </section>
 
       {/* =====================================================
-          ORDER DETAILS
+          DESCRIPTION
       ===================================================== */}
 
       {selectedService && (
-        <section className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 sm:p-7">
+        <section>
+          <label className="mb-2 block text-sm font-black text-slate-700">
+            Description
+          </label>
 
-          <div className="flex items-start gap-4">
-
-            <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
-              ✓
+          <div className="rounded-xl border border-cyan-100 bg-[#e7f5f5] px-4 py-4">
+            <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-5 text-slate-600">
+              {selectedService.description ||
+                "No description available."}
             </div>
-
-            <div className="min-w-0 flex-1">
-
-              <div className="flex flex-wrap items-center gap-2">
-
-                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-700">
-                  Selected
-                </span>
-
-                <span className="text-[11px] font-bold text-slate-400">
-                  #{selectedService.id}
-                </span>
-
-              </div>
-
-              <h3 className="mt-2 text-base font-black leading-6 text-slate-900 sm:text-lg">
-                {selectedService.name}
-              </h3>
-
-              <p className="mt-1 text-xs font-medium text-slate-500">
-                ₹{selectedService.rate} per 1,000
-              </p>
-
-            </div>
-
           </div>
-
-          {/* LINK */}
-
-          <div className="mt-7">
-
-            <label className="mb-2 block text-sm font-black text-slate-800">
-              Target link
-            </label>
-
-            <input
-              type="url"
-              value={link}
-              onChange={(event) =>
-                setLink(event.target.value)
-              }
-              placeholder="https://instagram.com/your-post"
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
-            />
-
-          </div>
-
-          {/* QUANTITY */}
-
-          <div className="mt-5">
-
-            <div className="mb-2 flex items-center justify-between gap-3">
-
-              <label className="text-sm font-black text-slate-800">
-                Quantity
-              </label>
-
-              <span className="text-[11px] font-bold text-slate-400">
-                {selectedService.min.toLocaleString()}{" "}
-                —{" "}
-                {selectedService.max.toLocaleString()}
-              </span>
-
-            </div>
-
-            <input
-              type="number"
-              min={selectedService.min}
-              max={selectedService.max}
-              value={quantity}
-              onChange={(event) =>
-                setQuantity(event.target.value)
-              }
-              placeholder="Enter quantity"
-              className={`h-14 w-full rounded-2xl border bg-white px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-4 ${
-                quantity &&
-                !validQuantity
-                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                  : "border-slate-200 focus:border-violet-400 focus:ring-violet-100"
-              }`}
-            />
-
-            {quantity &&
-              !validQuantity && (
-                <p className="mt-2 text-xs font-bold text-red-600">
-                  Quantity must be between{" "}
-                  {selectedService.min.toLocaleString()}{" "}
-                  and{" "}
-                  {selectedService.max.toLocaleString()}.
-                </p>
-              )}
-
-          </div>
-
-          {/* SUMMARY */}
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-
-            <Summary
-              label="Platform"
-              value={selectedService.platform}
-            />
-
-            <Summary
-              label="Rate"
-              value={`₹${selectedService.rate} / 1K`}
-            />
-
-            <Summary
-              label="Total"
-              value={`₹${total.toFixed(2)}`}
-              highlight
-            />
-
-          </div>
-
-          {/* ERROR */}
-
-          {error && (
-            <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
-              <p className="text-sm font-bold text-red-700">
-                {error}
-              </p>
-            </div>
-          )}
-
-          {/* SUCCESS */}
-
-          {success && (
-            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-              <p className="text-sm font-bold text-emerald-700">
-                ✓ {success}
-              </p>
-            </div>
-          )}
-
-          {/* PLACE ORDER */}
-
-          <button
-            type="submit"
-            disabled={
-              submitting ||
-              !link.trim() ||
-              !validQuantity
-            }
-            className="group mt-5 flex min-h-16 w-full touch-manipulation items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
-          >
-
-            {submitting ? (
-              <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Placing Order...
-              </>
-            ) : (
-              <>
-                Place Order
-
-                <span className="text-lg transition-transform group-hover:translate-x-1">
-                  →
-                </span>
-              </>
-            )}
-
-          </button>
-
         </section>
       )}
 
       {/* =====================================================
-          EMPTY INITIAL STATE
+          LINK
       ===================================================== */}
 
-      {!selectedService && (
-        <div className="rounded-[26px] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
+      {selectedService && (
+        <section>
+          <label className="mb-2 block text-sm font-black text-slate-700">
+            Link
+          </label>
 
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm">
-            ✦
-          </div>
+          <input
+            type="url"
+            value={link}
+            onChange={(event) =>
+              setLink(event.target.value)
+            }
+            placeholder="https://instagram.com/username"
+            className="h-12 w-full rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+          />
+        </section>
+      )}
 
-          <h3 className="mt-4 text-base font-black text-slate-800">
-            Build your order
-          </h3>
+      {/* =====================================================
+          QUANTITY
+      ===================================================== */}
 
-          <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-slate-500">
-            Choose a platform, category and service above.
-            Your order details will appear here.
+      {selectedService && (
+        <section>
+          <label className="mb-2 block text-sm font-black text-slate-700">
+            Quantity
+          </label>
+
+          <input
+            type="number"
+            min={selectedService.min}
+            max={selectedService.max}
+            value={quantity}
+            onChange={(event) =>
+              setQuantity(
+                event.target.value
+              )
+            }
+            placeholder="Enter quantity"
+            className={`h-12 w-full rounded-xl border bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+              quantity &&
+              !validQuantity
+                ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                : "border-cyan-100 focus:border-cyan-300 focus:ring-cyan-100"
+            }`}
+          />
+
+          <p className="mt-2 text-xs font-medium text-slate-500">
+            Min:{" "}
+            {selectedService.min.toLocaleString()}
+            {" - "}
+            Max:{" "}
+            {selectedService.max.toLocaleString()}
           </p>
 
+          {quantity &&
+            !validQuantity && (
+              <p className="mt-1 text-xs font-bold text-red-600">
+                Quantity must be between{" "}
+                {selectedService.min.toLocaleString()}{" "}
+                and{" "}
+                {selectedService.max.toLocaleString()}.
+              </p>
+            )}
+        </section>
+      )}
+
+      {/* =====================================================
+          RATE / CHARGE
+      ===================================================== */}
+
+      {selectedService && (
+        <section>
+          <label className="mb-2 block text-sm font-black text-slate-700">
+            Charge
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                Rate
+              </p>
+              <p className="mt-1 text-sm font-black text-slate-700">
+                &#8377;{selectedService.rate}
+                <span className="ml-1 text-[9px] font-semibold text-slate-400">
+                  / 1K
+                </span>
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                Total
+              </p>
+              <p className="mt-1 text-sm font-black text-slate-700">
+                &#8377;{total.toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =====================================================
+          FEEDBACK
+      ===================================================== */}
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <p className="text-xs font-bold text-red-700">
+            {error}
+          </p>
         </div>
       )}
 
+      {success && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <p className="text-xs font-bold text-emerald-700">
+            ✓ {success}
+          </p>
+        </div>
+      )}
+
+      {/* =====================================================
+          ORDER BUTTON
+      ===================================================== */}
+
+      {selectedService && (
+        <button
+          type="submit"
+          disabled={
+            submitting ||
+            !link.trim() ||
+            !validQuantity
+          }
+          className="h-12 w-full rounded-xl bg-[#5fc7ce] text-sm font-black text-white shadow-[0_8px_22px_rgba(54,180,190,0.22)] transition hover:bg-[#50bbc3] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {submitting
+            ? "Placing Order..."
+            : "Place Order"}
+        </button>
+      )}
     </form>
   );
 }
@@ -868,20 +808,18 @@ export default function OrderForm({
 function platformIcon(platform: string) {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "◎";
-  if (value.includes("youtube")) return "▶";
-  if (value.includes("facebook")) return "f";
-  if (value.includes("tiktok")) return "♪";
-  if (value.includes("telegram")) return "➤";
-  if (value.includes("twitter")) return "𝕏";
-  if (value === "x") return "𝕏";
-  if (value.includes("spotify")) return "●";
-  if (value.includes("linkedin")) return "in";
-  if (value.includes("reddit")) return "●";
+  if (value.includes("instagram")) return "IG";
+  if (value.includes("youtube")) return "YT";
+  if (value.includes("facebook")) return "FB";
+  if (value.includes("tiktok")) return "TK";
+  if (value.includes("telegram")) return "TG";
+  if (value.includes("twitter") || value === "x") return "X";
+  if (value.includes("spotify")) return "SP";
+  if (value.includes("linkedin")) return "IN";
+  if (value.includes("reddit")) return "RD";
 
-  return "✦";
+  return "+";
 }
-
 /* =========================================================
    CATEGORY ICON
 ========================================================= */
@@ -889,87 +827,19 @@ function platformIcon(platform: string) {
 function categoryIcon(category: string) {
   const value = category.toLowerCase();
 
-  if (value.includes("follower")) return "♙";
-  if (value.includes("like")) return "♡";
-  if (value.includes("view")) return "◉";
-  if (value.includes("comment")) return "◌";
-  if (value.includes("share")) return "⌁";
-  if (value.includes("save")) return "▱";
-  if (value.includes("story")) return "◌";
-  if (value.includes("subscriber")) return "♙";
-  if (value.includes("watch")) return "◉";
-  if (value.includes("traffic")) return "↗";
-  if (value.includes("member")) return "♙";
+  if (value.includes("follower")) return "F";
+  if (value.includes("like")) return "L";
+  if (value.includes("view")) return "V";
+  if (value.includes("comment")) return "C";
+  if (value.includes("share")) return "S";
+  if (value.includes("save")) return "SV";
+  if (value.includes("story")) return "ST";
+  if (value.includes("subscriber")) return "SUB";
+  if (value.includes("watch")) return "W";
+  if (value.includes("traffic")) return "TR";
+  if (value.includes("member")) return "M";
 
-  return "◇";
+  return "+";
 }
 
-/* =========================================================
-   EMPTY STATE
-========================================================= */
 
-function EmptyState({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-
-      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
-        ◇
-      </div>
-
-      <p className="mt-3 text-sm font-black text-slate-800">
-        {title}
-      </p>
-
-      <p className="mt-1 text-xs font-medium text-slate-500">
-        {description}
-      </p>
-
-    </div>
-  );
-}
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-function Summary({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-2xl border p-4 ${
-        highlight
-          ? "border-violet-200 bg-violet-100/70"
-          : "border-slate-200 bg-white"
-      }`}
-    >
-
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-        {label}
-      </p>
-
-      <p
-        className={`mt-2 truncate text-base font-black ${
-          highlight
-            ? "text-violet-800"
-            : "text-slate-800"
-        }`}
-      >
-        {value}
-      </p>
-
-    </div>
-  );
-}
