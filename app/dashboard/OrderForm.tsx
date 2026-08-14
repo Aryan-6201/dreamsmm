@@ -30,11 +30,16 @@ export default function OrderForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  /* =========================================================
+     PLATFORMS
+  ========================================================= */
+
   const platforms = useMemo(() => {
     const map = new Map<string, string>();
 
     services.forEach((service) => {
       const value = service.platform?.trim();
+
       if (!value) return;
 
       const key = value.toLowerCase();
@@ -47,6 +52,10 @@ export default function OrderForm({
     return Array.from(map.values());
   }, [services]);
 
+  /* =========================================================
+     PLATFORM SERVICES
+  ========================================================= */
+
   const platformServices = useMemo(() => {
     if (!platform) return [];
 
@@ -56,6 +65,10 @@ export default function OrderForm({
         platform.toLowerCase()
     );
   }, [services, platform]);
+
+  /* =========================================================
+     UNIQUE CATEGORIES
+  ========================================================= */
 
   const categories = useMemo(() => {
     const map = new Map<string, string>();
@@ -74,6 +87,10 @@ export default function OrderForm({
     return Array.from(map.values());
   }, [platformServices]);
 
+  /* =========================================================
+     CATEGORY SERVICES
+  ========================================================= */
+
   const categoryServices = useMemo(() => {
     if (!category) return [];
 
@@ -87,6 +104,10 @@ export default function OrderForm({
       );
     });
   }, [platformServices, category]);
+
+  /* =========================================================
+     SEARCH
+  ========================================================= */
 
   const filteredServices = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -104,11 +125,19 @@ export default function OrderForm({
     });
   }, [categoryServices, search]);
 
+  /* =========================================================
+     SELECTED SERVICE
+  ========================================================= */
+
   const selectedService = useMemo(() => {
     return services.find(
       (service) => service.id === serviceId
     );
   }, [services, serviceId]);
+
+  /* =========================================================
+     TOTAL
+  ========================================================= */
 
   const quantityNumber = Number(quantity) || 0;
 
@@ -123,6 +152,10 @@ export default function OrderForm({
         Number(selectedService.rate)
       : 0;
 
+  /* =========================================================
+     SELECT PLATFORM
+  ========================================================= */
+
   function selectPlatform(value: string) {
     setPlatform(value);
     setCategory("");
@@ -132,6 +165,10 @@ export default function OrderForm({
     setSuccess("");
   }
 
+  /* =========================================================
+     SELECT CATEGORY
+  ========================================================= */
+
   function selectCategory(value: string) {
     setCategory(value);
     setServiceId("");
@@ -140,11 +177,19 @@ export default function OrderForm({
     setSuccess("");
   }
 
+  /* =========================================================
+     SELECT SERVICE
+  ========================================================= */
+
   function selectService(id: number) {
     setServiceId(id);
     setError("");
     setSuccess("");
   }
+
+  /* =========================================================
+     PLACE ORDER
+  ========================================================= */
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
@@ -161,11 +206,6 @@ export default function OrderForm({
 
     if (!link.trim()) {
       setError("Please enter the target link.");
-      return;
-    }
-
-    if (!quantity.trim()) {
-      setError("Please enter a quantity.");
       return;
     }
 
@@ -191,38 +231,27 @@ export default function OrderForm({
         }),
       });
 
-      const text = await response.text();
-
-      let data: any = {};
-
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        data = {};
-      }
+      const data = await response.json();
 
       if (!response.ok) {
         setError(
-          data?.error ||
-            data?.message ||
-            `Order failed (${response.status}).`
+          data.error ||
+            "Unable to place your order."
         );
         return;
       }
 
       setSuccess(
-        data?.order?.id
-          ? `Order #${data.order.id} placed successfully.`
-          : "Order placed successfully."
+        `Order #${data.order.id} placed successfully.`
       );
 
       setLink("");
       setQuantity("");
-    } catch (err) {
-      console.error("ORDER ERROR:", err);
+    } catch (error) {
+      console.error(error);
 
       setError(
-        "Unable to connect to the order server. Please try again."
+        "Something went wrong. Please try again."
       );
     } finally {
       setSubmitting(false);
@@ -234,10 +263,15 @@ export default function OrderForm({
       onSubmit={handleSubmit}
       className="space-y-8"
     >
-      {/* SEARCH */}
+
+      {/* =====================================================
+          SEARCH
+      ===================================================== */}
 
       <section>
+
         <div className="mb-3 flex items-end justify-between gap-3">
+
           <div>
             <p className="text-sm font-black text-slate-900">
               Find a service
@@ -251,9 +285,11 @@ export default function OrderForm({
           <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black text-slate-500">
             {services.length} total
           </span>
+
         </div>
 
         <div className="relative">
+
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">
             ⌕
           </span>
@@ -271,18 +307,24 @@ export default function OrderForm({
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 hover:text-slate-800"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 transition hover:text-slate-800"
             >
               ×
             </button>
           )}
+
         </div>
+
       </section>
 
-      {/* PLATFORM */}
+      {/* =====================================================
+          PLATFORM
+      ===================================================== */}
 
       <section>
+
         <div className="mb-4">
+
           <p className="text-sm font-black text-slate-900">
             Choose platform
           </p>
@@ -290,9 +332,11 @@ export default function OrderForm({
           <p className="mt-1 text-xs font-medium text-slate-400">
             Click directly on the platform you want
           </p>
+
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+
           {platforms.map((item) => {
             const active =
               platform.toLowerCase() ===
@@ -311,12 +355,13 @@ export default function OrderForm({
                 onClick={() =>
                   selectPlatform(item)
                 }
-                className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all ${
+                className={`group relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-200 ${
                   active
                     ? "border-violet-300 bg-violet-50 shadow-lg shadow-violet-100"
                     : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
                 }`}
               >
+
                 {active && (
                   <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-black text-white">
                     ✓
@@ -346,17 +391,24 @@ export default function OrderForm({
                 <p className="mt-1 text-[10px] font-medium text-slate-400">
                   {count} services
                 </p>
+
               </button>
             );
           })}
+
         </div>
+
       </section>
 
-      {/* CATEGORY */}
+      {/* =====================================================
+          CATEGORY
+      ===================================================== */}
 
       {platform && (
         <section>
+
           <div className="mb-4 flex items-end justify-between gap-3">
+
             <div>
               <p className="text-sm font-black text-slate-900">
                 Choose category
@@ -370,10 +422,12 @@ export default function OrderForm({
             <span className="rounded-full bg-violet-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-violet-700">
               {platform}
             </span>
+
           </div>
 
           {categories.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="max-h-[280px] overflow-y-auto overscroll-contain pr-1 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
               {categories.map((item) => {
                 const active =
                   category.toLowerCase() ===
@@ -402,7 +456,9 @@ export default function OrderForm({
                         : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
                     }`}
                   >
+
                     <div className="flex items-center gap-3">
+
                       <div
                         className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-black ${
                           active
@@ -414,6 +470,7 @@ export default function OrderForm({
                       </div>
 
                       <div>
+
                         <p
                           className={`text-sm font-black ${
                             active
@@ -427,7 +484,9 @@ export default function OrderForm({
                         <p className="mt-1 text-[10px] font-medium text-slate-400">
                           {count} services
                         </p>
+
                       </div>
+
                     </div>
 
                     <span
@@ -439,9 +498,11 @@ export default function OrderForm({
                     >
                       {active ? "✓" : "→"}
                     </span>
+
                   </button>
                 );
               })}
+
             </div>
           ) : (
             <EmptyState
@@ -449,14 +510,19 @@ export default function OrderForm({
               description="There are currently no active services for this platform."
             />
           )}
+
         </section>
       )}
 
-      {/* SERVICES */}
+      {/* =====================================================
+          SERVICES
+      ===================================================== */}
 
       {platform && category && (
         <section>
+
           <div className="mb-4 flex items-end justify-between gap-3">
+
             <div>
               <p className="text-sm font-black text-slate-900">
                 Choose service
@@ -470,9 +536,11 @@ export default function OrderForm({
             <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-black text-slate-500">
               {filteredServices.length} results
             </span>
+
           </div>
 
-          <div className="space-y-3">
+          <div className="max-h-[360px] overflow-y-auto overscroll-contain space-y-3 pr-1">
+
             {filteredServices.map((service) => {
               const active =
                 service.id === serviceId;
@@ -484,13 +552,15 @@ export default function OrderForm({
                   onClick={() =>
                     selectService(service.id)
                   }
-                  className={`group w-full rounded-2xl border p-4 text-left transition-all ${
+                  className={`group w-full rounded-2xl border p-4 text-left transition-all duration-200 ${
                     active
                       ? "border-violet-300 bg-violet-50 shadow-lg shadow-violet-100"
                       : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
                   }`}
                 >
+
                   <div className="flex items-center gap-4">
+
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg font-black ${
                         active
@@ -506,7 +576,9 @@ export default function OrderForm({
                     </div>
 
                     <div className="min-w-0 flex-1">
+
                       <div className="flex flex-wrap items-center gap-2">
+
                         <p
                           className={`text-sm font-black leading-5 ${
                             active
@@ -520,26 +592,29 @@ export default function OrderForm({
                         <span className="rounded-md bg-slate-100 px-2 py-1 text-[9px] font-black text-slate-500">
                           #{service.id}
                         </span>
+
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-2">
+
                         <span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                          Min{" "}
-                          {service.min.toLocaleString()}
+                          Min {service.min.toLocaleString()}
                         </span>
 
                         <span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                          Max{" "}
-                          {service.max.toLocaleString()}
+                          Max {service.max.toLocaleString()}
                         </span>
 
                         <span className="rounded-lg bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-600">
                           Available
                         </span>
+
                       </div>
+
                     </div>
 
                     <div className="hidden shrink-0 text-right sm:block">
+
                       <p className="text-base font-black text-violet-700">
                         ₹{service.rate}
                       </p>
@@ -547,20 +622,26 @@ export default function OrderForm({
                       <p className="mt-1 text-[10px] font-bold text-slate-400">
                         per 1K
                       </p>
+
                     </div>
+
                   </div>
 
                   {active && (
                     <div className="mt-4 rounded-xl border border-violet-100 bg-white p-3">
+
                       <p className="text-xs font-medium leading-5 text-slate-500">
                         {service.description ||
                           "High-quality service with fast processing."}
                       </p>
+
                     </div>
                   )}
+
                 </button>
               );
             })}
+
           </div>
 
           {filteredServices.length === 0 && (
@@ -569,20 +650,27 @@ export default function OrderForm({
               description="Try another search or choose a different category."
             />
           )}
+
         </section>
       )}
 
-      {/* ORDER DETAILS */}
+      {/* =====================================================
+          ORDER DETAILS
+      ===================================================== */}
 
       {selectedService && (
         <section className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 sm:p-7">
+
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
+
+            <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
               ✓
             </div>
 
             <div className="min-w-0 flex-1">
+
               <div className="flex flex-wrap items-center gap-2">
+
                 <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-700">
                   Selected
                 </span>
@@ -590,6 +678,7 @@ export default function OrderForm({
                 <span className="text-[11px] font-bold text-slate-400">
                   #{selectedService.id}
                 </span>
+
               </div>
 
               <h3 className="mt-2 text-base font-black leading-6 text-slate-900 sm:text-lg">
@@ -599,12 +688,15 @@ export default function OrderForm({
               <p className="mt-1 text-xs font-medium text-slate-500">
                 ₹{selectedService.rate} per 1,000
               </p>
+
             </div>
+
           </div>
 
           {/* LINK */}
 
           <div className="mt-7">
+
             <label className="mb-2 block text-sm font-black text-slate-800">
               Target link
             </label>
@@ -618,21 +710,25 @@ export default function OrderForm({
               placeholder="https://instagram.com/your-post"
               className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
             />
+
           </div>
 
           {/* QUANTITY */}
 
           <div className="mt-5">
+
             <div className="mb-2 flex items-center justify-between gap-3">
+
               <label className="text-sm font-black text-slate-800">
                 Quantity
               </label>
 
               <span className="text-[11px] font-bold text-slate-400">
-                {selectedService.min.toLocaleString()}
-                {" — "}
+                {selectedService.min.toLocaleString()}{" "}
+                —{" "}
                 {selectedService.max.toLocaleString()}
               </span>
+
             </div>
 
             <input
@@ -645,25 +741,29 @@ export default function OrderForm({
               }
               placeholder="Enter quantity"
               className={`h-14 w-full rounded-2xl border bg-white px-4 text-sm font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-4 ${
-                quantity && !validQuantity
+                quantity &&
+                !validQuantity
                   ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                   : "border-slate-200 focus:border-violet-400 focus:ring-violet-100"
               }`}
             />
 
-            {quantity && !validQuantity && (
-              <p className="mt-2 text-xs font-bold text-red-600">
-                Quantity must be between{" "}
-                {selectedService.min.toLocaleString()}{" "}
-                and{" "}
-                {selectedService.max.toLocaleString()}.
-              </p>
-            )}
+            {quantity &&
+              !validQuantity && (
+                <p className="mt-2 text-xs font-bold text-red-600">
+                  Quantity must be between{" "}
+                  {selectedService.min.toLocaleString()}{" "}
+                  and{" "}
+                  {selectedService.max.toLocaleString()}.
+                </p>
+              )}
+
           </div>
 
           {/* SUMMARY */}
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
+
             <Summary
               label="Platform"
               value={selectedService.platform}
@@ -679,6 +779,7 @@ export default function OrderForm({
               value={`₹${total.toFixed(2)}`}
               highlight
             />
+
           </div>
 
           {/* ERROR */}
@@ -705,9 +806,14 @@ export default function OrderForm({
 
           <button
             type="submit"
-            disabled={submitting}
-            className="group mt-5 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={
+              submitting ||
+              !link.trim() ||
+              !validQuantity
+            }
+            className="group mt-5 flex min-h-16 w-full touch-manipulation items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
+
             {submitting ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -722,14 +828,19 @@ export default function OrderForm({
                 </span>
               </>
             )}
+
           </button>
+
         </section>
       )}
 
-      {/* INITIAL STATE */}
+      {/* =====================================================
+          EMPTY INITIAL STATE
+      ===================================================== */}
 
       {!selectedService && (
         <div className="rounded-[26px] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
+
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm">
             ✦
           </div>
@@ -742,8 +853,10 @@ export default function OrderForm({
             Choose a platform, category and service above.
             Your order details will appear here.
           </p>
+
         </div>
       )}
+
     </form>
   );
 }
@@ -804,6 +917,7 @@ function EmptyState({
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+
       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
         ◇
       </div>
@@ -815,6 +929,7 @@ function EmptyState({
       <p className="mt-1 text-xs font-medium text-slate-500">
         {description}
       </p>
+
     </div>
   );
 }
@@ -840,6 +955,7 @@ function Summary({
           : "border-slate-200 bg-white"
       }`}
     >
+
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
         {label}
       </p>
@@ -853,6 +969,7 @@ function Summary({
       >
         {value}
       </p>
+
     </div>
   );
 }

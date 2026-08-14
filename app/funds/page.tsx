@@ -1,17 +1,694 @@
+
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+/* ============================================================================
+   DREAMSMM — ULTRA PREMIUM ADD FUNDS
+   ----------------------------------------------------------------------------
+   Design goals:
+   - Light premium UI
+   - Large QR payment experience
+   - Amount presets
+   - UPI copy interaction
+   - UTR validation
+   - Step/progress indicators
+   - Payment checklist
+   - FAQ accordion
+   - Responsive/mobile-first layout
+   - Loading, success and error states
+   - Existing /api/fund-request contract preserved
+============================================================================ */
+
+const UPI_ID = "aryan251@ybl";
+const QR_IMAGE = "/qr.jpeg";
+const MIN_AMOUNT = 10;
+const AMOUNT_PRESETS = [50, 100, 250, 500, 1000, 2000];
+
+type NoticeTone = "success" | "error" | "info";
+
+type Notice = {
+  tone: NoticeTone;
+  text: string;
+};
+
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+const FAQS: FaqItem[] = [
+  {
+    question: "How do I add funds?",
+    answer:
+      "Choose an amount, scan the UPI QR code, complete the payment, copy the UTR from your payment receipt, then submit the amount and UTR in the verification form.",
+  },
+  {
+    question: "Where can I find my UTR?",
+    answer:
+      "Open the payment receipt in your UPI application. The UTR, transaction reference, or transaction ID is normally displayed in the receipt details.",
+  },
+  {
+    question: "Why is my balance not credited immediately?",
+    answer:
+      "This page uses manual deposit verification. Your request remains pending until an admin verifies the submitted payment details.",
+  },
+  {
+    question: "What if I entered the wrong UTR?",
+    answer:
+      "Do not submit inaccurate transaction information. Check the payment receipt again and enter the exact transaction reference before submitting.",
+  },
+  {
+    question: "What is the minimum deposit?",
+    answer: `The minimum deposit amount is ₹${MIN_AMOUNT}.`,
+  },
+  {
+    question: "Can I pay using any UPI application?",
+    answer:
+      "Use a UPI application that can scan and complete the payment represented by the QR code. The exact interface varies by payment application.",
+  },
+];
+
+/* ============================================================================
+   SMALL UI COMPONENTS
+============================================================================ */
+
+function IconSpark() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <path
+        d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconCheck() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        d="m5 12.5 4.2 4.2L19.5 6.5"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconCopy() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <rect
+        x="8"
+        y="8"
+        width="11"
+        height="11"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function IconShield() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3 20 6v5.5c0 4.7-3.1 7.9-8 9.5-4.9-1.6-8-4.8-8-9.5V6l8-3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m8.3 12 2.3 2.3 5.2-5.2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconWallet() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5v-11Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M4 7h13.5A2.5 2.5 0 0 1 20 9.5V13h-4.5a2 2 0 1 1 0-4H20"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="15.5" cy="11" r=".9" fill="currentColor" />
+    </svg>
+  );
+}
+
+function IconArrow() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12h13M13 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconExternal() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path
+        d="M14 5h5v5M19 5l-8 8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconInfo() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M12 10.5v5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="7.5" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function IconClock() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M12 7v5l3 2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconQr() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-5 w-5"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M14 14h3v3h-3zM20 14v3M17 20h3M14 20v-2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function StepBadge({
+  number,
+  active = false,
+  complete = false,
+}: {
+  number: string;
+  active?: boolean;
+  complete?: boolean;
+}) {
+  return (
+    <span
+      className={[
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-black transition-all",
+        complete
+          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-100"
+          : active
+            ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
+            : "border border-slate-200 bg-white text-slate-400",
+      ].join(" ")}
+    >
+      {complete ? <IconCheck /> : number}
+    </span>
+  );
+}
+
+function StatusPill({
+  tone,
+  children,
+}: {
+  tone: "green" | "violet" | "slate" | "amber";
+  children: React.ReactNode;
+}) {
+  const styles = {
+    green: "border-emerald-100 bg-emerald-50 text-emerald-700",
+    violet: "border-violet-100 bg-violet-50 text-violet-700",
+    slate: "border-slate-200 bg-slate-50 text-slate-600",
+    amber: "border-amber-100 bg-amber-50 text-amber-700",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-wider ${styles[tone]}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function SectionEyebrow({
+  children,
+  icon,
+}: {
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
+      {icon}
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function PaymentStep({
+  number,
+  title,
+  description,
+  active = false,
+  complete = false,
+}: {
+  number: string;
+  title: string;
+  description: string;
+  active?: boolean;
+  complete?: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "group flex gap-4 rounded-2xl border p-4 transition-all",
+        active
+          ? "border-violet-200 bg-violet-50/70 shadow-sm"
+          : complete
+            ? "border-emerald-100 bg-emerald-50/50"
+            : "border-slate-100 bg-slate-50/60",
+      ].join(" ")}
+    >
+      <StepBadge number={number} active={active} complete={complete} />
+
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm font-black text-slate-800">{title}</p>
+
+          {complete && <StatusPill tone="green">Done</StatusPill>}
+
+          {active && !complete && (
+            <StatusPill tone="violet">Current</StatusPill>
+          )}
+        </div>
+
+        <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 transition-all group-hover:bg-violet-100">
+        {icon}
+      </div>
+
+      <p className="mt-4 text-sm font-black text-slate-800">{title}</p>
+
+      <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function NoticeCard({
+  notice,
+  onClose,
+}: {
+  notice: Notice;
+  onClose: () => void;
+}) {
+  const tone = {
+    success: {
+      wrapper: "border-emerald-200 bg-emerald-50 text-emerald-800",
+      icon: "bg-emerald-100 text-emerald-700",
+      title: "Request submitted",
+    },
+    error: {
+      wrapper: "border-red-200 bg-red-50 text-red-800",
+      icon: "bg-red-100 text-red-700",
+      title: "Unable to submit",
+    },
+    info: {
+      wrapper: "border-blue-200 bg-blue-50 text-blue-800",
+      icon: "bg-blue-100 text-blue-700",
+      title: "Payment information",
+    },
+  }[notice.tone];
+
+  return (
+    <div className={`rounded-2xl border p-4 ${tone.wrapper}`}>
+      <div className="flex items-start gap-3">
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${tone.icon}`}
+        >
+          {notice.tone === "success" ? (
+            <IconCheck />
+          ) : notice.tone === "error" ? (
+            "!"
+          ) : (
+            <IconInfo />
+          )}
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-black">{tone.title}</p>
+          <p className="mt-1 text-xs font-semibold leading-5 opacity-80">
+            {notice.text}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg px-2 py-1 text-xs font-black opacity-50 transition hover:bg-white/60 hover:opacity-100"
+          aria-label="Close message"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AmountPreset({
+  value,
+  active,
+  onClick,
+}: {
+  value: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "rounded-xl border px-3 py-2.5 text-xs font-black transition-all",
+        active
+          ? "border-violet-400 bg-violet-600 text-white shadow-md shadow-violet-100"
+          : "border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700",
+      ].join(" ")}
+    >
+      ₹{value.toLocaleString("en-IN")}
+    </button>
+  );
+}
+
+function TrustMetric({
+  value,
+  label,
+}: {
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-lg font-black text-slate-900">{value}</p>
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function FaqRow({
+  item,
+  open,
+  onToggle,
+}: {
+  item: FaqItem;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div
+      className={[
+        "overflow-hidden rounded-2xl border transition-all",
+        open
+          ? "border-violet-200 bg-violet-50/60"
+          : "border-slate-200 bg-white",
+      ].join(" ")}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-4 p-4 text-left sm:p-5"
+        aria-expanded={open}
+      >
+        <span className="text-sm font-black text-slate-800">
+          {item.question}
+        </span>
+
+        <span
+          className={[
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-lg font-bold transition-transform",
+            open
+              ? "rotate-45 border-violet-200 bg-white text-violet-600"
+              : "border-slate-200 bg-slate-50 text-slate-400",
+          ].join(" ")}
+        >
+          +
+        </span>
+      </button>
+
+      {open && (
+        <div className="border-t border-violet-100 px-5 pb-5 pt-4">
+          <p className="text-xs font-medium leading-6 text-slate-600">
+            {item.answer}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================================
+   MAIN PAGE
+============================================================================ */
 
 export default function FundsPage() {
   const [amount, setAmount] = useState("");
   const [utr, setUtr] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  async function submitRequest(e: React.FormEvent) {
+  const numericAmount = Number(amount);
+
+  const validAmount =
+    Number.isFinite(numericAmount) && numericAmount >= MIN_AMOUNT;
+
+  const hasUtr = utr.trim().length >= 4;
+
+  const amountLabel = useMemo(() => {
+    if (!amount) return "₹0.00";
+
+    if (!Number.isFinite(numericAmount)) return "₹0.00";
+
+    return `₹${numericAmount.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }, [amount, numericAmount]);
+
+  const currentStep = !amount
+    ? 1
+    : !validAmount
+      ? 1
+      : !utr.trim()
+        ? 2
+        : 3;
+
+  const formReady = validAmount && hasUtr && !loading;
+
+  async function copyUpi() {
+    try {
+      await navigator.clipboard.writeText(UPI_ID);
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 2200);
+    } catch {
+      setNotice({
+        tone: "error",
+        text: "Your browser did not allow automatic copying. Please copy the UPI ID manually.",
+      });
+    }
+  }
+
+  function chooseAmount(value: number) {
+    setAmount(String(value));
+
+    setNotice(null);
+
+    window.setTimeout(() => {
+      document
+        .getElementById("payment-form")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 20);
+  }
+
+  function handleAmountChange(value: string) {
+    setAmount(value);
+
+    if (notice) {
+      setNotice(null);
+    }
+  }
+
+  function handleUtrChange(value: string) {
+    setUtr(value);
+
+    if (notice?.tone === "error") {
+      setNotice(null);
+    }
+  }
+
+  async function submitRequest(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!validAmount) {
+      setNotice({
+        tone: "error",
+        text: `Please enter an amount of at least ₹${MIN_AMOUNT}.`,
+      });
+      return;
+    }
+
+    if (!hasUtr) {
+      setNotice({
+        tone: "error",
+        text: "Please enter a valid UTR or transaction reference from your payment receipt.",
+      });
+      return;
+    }
+
     setLoading(true);
-    setMessage("");
+    setNotice(null);
 
     try {
       const response = await fetch("/api/fund-request", {
@@ -21,112 +698,808 @@ export default function FundsPage() {
         },
         body: JSON.stringify({
           amount,
-          utr,
+          utr: utr.trim(),
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setMessage(data.error || "Something went wrong.");
+        setNotice({
+          tone: "error",
+          text: data?.error || "Something went wrong while submitting your deposit.",
+        });
         return;
       }
 
-      setMessage(
-        `Deposit request #${data.deposit.id} submitted successfully. Status: ${data.deposit.status}`
-      );
+      setNotice({
+        tone: "success",
+        text: `Deposit request #${data.deposit.id} submitted successfully. Status: ${data.deposit.status}.`,
+      });
 
       setAmount("");
       setUtr("");
     } catch {
-      setMessage("Could not connect to the server.");
+      setNotice({
+        tone: "error",
+        text: "Could not connect to the server. Please check your connection and try again.",
+      });
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#080b12] p-8 text-white">
-      <div className="mx-auto max-w-2xl">
-        <h1 className="text-3xl font-bold">Add Funds</h1>
+    <main className="min-h-screen overflow-x-hidden bg-[#f7f7fb] text-slate-900">
+      {/* ----------------------------------------------------------------------
+          AMBIENT BACKGROUND
+      ---------------------------------------------------------------------- */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-48 -top-48 h-[32rem] w-[32rem] rounded-full bg-violet-200/30 blur-3xl" />
+        <div className="absolute -right-48 top-0 h-[34rem] w-[34rem] rounded-full bg-indigo-200/25 blur-3xl" />
+        <div className="absolute bottom-0 left-[25%] h-[26rem] w-[26rem] rounded-full bg-fuchsia-100/35 blur-3xl" />
+      </div>
 
-        <p className="mt-2 text-gray-400">
-          Add money to your DreamSMM account using UPI.
-        </p>
+      <div className="relative mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+        {/* --------------------------------------------------------------------
+            HERO
+        -------------------------------------------------------------------- */}
+        <section className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white/90 shadow-[0_30px_100px_rgba(76,29,149,0.10)] backdrop-blur-xl">
+          <div className="absolute -right-20 -top-32 h-80 w-80 rounded-full bg-violet-200/35 blur-3xl" />
+          <div className="absolute -bottom-40 left-1/4 h-80 w-80 rounded-full bg-indigo-100/40 blur-3xl" />
 
-        <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-          <h2 className="text-xl font-semibold">
-            Manual UPI Payment
-          </h2>
+          <div className="relative p-5 sm:p-7 lg:p-9">
+            <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 text-2xl font-black text-white shadow-[0_18px_45px_rgba(124,58,237,0.28)]">
+                  ₹
+                </div>
 
-          <div className="mt-5 rounded-xl bg-black/20 p-5">
-            <p className="text-sm text-gray-400">
-              Pay to this UPI ID
-            </p>
+                <div className="min-w-0">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">
+                    <IconSpark />
+                    Premium Wallet
+                  </div>
 
-            <p className="mt-2 text-xl font-bold">
-              YOUR-UPI-ID@upi
-            </p>
+                  <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+                    Add Funds
+                  </h1>
 
-            <p className="mt-3 text-sm text-gray-500">
-              Replace this with your real UPI ID before launching.
+                  <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500 sm:text-base">
+                    Fund your DreamSMM wallet through a simple UPI payment,
+                    then submit your transaction reference for verification.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/80 p-3.5 shadow-sm">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm">
+                  <IconShield />
+                </span>
+
+                <div>
+                  <p className="text-sm font-black text-emerald-900">
+                    Secure Payment
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-bold text-emerald-600">
+                    Manual verification enabled
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress */}
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              <PaymentStep
+                number="01"
+                title="Choose Amount"
+                description="Enter how much you want to add."
+                active={currentStep === 1}
+                complete={currentStep > 1}
+              />
+
+              <PaymentStep
+                number="02"
+                title="Make Payment"
+                description="Scan the QR and complete your UPI payment."
+                active={currentStep === 2}
+                complete={currentStep > 2}
+              />
+
+              <PaymentStep
+                number="03"
+                title="Submit UTR"
+                description="Send your transaction reference for review."
+                active={currentStep === 3}
+                complete={false}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* --------------------------------------------------------------------
+            QUICK TRUST STRIP
+        -------------------------------------------------------------------- */}
+        <section className="mt-5 grid gap-3 sm:grid-cols-3">
+          <TrustMetric value="UPI" label="Payment Method" />
+          <TrustMetric value="₹10+" label="Minimum Deposit" />
+          <TrustMetric value="Manual" label="Verification" />
+        </section>
+
+        {/* --------------------------------------------------------------------
+            MAIN TWO COLUMN AREA
+        -------------------------------------------------------------------- */}
+        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+          {/* ==================================================================
+              LEFT — PAYMENT
+          ================================================================== */}
+          <div className="space-y-6">
+            <section className="overflow-hidden rounded-[34px] border border-slate-200/80 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+              {/* Gradient top */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 px-6 py-7 text-white sm:px-8">
+                <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                <div className="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-fuchsia-400/10 blur-3xl" />
+
+                <div className="relative flex items-start justify-between gap-4">
+                  <div>
+                    <SectionEyebrow icon={<IconQr />}>
+                      UPI Payment Gateway
+                    </SectionEyebrow>
+
+                    <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">
+                      Scan & Pay
+                    </h2>
+
+                    <p className="mt-2 max-w-md text-xs font-medium leading-5 text-violet-100 sm:text-sm">
+                      Scan the QR code with your UPI application and complete
+                      the payment for your selected amount.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/20 bg-white/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.15em] backdrop-blur">
+                    UPI
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 sm:p-7">
+                {/* QR frame */}
+                <div className="rounded-[30px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-violet-50/40 p-4 sm:p-6">
+                  <div className="mx-auto max-w-[340px] rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_25px_65px_rgba(15,23,42,0.11)] sm:p-5">
+                    <div className="relative overflow-hidden rounded-2xl bg-white p-2">
+                      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-slate-100" />
+
+                      <img
+                        src={QR_IMAGE}
+                        alt="UPI Payment QR Code"
+                        className="aspect-square w-full rounded-xl object-contain"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                    <StatusPill tone="green">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      QR Active
+                    </StatusPill>
+
+                    <StatusPill tone="slate">Scan with UPI</StatusPill>
+                  </div>
+                </div>
+
+                {/* UPI ID */}
+                <div className="mt-5 rounded-[24px] border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-500">
+                        Direct UPI ID
+                      </p>
+
+                      <p className="mt-2 break-all text-base font-black text-violet-950">
+                        {UPI_ID}
+                      </p>
+
+                      <p className="mt-1 text-[10px] font-semibold text-violet-500">
+                        Use this ID if you prefer manual UPI payment.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={copyUpi}
+                      className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-4 text-xs font-black text-violet-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 hover:shadow-md"
+                    >
+                      {copied ? <IconCheck /> : <IconCopy />}
+                      {copied ? "Copied" : "Copy UPI"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Amount hint */}
+                <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
+                      <IconWallet />
+                    </span>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-slate-700">
+                        Pay exactly the amount you submit
+                      </p>
+
+                      <p className="mt-0.5 text-[10px] font-medium text-slate-400">
+                        Current selected amount:{" "}
+                        <span className="font-black text-slate-600">
+                          {amountLabel}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ----------------------------------------------------------------
+                HOW TO PAY
+            ---------------------------------------------------------------- */}
+            <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:p-7">
+              <SectionEyebrow icon={<IconArrow />}>
+                Payment Journey
+              </SectionEyebrow>
+
+              <h3 className="mt-2 text-xl font-black text-slate-900">
+                How to add funds
+              </h3>
+
+              <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                Follow these steps in order to avoid verification delays.
+              </p>
+
+              <div className="mt-5 space-y-3">
+                <PaymentStep
+                  number="01"
+                  title="Choose your amount"
+                  description="Select a quick amount or enter your own amount of ₹10 or more."
+                  active={!validAmount}
+                  complete={validAmount}
+                />
+
+                <PaymentStep
+                  number="02"
+                  title="Complete the UPI payment"
+                  description="Scan the QR above or use the displayed UPI ID to make the payment."
+                  active={validAmount && !hasUtr}
+                  complete={hasUtr}
+                />
+
+                <PaymentStep
+                  number="03"
+                  title="Submit your UTR"
+                  description="Enter the exact transaction reference from your payment receipt."
+                  active={hasUtr}
+                  complete={false}
+                />
+              </div>
+            </section>
+
+            {/* ----------------------------------------------------------------
+                SECURITY
+            ---------------------------------------------------------------- */}
+            <section className="rounded-[30px] border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm sm:p-7">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm">
+                  <IconShield />
+                </div>
+
+                <div>
+                  <p className="text-sm font-black text-emerald-900">
+                    Payment verification protection
+                  </p>
+
+                  <p className="mt-1 text-xs font-medium leading-5 text-emerald-700/80">
+                    Your deposit request is recorded with the amount and UTR
+                    you provide. Balance credit happens after verification.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-emerald-100 bg-white/80 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500">
+                    01
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-emerald-900">
+                    Payment recorded
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-100 bg-white/80 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500">
+                    02
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-emerald-900">
+                    UTR submitted
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-100 bg-white/80 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500">
+                    03
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-emerald-900">
+                    Admin verifies
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* ==================================================================
+              RIGHT — FORM
+          ================================================================== */}
+          <div className="space-y-6">
+            <section
+              id="payment-form"
+              className="rounded-[34px] border border-slate-200/80 bg-white p-5 shadow-[0_30px_90px_rgba(15,23,42,0.09)] sm:p-7 lg:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <SectionEyebrow icon={<IconWallet />}>
+                    Payment Verification
+                  </SectionEyebrow>
+
+                  <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                    Submit Payment
+                  </h2>
+
+                  <p className="mt-2 max-w-xl text-xs font-medium leading-5 text-slate-500 sm:text-sm">
+                    Enter the amount you paid and the UTR shown in your UPI
+                    payment receipt.
+                  </p>
+                </div>
+
+                <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 sm:flex">
+                  ₹
+                </div>
+              </div>
+
+              {/* Notice */}
+              {notice && (
+                <div className="mt-6">
+                  <NoticeCard
+                    notice={notice}
+                    onClose={() => setNotice(null)}
+                  />
+                </div>
+              )}
+
+              <form onSubmit={submitRequest} className="mt-7 space-y-6">
+                {/* Amount */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <label
+                      htmlFor="amount"
+                      className="text-sm font-black text-slate-800"
+                    >
+                      Amount
+                    </label>
+
+                    <StatusPill tone="slate">
+                      Minimum ₹{MIN_AMOUNT}
+                    </StatusPill>
+                  </div>
+
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-violet-500">
+                      ₹
+                    </span>
+
+                    <input
+                      id="amount"
+                      type="number"
+                      min={MIN_AMOUNT}
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => handleAmountChange(e.target.value)}
+                      placeholder="0.00"
+                      required
+                      className={[
+                        "h-16 w-full rounded-2xl border bg-slate-50 pl-10 pr-4 text-lg font-black text-slate-900 outline-none transition-all placeholder:text-slate-300",
+                        amount && !validAmount
+                          ? "border-red-300 focus:border-red-400 focus:ring-4 focus:ring-red-100"
+                          : "border-slate-200 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100",
+                      ].join(" ")}
+                    />
+                  </div>
+
+                  <p className="mt-2 text-[10px] font-semibold text-slate-400">
+                    Enter the exact amount that you paid through UPI.
+                  </p>
+
+                  {/* Presets */}
+                  <div className="mt-4">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        Quick amount
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => setAmount("")}
+                        className="text-[10px] font-bold text-violet-600 hover:text-violet-800"
+                      >
+                        Clear
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                      {AMOUNT_PRESETS.map((value) => (
+                        <AmountPreset
+                          key={value}
+                          value={value}
+                          active={numericAmount === value}
+                          onClick={() => chooseAmount(value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {amount && !validAmount && (
+                    <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600">
+                      Minimum deposit amount is ₹{MIN_AMOUNT}.
+                    </div>
+                  )}
+                </div>
+
+                {/* UTR */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <label
+                      htmlFor="utr"
+                      className="text-sm font-black text-slate-800"
+                    >
+                      UTR / Transaction ID
+                    </label>
+
+                    <StatusPill tone={hasUtr ? "green" : "slate"}>
+                      {hasUtr ? "Looks ready" : "Required"}
+                    </StatusPill>
+                  </div>
+
+                  <input
+                    id="utr"
+                    type="text"
+                    value={utr}
+                    onChange={(e) => handleUtrChange(e.target.value)}
+                    placeholder="Enter transaction reference"
+                    required
+                    autoComplete="off"
+                    className={[
+                      "h-16 w-full rounded-2xl border bg-slate-50 px-4 text-sm font-bold tracking-wide text-slate-900 outline-none transition-all placeholder:text-slate-300",
+                      hasUtr
+                        ? "border-emerald-200 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-50"
+                        : "border-slate-200 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100",
+                    ].join(" ")}
+                  />
+
+                  <div className="mt-2 flex items-start gap-2 text-[10px] font-semibold leading-5 text-slate-400">
+                    <IconInfo />
+                    <span>
+                      Find this reference inside your UPI payment receipt.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="overflow-hidden rounded-[26px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50">
+                  <div className="border-b border-violet-100 px-5 py-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-500">
+                      Payment Summary
+                    </p>
+                  </div>
+
+                  <div className="space-y-4 p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-xs font-bold text-slate-500">
+                        Deposit amount
+                      </span>
+
+                      <span className="text-xl font-black text-violet-800">
+                        {amountLabel}
+                      </span>
+                    </div>
+
+                    <div className="h-px bg-violet-100" />
+
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-xs font-bold text-slate-500">
+                        Verification
+                      </span>
+
+                      <span className="inline-flex items-center gap-2 text-xs font-black text-amber-600">
+                        <span className="h-2 w-2 rounded-full bg-amber-500" />
+                        Pending after submission
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning */}
+                <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-amber-600 shadow-sm">
+                      <IconInfo />
+                    </span>
+
+                    <div>
+                      <p className="text-sm font-black text-amber-900">
+                        Verify before submitting
+                      </p>
+
+                      <p className="mt-1 text-xs font-medium leading-5 text-amber-800">
+                        Make sure the amount and UTR exactly match your UPI
+                        payment. Incorrect information can delay verification.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={!formReady}
+                  className="group relative flex min-h-[64px] w-full touch-manipulation items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-5 text-sm font-black text-white shadow-[0_18px_45px_rgba(124,58,237,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(124,58,237,0.30)] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-45 disabled:shadow-none"
+                >
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+                  {loading ? (
+                    <>
+                      <span className="relative h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      <span className="relative">
+                        Processing Request...
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="relative">
+                        Submit Deposit Request
+                      </span>
+
+                      <span className="relative transition-transform duration-200 group-hover:translate-x-1">
+                        <IconArrow />
+                      </span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm">
+                    <IconClock />
+                  </span>
+
+                  <p className="text-[10px] font-semibold leading-5 text-slate-500">
+                    Your request will remain pending until an admin verifies
+                    the payment details.
+                  </p>
+                </div>
+              </form>
+            </section>
+
+            {/* ----------------------------------------------------------------
+                FORM CHECKLIST
+            ---------------------------------------------------------------- */}
+            <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+              <SectionEyebrow icon={<IconCheck />}>
+                Submission Checklist
+              </SectionEyebrow>
+
+              <h3 className="mt-2 text-xl font-black text-slate-900">
+                Before you submit
+              </h3>
+
+              <div className="mt-5 space-y-3">
+                <div
+                  className={[
+                    "flex items-center gap-3 rounded-2xl border p-4",
+                    validAmount
+                      ? "border-emerald-100 bg-emerald-50/60"
+                      : "border-slate-200 bg-slate-50",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "flex h-9 w-9 items-center justify-center rounded-xl",
+                      validAmount
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white text-slate-300",
+                    ].join(" ")}
+                  >
+                    <IconCheck />
+                  </span>
+
+                  <div>
+                    <p className="text-xs font-black text-slate-800">
+                      Valid amount
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-semibold text-slate-400">
+                      Minimum ₹{MIN_AMOUNT}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className={[
+                    "flex items-center gap-3 rounded-2xl border p-4",
+                    hasUtr
+                      ? "border-emerald-100 bg-emerald-50/60"
+                      : "border-slate-200 bg-slate-50",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "flex h-9 w-9 items-center justify-center rounded-xl",
+                      hasUtr
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white text-slate-300",
+                    ].join(" ")}
+                  >
+                    <IconCheck />
+                  </span>
+
+                  <div>
+                    <p className="text-xs font-black text-slate-800">
+                      UTR entered
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-semibold text-slate-400">
+                      Payment reference required
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-slate-400">
+                    <IconShield />
+                  </span>
+
+                  <div>
+                    <p className="text-xs font-black text-slate-800">
+                      Details verified by you
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-semibold text-slate-400">
+                      Double-check before submission
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {/* --------------------------------------------------------------------
+            PREMIUM FEATURES
+        -------------------------------------------------------------------- */}
+        <section className="mt-7">
+          <div className="mb-4">
+            <SectionEyebrow icon={<IconSpark />}>
+              Built For Confidence
+            </SectionEyebrow>
+
+            <h2 className="mt-2 text-2xl font-black text-slate-900">
+              A cleaner way to fund your wallet
+            </h2>
+
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              Everything you need is organized in one payment workspace.
             </p>
           </div>
 
-          <form onSubmit={submitRequest} className="mt-6 space-y-5">
-            <div>
-              <label className="mb-2 block text-sm text-gray-300">
-                Amount
-              </label>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <FeatureCard
+              icon={<IconQr />}
+              title="Instant QR Access"
+              description="The payment QR stays visible while you complete the payment."
+            />
 
-              <input
-                type="number"
-                min="10"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount"
-                required
-                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-gray-600 focus:border-blue-500"
+            <FeatureCard
+              icon={<IconCopy />}
+              title="Quick UPI Copy"
+              description="Copy the payment UPI ID with one tap when manual payment is preferred."
+            />
+
+            <FeatureCard
+              icon={<IconShield />}
+              title="Manual Verification"
+              description="Deposit requests remain pending until payment details are reviewed."
+            />
+
+            <FeatureCard
+              icon={<IconClock />}
+              title="Clear Status"
+              description="Your submission returns a request ID and verification status."
+            />
+          </div>
+        </section>
+
+        {/* --------------------------------------------------------------------
+            FAQ
+        -------------------------------------------------------------------- */}
+        <section className="mt-7 rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 lg:p-8">
+          <div className="max-w-2xl">
+            <SectionEyebrow icon={<IconInfo />}>
+              Help Center
+            </SectionEyebrow>
+
+            <h2 className="mt-2 text-2xl font-black text-slate-900">
+              Frequently asked questions
+            </h2>
+
+            <p className="mt-2 text-xs font-medium leading-5 text-slate-500">
+              Quick answers for the most common payment and verification
+              questions.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 lg:grid-cols-2">
+            {FAQS.map((item, index) => (
+              <FaqRow
+                key={item.question}
+                item={item}
+                open={openFaq === index}
+                onToggle={() =>
+                  setOpenFaq(openFaq === index ? null : index)
+                }
               />
-            </div>
+            ))}
+          </div>
+        </section>
 
-            <div>
-              <label className="mb-2 block text-sm text-gray-300">
-                UTR / Transaction ID
-              </label>
+        {/* --------------------------------------------------------------------
+            FINAL TRUST FOOTER
+        -------------------------------------------------------------------- */}
+        <section className="relative mt-7 overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 shadow-sm sm:p-7">
+          <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-violet-200/30 blur-3xl" />
 
-              <input
-                type="text"
-                value={utr}
-                onChange={(e) => setUtr(e.target.value)}
-                placeholder="Enter UTR after payment"
-                required
-                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-gray-600 focus:border-blue-500"
-              />
-            </div>
-
-            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-300">
-              First make the UPI payment. Then enter the UTR/transaction
-              ID above. Your request will remain pending until an admin
-              verifies the payment.
-            </div>
-
-            {message && (
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-gray-300">
-                {message}
+          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-violet-600 shadow-sm">
+                <IconShield />
               </div>
-            )}
+
+              <div>
+                <p className="text-sm font-black text-slate-900">
+                  Ready to fund your DreamSMM wallet?
+                </p>
+
+                <p className="mt-1 max-w-2xl text-xs font-medium leading-5 text-slate-500">
+                  Complete the payment, keep your UTR ready, and submit the
+                  request from the verification form above.
+                </p>
+              </div>
+            </div>
 
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-600 py-3 font-medium hover:bg-blue-500 disabled:opacity-50"
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("payment-form")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  })
+              }
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-xs font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
             >
-              {loading ? "Submitting..." : "Submit Deposit Request"}
+              Go to Payment Form
+              <IconArrow />
             </button>
-          </form>
-        </div>
+          </div>
+        </section>
+
+        <footer className="px-2 pb-6 pt-6 text-center">
+          <p className="text-[10px] font-semibold text-slate-400">
+            DreamSMM Wallet • UPI Payment • Manual Deposit Verification
+          </p>
+        </footer>
       </div>
     </main>
   );
