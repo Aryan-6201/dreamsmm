@@ -4,6 +4,187 @@ import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
 
+/**
+ * GET /api/orders
+ *
+ * Returns only the currently logged-in user's orders.
+ *
+ * Supports:
+ * ?page=1
+ * ?limit=10
+ * ?status=ALL|PENDING|PROCESSING|COMPLETED|PARTIAL|CANCELLED|REFUNDED
+ * ?search=order-id-or-service-or-link
+ */
+export async function GET(request: Request) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("session")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "You must be logged in." },
+        { status: 401 }
+      );
+    }
+
+    const session = await verifySession(token);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Your session has expired. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+
+    const requestedPage = Number(searchParams.get("page") || "1");
+    const requestedLimit = Number(searchParams.get("limit") || "10");
+
+    const page = Number.isInteger(requestedPage)
+      ? Math.max(1, requestedPage)
+      : 1;
+
+    const limit = Number.isInteger(requestedLimit)
+      ? Math.min(20, Math.max(5, requestedLimit))
+      : 10;
+
+    const status = searchParams.get("status") || "ALL";
+    const search = searchParams.get("search")?.trim() || "";
+
+    const validStatuses = [
+      "ALL",
+      "PENDING",
+      "PROCESSING",
+      "COMPLETED",
+      "PARTIAL",
+      "CANCELLED",
+      "REFUNDED",
+    ];
+
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { error: "Invalid order status." },
+        { status: 400 }
+      );
+    }
+
+    const where: {
+      userId: string;
+      status?:
+        | "PENDING"
+        | "PROCESSING"
+        | "COMPLETED"
+        | "PARTIAL"
+        | "CANCELLED"
+        | "REFUNDED";
+      OR?: Array<
+        | { id: number }
+        | { link: { contains: string; mode: "insensitive" } }
+        | {
+            service: {
+              name: { contains: string; mode: "insensitive" };
+            };
+          }
+      >;
+    } = {
+      userId: session.userId,
+    };
+
+    if (status !== "ALL") {
+      where.status = status as
+        | "PENDING"
+        | "PROCESSING"
+        | "COMPLETED"
+        | "PARTIAL"
+        | "CANCELLED"
+        | "REFUNDED";
+    }
+
+    if (search) {
+      const numericId = Number(search);
+
+      where.OR = [
+        ...(Number.isInteger(numericId) && numericId > 0
+          ? [{ id: numericId }]
+          : []),
+        {
+          link: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          service: {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        },
+      ];
+    }
+
+    const [orders, total] = await prisma.$transaction([
+      prisma.order.findMany({
+        where,
+        include: {
+          service: {
+            select: {
+              name: true,
+              platform: true,
+              category: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      orders: orders.map((order) => ({
+        id: order.id,
+        link: order.link,
+        quantity: order.quantity,
+        charge: order.charge.toString(),
+        status: order.status,
+        startCount: order.startCount,
+        remains: order.remains,
+        providerId: order.providerId,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        service: order.service,
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      },
+    });
+  } catch (error) {
+    console.error("GET ORDERS ERROR:", error);
+
+    return NextResponse.json(
+      { error: "Unable to load orders." },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * POST /api/orders
+ *
+ * Creates an order, sends it to MicoSMM,
+ * stores the provider order ID,
+ * and refunds the customer if the provider rejects the order.
+ */
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
