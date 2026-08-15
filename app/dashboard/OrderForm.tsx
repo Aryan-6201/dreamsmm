@@ -2,6 +2,20 @@
 
 import { useMemo, useState } from "react";
 
+import {
+  Eye,
+  Heart,
+  MessageCircle,
+  Share2,
+  Bookmark,
+  Users,
+  Play,
+  Send,
+  Sparkles,
+  UserPlus,
+  type LucideIcon,
+} from "lucide-react";
+
 type Service = {
   id: number;
   name: string;
@@ -71,7 +85,7 @@ export default function OrderForm({
   }, [services]);
 
   const categoryIcons = useMemo(() => {
-    const icons = new Map<string, string>();
+    const icons = new Map<string, LucideIcon>();
 
     services.forEach((service) => {
       const categoryName =
@@ -81,7 +95,7 @@ export default function OrderForm({
       if (!icons.has(key)) {
         icons.set(
           key,
-          platformIcon(service.platform)
+          categoryIcon(categoryName)
         );
       }
     });
@@ -332,7 +346,7 @@ export default function OrderForm({
         )}
       </div>
 
-      {/* =====================================================
+{/* =====================================================
           CATEGORY
       ===================================================== */}
 
@@ -349,12 +363,20 @@ export default function OrderForm({
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[50px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
+            className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm">
-              {category
-                ? categoryIcon(category)
-                : "+"}
+              
+{(() => {
+  const Icon = category ? categoryIcon(category) : Sparkles;
+
+  return (
+    <Icon
+      className="h-4 w-4"
+      strokeWidth={2.2}
+    />
+  );
+})()}
             </span>
 
             <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
@@ -403,12 +425,18 @@ export default function OrderForm({
                               : "bg-[#eaf6f6] text-cyan-700"
                           }`}
                         >
-                          {categoryIcons.get(
-                            key
-                          ) ||
-                            categoryIcon(
-                              item
-                            )}
+                          {(() => {
+  const Icon =
+    categoryIcons.get(key) ||
+    categoryIcon(item);
+
+  return (
+    <Icon
+      className="h-4 w-4"
+      strokeWidth={2.2}
+    />
+  );
+})()}
                         </span>
 
                         <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
@@ -827,19 +855,17 @@ function platformIcon(platform: string) {
 function categoryIcon(category: string) {
   const value = category.toLowerCase();
 
-  if (value.includes("follower")) return "F";
-  if (value.includes("like")) return "L";
-  if (value.includes("view")) return "V";
-  if (value.includes("comment")) return "C";
-  if (value.includes("share")) return "S";
-  if (value.includes("save")) return "SV";
-  if (value.includes("story")) return "ST";
-  if (value.includes("subscriber")) return "SUB";
-  if (value.includes("watch")) return "W";
-  if (value.includes("traffic")) return "TR";
-  if (value.includes("member")) return "M";
+  if (value.includes("follower")) return UserPlus;
+  if (value.includes("like")) return Heart;
+  if (value.includes("view")) return Eye;
+  if (value.includes("comment")) return MessageCircle;
+  if (value.includes("share")) return Share2;
+  if (value.includes("save")) return Bookmark;
+  if (value.includes("story")) return Play;
+  if (value.includes("subscriber")) return Users;
+  if (value.includes("watch")) return Play;
+  if (value.includes("traffic")) return Send;
+  if (value.includes("member")) return Users;
 
-  return "+";
+  return Sparkles;
 }
-
-
