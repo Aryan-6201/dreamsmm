@@ -16,6 +16,13 @@ type Service = {
   providerId: string | null;
   providerName: string | null;
 };
+type Category = {
+  id: number;
+  name: string;
+  platform: string;
+  enabled: boolean;
+  sortOrder: number;
+};
 
 type FormState = {
   name: string;
@@ -67,6 +74,7 @@ function Field({
 
 export default function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -100,10 +108,26 @@ export default function AdminServicesPage() {
       setLoading(false);
     }
   }
+  async function loadCategories() {
+  try {
+    const response = await fetch("/api/categories", {
+      cache: "no-store",
+    });
 
-  useEffect(() => {
-    loadServices();
-  }, []);
+    const data = await response.json();
+
+    if (response.ok) {
+      setCategories(data.categories || []);
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+  }
+}
+
+useEffect(() => {
+  loadServices();
+  loadCategories();
+}, []);
 
   function updateForm<K extends keyof FormState>(
     key: K,
@@ -427,7 +451,7 @@ export default function AdminServicesPage() {
                   />
                 </Field>
 
-            <Field label="Category">
+ <Field label="Category">
   <select
     value={form.category}
     onChange={(e) =>
@@ -436,12 +460,12 @@ export default function AdminServicesPage() {
     className={inputClass}
   >
     <option value="">Select category</option>
-    <option value="Followers">Followers</option>
-    <option value="Likes">Likes</option>
-    <option value="Views">Views</option>
-    <option value="Comments">Comments</option>
-    <option value="Shares">Shares</option>
-    <option value="Saves">Saves</option>
+
+    {categories.map((category) => (
+      <option key={category.id} value={category.name}>
+        {category.name}
+      </option>
+    ))}
   </select>
 </Field>
               </div>
@@ -662,7 +686,7 @@ export default function AdminServicesPage() {
                             {service.max.toLocaleString()}
                           </span>
 
-                          <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
+                          <span className="rounded-lg bg bg-pink-300:/20 px-2 py-1 text-gray-500">
                             {service.providerName ||
                               "No provider"}
 

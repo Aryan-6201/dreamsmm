@@ -1,0 +1,1250 @@
+/* ========================================================================
+   DREAMSMM — ORDER FORM
+   PREMIUM LIGHT UI / COMPACT INTERNAL-SCROLL SELECTORS
+   ------------------------------------------------------------------------
+   UX goal:
+   - Keep the page compact.
+   - Put category choices inside the Category selector.
+   - Put service choices inside the Service selector.
+   - Scroll INSIDE those selectors instead of forcing page scrolling.
+   - Preserve the existing order API, validation and pricing behavior.
+   ======================================================================== */
+
+"use client";
+
+import { useMemo, useState } from "react";
+
+/* ========================================================================
+   TYPES
+   ======================================================================== */
+
+type Service = {
+  id: number;
+  name: string;
+  platform: string;
+  category: string | null;
+  description: string | null;
+  rate: string;
+  min: number;
+  max: number;
+};
+
+type CategoryOption = {
+  key: string;
+  label: string;
+  platform: string;
+  count: number;
+};
+
+type SelectorMode = "category" | "service" | null;
+
+/* ========================================================================
+   MAIN ORDER FORM
+   ======================================================================== */
+
+export default function OrderForm({
+  services,
+}: {
+  services: Service[];
+}) {
+  /* ----------------------------------------------------------------------
+     FORM STATE
+     ---------------------------------------------------------------------- */
+
+  const [categoryKey, setCategoryKey] = useState("");
+  const [serviceId, setServiceId] = useState<number | "">("");
+
+  const [search, setSearch] = useState("");
+  const [link, setLink] = useState("");
+  const [quantity, setQuantity] = useState("");
+
+  const [openSelector, setOpenSelector] =
+    useState<SelectorMode>(null);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  /* ----------------------------------------------------------------------
+     NORMALIZED CATEGORY DATA
+     ---------------------------------------------------------------------- */
+
+  const categoryOptions = useMemo<CategoryOption[]>(() => {
+    const map = new Map<string, CategoryOption>();
+
+    services.forEach((service) => {
+      const platform =
+        service.platform?.trim() || "Other";
+
+      const label =
+        service.category?.trim() || "Other";
+
+      const key =
+        `${platform.toLowerCase()}::${label.toLowerCase()}`;
+
+      const existing = map.get(key);
+
+      if (existing) {
+        existing.count += 1;
+        return;
+      }
+
+      map.set(key, {
+        key,
+        label,
+        platform,
+        count: 1,
+      });
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      const platformCompare =
+        a.platform.localeCompare(b.platform);
+
+      if (platformCompare !== 0) {
+        return platformCompare;
+      }
+
+      return a.label.localeCompare(b.label);
+    });
+  }, [services]);
+
+  /* ----------------------------------------------------------------------
+     SELECTED CATEGORY
+     ---------------------------------------------------------------------- */
+
+  const selectedCategory = useMemo(() => {
+    return (
+      categoryOptions.find(
+        (item) => item.key === categoryKey,
+      ) || null
+    );
+  }, [categoryOptions, categoryKey]);
+
+  /* ----------------------------------------------------------------------
+     CATEGORY SEARCH
+     ---------------------------------------------------------------------- */
+
+  const normalizedSearch =
+    search.trim().toLowerCase();
+
+  const filteredCategories = useMemo(() => {
+    if (!normalizedSearch) {
+      return categoryOptions;
+    }
+
+    return categoryOptions.filter((item) => {
+      const categoryText =
+        item.label.toLowerCase();
+
+      const platformText =
+        item.platform.toLowerCase();
+
+      const matchingService = services.some(
+        (service) => {
+          const platform =
+            service.platform?.trim() ||
+            "Other";
+
+          const category =
+            service.category?.trim() ||
+            "Other";
+
+          const key =
+            `${platform.toLowerCase()}::${category.toLowerCase()}`;
+
+          if (key !== item.key) {
+            return false;
+          }
+
+          return (
+            service.name
+              .toLowerCase()
+              .includes(normalizedSearch) ||
+            String(service.id)
+              .includes(normalizedSearch) ||
+            (service.description || "")
+              .toLowerCase()
+              .includes(normalizedSearch)
+          );
+        },
+      );
+
+      return (
+        categoryText.includes(normalizedSearch) ||
+        platformText.includes(normalizedSearch) ||
+        String(item.count).includes(normalizedSearch) ||
+        matchingService
+      );
+    });
+  }, [
+    categoryOptions,
+    normalizedSearch,
+    services,
+  ]);
+
+  /* ----------------------------------------------------------------------
+     SERVICES FOR SELECTED CATEGORY
+     ---------------------------------------------------------------------- */
+
+  const categoryServices = useMemo(() => {
+    if (!selectedCategory) {
+      return [];
+    }
+
+    return services.filter((service) => {
+      const platform =
+        service.platform?.trim() ||
+        "Other";
+
+      const category =
+        service.category?.trim() ||
+        "Other";
+
+      const key =
+        `${platform.toLowerCase()}::${category.toLowerCase()}`;
+
+      return key === selectedCategory.key;
+    });
+  }, [
+    services,
+    selectedCategory,
+  ]);
+
+  /* ----------------------------------------------------------------------
+     SERVICE SEARCH
+     ---------------------------------------------------------------------- */
+
+  const filteredServices = useMemo(() => {
+    if (!normalizedSearch) {
+      return categoryServices;
+    }
+
+    return categoryServices.filter((service) => {
+      return (
+        service.name
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        String(service.id)
+          .includes(normalizedSearch) ||
+        service.platform
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        (service.category || "")
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        (service.description || "")
+          .toLowerCase()
+          .includes(normalizedSearch)
+      );
+    });
+  }, [
+    categoryServices,
+    normalizedSearch,
+  ]);
+
+  /* ----------------------------------------------------------------------
+     SELECTED SERVICE
+     ---------------------------------------------------------------------- */
+
+  const selectedService = useMemo(() => {
+    return (
+      services.find(
+        (service) => service.id === serviceId,
+      ) || null
+    );
+  }, [
+    services,
+    serviceId,
+  ]);
+
+  /* ----------------------------------------------------------------------
+     QUANTITY / PRICE
+     ---------------------------------------------------------------------- */
+
+  const quantityNumber =
+    Number(quantity) || 0;
+
+  const validQuantity =
+    !!selectedService &&
+    quantityNumber >= selectedService.min &&
+    quantityNumber <= selectedService.max;
+
+  const total =
+    selectedService &&
+    quantityNumber > 0
+      ? (quantityNumber / 1000) *
+        Number(selectedService.rate)
+      : 0;
+
+  /* ----------------------------------------------------------------------
+     SELECT CATEGORY
+     ---------------------------------------------------------------------- */
+
+  function selectCategory(
+    option: CategoryOption,
+  ) {
+    setCategoryKey(option.key);
+    setServiceId("");
+    setSearch("");
+    setError("");
+    setSuccess("");
+
+    /*
+      The category dropdown closes immediately after
+      selection, matching the compact UX from the
+      reference layout.
+    */
+    setOpenSelector(null);
+  }
+
+  /* ----------------------------------------------------------------------
+     SELECT SERVICE
+     ---------------------------------------------------------------------- */
+
+  function selectService(id: number) {
+    setServiceId(id);
+    setError("");
+    setSuccess("");
+
+    /*
+      Service selector also closes after one selection.
+      This prevents the selector from occupying the
+      whole page after a service is chosen.
+    */
+    setOpenSelector(null);
+  }
+
+  /* ----------------------------------------------------------------------
+     RESET SELECTION
+     ---------------------------------------------------------------------- */
+
+  function resetSelection() {
+    setCategoryKey("");
+    setServiceId("");
+    setSearch("");
+    setError("");
+    setSuccess("");
+    setOpenSelector(null);
+  }
+
+  /* ----------------------------------------------------------------------
+     SUBMIT ORDER
+     ---------------------------------------------------------------------- */
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setError("");
+    setSuccess("");
+
+    if (!selectedService) {
+      setError("Please select a service.");
+      return;
+    }
+
+    if (!link.trim()) {
+      setError("Please enter the target link.");
+      return;
+    }
+
+    if (!quantity.trim()) {
+      setError("Please enter a quantity.");
+      return;
+    }
+
+    if (!validQuantity) {
+      setError(
+        `Quantity must be between ${selectedService.min.toLocaleString()} and ${selectedService.max.toLocaleString()}.`,
+      );
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(
+        "/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            serviceId: selectedService.id,
+            link: link.trim(),
+            quantity: quantityNumber,
+          }),
+        },
+      );
+
+      const text =
+        await response.text();
+
+      let data: any = {};
+
+      try {
+        data = text
+          ? JSON.parse(text)
+          : {};
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        setError(
+          data?.error ||
+            data?.message ||
+            `Order failed (${response.status}).`,
+        );
+        return;
+      }
+
+      setSuccess(
+        data?.order?.id
+          ? `Order #${data.order.id} placed successfully.`
+          : "Order placed successfully.",
+      );
+
+      setLink("");
+      setQuantity("");
+    } catch (err) {
+      console.error(
+        "ORDER ERROR:",
+        err,
+      );
+
+      setError(
+        "Unable to connect to the order server. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  /* ======================================================================
+     RENDER
+     ====================================================================== */
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-5"
+    >
+      {/* ==================================================================
+          SEARCH
+      ================================================================== */}
+
+      <section className="rounded-[24px] border border-slate-200 bg-white p-3 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-4">
+        <div className="relative">
+          <span
+            className="
+              pointer-events-none
+              absolute
+              left-4
+              top-1/2
+              -translate-y-1/2
+              text-xl
+              text-slate-400
+            "
+            aria-hidden="true"
+          >
+            ⌕
+          </span>
+
+          <input
+            value={search}
+            onChange={(event) =>
+              setSearch(
+                event.target.value,
+              )
+            }
+            placeholder="Search"
+            aria-label="Search services"
+            className="
+              h-13
+              w-full
+              rounded-2xl
+              border
+              border-slate-200
+              bg-[#eef8f8]
+              pl-12
+              pr-12
+              text-sm
+              font-semibold
+              text-slate-800
+              outline-none
+              transition
+              placeholder:text-slate-400
+              focus:border-cyan-300
+              focus:bg-white
+              focus:ring-4
+              focus:ring-cyan-100
+            "
+          />
+
+          {search && (
+            <button
+              type="button"
+              onClick={() =>
+                setSearch("")
+              }
+              aria-label="Clear search"
+              className="
+                absolute
+                right-3
+                top-1/2
+                flex
+                h-8
+                w-8
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-xl
+                text-lg
+                font-black
+                text-slate-400
+                transition
+                hover:bg-white
+                hover:text-slate-700
+              "
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* ==================================================================
+          CATEGORY
+      ================================================================== */}
+
+      <section>
+        <div className="mb-2.5">
+          <label
+            className="
+              text-sm
+              font-black
+              text-slate-700
+            "
+          >
+            Category
+          </label>
+        </div>
+
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() =>
+              setOpenSelector(
+                openSelector === "category"
+                  ? null
+                  : "category",
+              )
+            }
+            aria-expanded={
+              openSelector === "category"
+            }
+            className="
+              flex
+              h-13
+              w-full
+              items-center
+              justify-between
+              gap-3
+              rounded-2xl
+              border
+              border-cyan-100
+              bg-[#dceff0]
+              px-4
+              text-left
+              shadow-[0_5px_20px_rgba(15,23,42,0.03)]
+              transition
+              hover:border-cyan-200
+              hover:bg-[#d6eded]
+            "
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span
+                className="
+                  flex
+                  h-8
+                  w-8
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-white
+                  text-sm
+                  font-black
+                  text-cyan-700
+                  shadow-sm
+                "
+              >
+                {selectedCategory
+                  ? platformIcon(
+                      selectedCategory.platform,
+                    )
+                  : "⌁"}
+              </span>
+
+              <div className="min-w-0">
+                <p
+                  className="
+                    truncate
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  {selectedCategory
+                    ? selectedCategory.label
+                    : "Select category"}
+                </p>
+
+                {selectedCategory && (
+                  <p
+                    className="
+                      truncate
+                      text-[9px]
+                      font-medium
+                      text-slate-400
+                    "
+                  >
+                    {selectedCategory.platform}
+                    {" · "}
+                    {selectedCategory.count}
+                    {" services"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <span
+              className={`
+                shrink-0
+                text-sm
+                font-black
+                text-slate-400
+                transition-transform
+                ${
+                  openSelector ===
+                  "category"
+                    ? "rotate-180"
+                    : ""
+                }
+              `}
+            >
+              ▾
+            </span>
+          </button>
+
+          {openSelector ===
+            "category" && (
+            <div
+              className="
+                absolute
+                left-0
+                right-0
+                z-40
+                mt-2
+                overflow-hidden
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                shadow-[0_20px_55px_rgba(15,23,42,0.14)]
+              "
+            >
+              <div
+                className="
+                  max-h-[320px]
+                  overflow-y-auto
+                  overscroll-contain
+                  p-1.5
+                  [scrollbar-width:thin]
+                  [scrollbar-color:#94a3b8_transparent]
+                "
+              >
+                {filteredCategories.length >
+                0 ? (
+                  filteredCategories.map(
+                    (item) => {
+                      const active =
+                        item.key ===
+                        categoryKey;
+
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() =>
+                            selectCategory(
+                              item,
+                            )
+                          }
+                          className={`
+                            group
+                            flex
+                            w-full
+                            items-center
+                            justify-between
+                            gap-3
+                            rounded-xl
+                            px-3
+                            py-2.5
+                            text-left
+                            transition
+                            ${
+                              active
+                                ? "bg-cyan-500 text-white"
+                                : "text-slate-700 hover:bg-cyan-50"
+                            }
+                          `}
+                        >
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <span
+                              className={`
+                                flex
+                                h-7
+                                w-7
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-xs
+                                font-black
+                                ${
+                                  active
+                                    ? "bg-white/20 text-white"
+                                    : "bg-cyan-50 text-cyan-700"
+                                }
+                              `}
+                            >
+                              {platformIcon(
+                                item.platform,
+                              )}
+                            </span>
+
+                            <div className="min-w-0">
+                              <p
+                                className="
+                                  truncate
+                                  text-[13px]
+                                  font-semibold
+                                "
+                              >
+                                {item.label}
+                              </p>
+
+                              <p
+                                className={`
+                                  truncate
+                                  text-[9px]
+                                  font-medium
+                                  ${
+                                    active
+                                      ? "text-white/70"
+                                      : "text-slate-400"
+                                  }
+                                `}
+                              >
+                                {item.platform}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex shrink-0 items-center gap-2">
+                            <span
+                              className={`
+                                rounded-md
+                                px-1.5
+                                py-1
+                                text-[8px]
+                                font-black
+                                ${
+                                  active
+                                    ? "bg-white/15 text-white"
+                                    : "bg-slate-100 text-slate-500"
+                                }
+                              `}
+                            >
+                              {item.count}
+                            </span>
+
+                            {active && (
+                              <span className="text-xs font-black">
+                                ✓
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    },
+                  )
+                ) : (
+                  <div className="p-7">
+                    <EmptyState
+                      title="No category found"
+                      description="Try another search term."
+                      compact
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ==================================================================
+          SERVICE
+      ================================================================== */}
+
+      <section>
+        <div className="mb-2.5 flex items-center justify-between gap-3">
+          <label
+            className="
+              text-sm
+              font-black
+              text-slate-700
+            "
+          >
+            Service
+          </label>
+
+          {selectedCategory && (
+            <span
+              className="
+                rounded-full
+                bg-cyan-50
+                px-2.5
+                py-1
+                text-[8px]
+                font-black
+                uppercase
+                tracking-wider
+                text-cyan-700
+              "
+            >
+              {filteredServices.length}
+              {" available"}
+            </span>
+          )}
+        </div>
+
+        <div className="relative">
+          <button
+            type="button"
+            disabled={!selectedCategory}
+            onClick={() =>
+              setOpenSelector(
+                openSelector === "service"
+                  ? null
+                  : "service",
+              )
+            }
+            aria-expanded={
+              openSelector === "service"
+            }
+            className={`
+              flex
+              h-13
+              w-full
+              items-center
+              justify-between
+              gap-3
+              rounded-2xl
+              border
+              px-4
+              text-left
+              shadow-[0_5px_20px_rgba(15,23,42,0.03)]
+              transition
+              ${
+                selectedCategory
+                  ? "border-cyan-100 bg-[#dceff0] hover:border-cyan-200 hover:bg-[#d6eded]"
+                  : "cursor-not-allowed border-slate-200 bg-slate-100"
+              }
+            `}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span
+                className="
+                  flex
+                  h-8
+                  w-8
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-white
+                  text-xs
+                  font-black
+                  text-cyan-700
+                  shadow-sm
+                "
+              >
+                {selectedService
+                  ? platformIcon(
+                      selectedService.platform,
+                    )
+                  : "◈"}
+              </span>
+
+              <div className="min-w-0">
+                <p
+                  className="
+                    truncate
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  {selectedService
+                    ? selectedService.name
+                    : selectedCategory
+                      ? "Select service"
+                      : "Select category first"}
+                </p>
+
+                {selectedService && (
+                  <p
+                    className="
+                      truncate
+                      text-[9px]
+                      font-medium
+                      text-slate-400
+                    "
+                  >
+                    #{selectedService.id}
+                    {" · ₹"}
+                    {selectedService.rate}
+                    {" / 1K"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <span
+              className={`
+                shrink-0
+                text-sm
+                font-black
+                text-slate-400
+                transition-transform
+                ${
+                  openSelector ===
+                  "service"
+                    ? "rotate-180"
+                    : ""
+                }
+              `}
+            >
+              ▾
+            </span>
+          </button>
+
+          {openSelector ===
+            "service" &&
+            selectedCategory && (
+              <div
+                className="
+                  absolute
+                  left-0
+                  right-0
+                  z-30
+                  mt-2
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-slate-200
+                  bg-white
+                  shadow-[0_20px_55px_rgba(15,23,42,0.14)]
+                "
+              >
+                <div
+                  className="
+                    max-h-[360px]
+                    overflow-y-auto
+                    overscroll-contain
+                    p-1.5
+                    [scrollbar-width:thin]
+                    [scrollbar-color:#94a3b8_transparent]
+                  "
+                >
+                  {filteredServices.length >
+                  0 ? (
+                    filteredServices.map(
+                      (service) => {
+                        const active =
+                          service.id ===
+                          serviceId;
+
+                        return (
+                          <button
+                            key={service.id}
+                            type="button"
+                            onClick={() =>
+                              selectService(
+                                service.id,
+                              )
+                            }
+                            className={`
+                              group
+                              w-full
+                              rounded-xl
+                              px-3
+                              py-2.5
+                              text-left
+                              transition
+                              ${
+                                active
+                                  ? "bg-cyan-500 text-white"
+                                  : "text-slate-700 hover:bg-cyan-50"
+                              }
+                            `}
+                          >
+                            <div className="flex items-start gap-2.5">
+                              <span
+                                className={`
+                                  mt-0.5
+                                  flex
+                                  h-7
+                                  w-7
+                                  shrink-0
+                                  items-center
+                                  justify-center
+                                  rounded-lg
+                                  text-[10px]
+                                  font-black
+                                  ${
+                                    active
+                                      ? "bg-white/20 text-white"
+                                      : "bg-cyan-50 text-cyan-700"
+                                  }
+                                `}
+                              >
+                                {active
+                                  ? "✓"
+                                  : platformIcon(
+                                      service.platform,
+                                    )}
+                              </span>
+
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p
+                                    className="
+                                      line-clamp-2
+                                      text-[12px]
+                                      font-semibold
+                                      leading-5
+                                    "
+                                  >
+                                    {service.name}
+                                  </p>
+
+                                  <span
+                                    className={`
+                                      shrink-0
+                                      rounded-md
+                                      px-1.5
+                                      py-1
+                                      text-[8px]
+                                      font-black
+                                      ${
+                                        active
+                                          ? "bg-white/15 text-white"
+                                          : "bg-slate-100 text-slate-500"
+                                      }
+                                    `}
+                                  >
+                                    #{service.id}
+                                  </span>
+                                </div>
+
+                                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                  <span
+                                    className={`
+                                      rounded-md
+                                      px-1.5
+                                      py-1
+                                      text-[8px]
+                                      font-bold
+                                      ${
+                                        active
+                                          ? "bg-white/15 text-white/80"
+                                          : "bg-slate-50 text-slate-400"
+                                      }
+                                    `}
+                                  >
+                                    Min{" "}
+                                    {service.min.toLocaleString()}
+                                  </span>
+
+                                  <span
+                                    className={`
+                                      rounded-md
+                                      px-1.5
+                                      py-1
+                                      text-[8px]
+                                      font-bold
+                                      ${
+                                        active
+                                          ? "bg-white/15 text-white/80"
+                                          : "bg-slate-50 text-slate-400"
+                                      }
+                                    `}
+                                  >
+                                    Max{" "}
+                                    {service.max.toLocaleString()}
+                                  </span>
+
+                                  <span
+                                    className={`
+                                      rounded-md
+                                      px-1.5
+                                      py-1
+                                      text-[8px]
+                                      font-black
+                                      ${
+                                        active
+                                          ? "bg-white/15 text-white"
+                                          : "bg-emerald-50 text-emerald-600"
+                                      }
+                                    `}
+                                  >
+                                    ₹
+                                    {service.rate}
+                                    {" / 1K"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      },
+                    )
+                  ) : (
+                    <div className="p-7">
+                      <EmptyState
+                        title="No matching service"
+                        description="Try clearing the search or choose another category."
+                        compact
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+        </div>
+      </section>
+
+      {/* ==================================================================
+          SELECTED SERVICE DESCRIPTION
+      ================================================================== */}
+
+      {selectedService && (
+        <section
+          className="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-cyan-100
+            bg-[#e6f4f4]
+          "
+        >
+          <div className="border-b border-cyan-100 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <p
+                className="
+                  text-sm
+                  font-black
+                  text-slate-700
+                "
+              >
+                Description
+              </p>
+
+              <button
+                type="button"
+                onClick={resetSelection}
+                className="
+                  rounded-lg
+                  bg-white/70
+                  px-2.5
+                  py-1.5
+                  text-[8px]
+                  font-black
+                  uppercase
+                  tracking-wider
+                  text-slate-500
+                  transition
+                  hover:bg-white
+                  hover:text-violet-600
+                "
+              >
+                Change
+              </button>
+            </div>
+          </div>
+
+          <div className="px-4 py-4">
+            <div
+              className="
+                whitespace-pre-wrap
+                break-words
+                text-[11px]
+                font-medium
+                leading-5
+                text-slate-600
+              "
+            >
+              {selectedService.description ||
+                "Service description is not available."}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ==================================================================
+          ORDER DETAILS
+      ================================================================== */}
+
+      {selectedService && (
+        <section
+          className="
+            space-y-5
+            rounded-[24px]
+            border
+            border-slate-200
+            bg-white
+            p-4
+            shadow-[0_8px_30px_rgba(15,23,42,0.04)]
+            sm:p-5
+          "
+        >
+          {/* ----------------------------------------------------------------
+              SELECTED SERVICE HEADER
+          ---------------------------------------------------------------- */}
+
+          <div
+            className="
+              flex
+              items-start
+              gap-3
+              rounded-2xl
+              border
+              border-cyan-100
+              bg-[#eef8f8]
+              p-3.5
+            "
+          >
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0

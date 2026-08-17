@@ -93,7 +93,7 @@ export default async function DashboardPage() {
 
             <div className="flex shrink-0 items-center gap-2">
 
-              {/* OUTSIDE ADD FUNDS */}
+              {/* ADD FUNDS */}
 
               <a
                 href="/funds"
@@ -118,427 +118,363 @@ export default async function DashboardPage() {
                   </span>
                 </summary>
 
-                <div className="absolute right-0 top-[calc(100%+10px)] w-[285px] overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 shadow-[0_25px_70px_rgba(15,23,42,0.16)]">
+                <div className="absolute right-0 top-14 z-50 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-200/70">
 
-                  <div className="px-3 pb-3 pt-2">
-
-                    <div className="flex items-center justify-between">
-
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                          Quick Actions
-                        </p>
-
-                        <p className="mt-1 text-xs font-medium text-slate-500">
-                          Manage your workspace
-                        </p>
-                      </div>
-
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-sm font-black text-violet-700">
-                        ✦
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  <div className="h-px bg-slate-100" />
-
-                  <MenuItem
-                    href="/services"
-                    icon="✦"
-                    title="Browse Services"
-                    description="Explore the service catalog"
-                    iconClass="bg-violet-50 text-violet-700"
-                  />
-
-                  <MenuItem
+                  <a
                     href="/orders"
-                    icon="▣"
-                    title="Order History"
-                    description="Track all your orders"
-                    iconClass="bg-blue-50 text-blue-700"
-                  />
+                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+                  >
+                    Orders
+                  </a>
 
-                  <MenuItem
+                  <a
+                    href="/services"
+                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+                  >
+                    Services
+                  </a>
+
+                  <a
+                    href="/transactions"
+                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+                  >
+                    Transactions
+                  </a>
+
+                  <a
                     href="/tickets"
-                    icon="?"
-                    title="Create Ticket"
-                    description="Contact support"
-                    iconClass="bg-amber-50 text-amber-700"
-                  />
-
-                  <MenuItem
-                    href="/funds"
-                    icon="₹"
-                    title="Add Funds"
-                    description="Add money to your balance"
-                    iconClass="bg-emerald-50 text-emerald-700"
-                  />
-
-                  <div className="my-1 h-px bg-slate-100" />
-
-                  <MenuItem
-                    href="/profile"
-                    icon="◉"
-                    title="My Profile"
-                    description={user.email}
-                    iconClass="bg-slate-100 text-slate-600"
-                  />
+                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+                  >
+                    Support
+                  </a>
 
                 </div>
+
               </details>
 
-              {/* PROFILE */}
-
-              <div className="hidden h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 shadow-sm sm:flex sm:px-3">
-
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-[10px] font-black text-white">
-                  {initials}
-                </div>
-
-                <div className="max-w-[145px]">
-
-                  <p className="truncate text-xs font-black text-slate-800">
-                    {user.name || "User"}
-                  </p>
-
-                  <p className="truncate text-[10px] font-medium text-slate-400">
-                    {user.email}
-                  </p>
-
-                </div>
-
-              </div>
-
             </div>
+
           </header>
 
-          {/* ================= HERO ================= */}
+          {/* ================= WELCOME ================= */}
 
-          <section className="relative mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.07)]">
+          <section className="mt-7">
 
-            <div className="pointer-events-none absolute -right-32 -top-36 h-[440px] w-[440px] rounded-full bg-violet-200/40 blur-[100px]" />
+            <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
 
-            <div className="pointer-events-none absolute -bottom-40 left-[32%] h-[400px] w-[400px] rounded-full bg-blue-100/50 blur-[100px]" />
+              {/* WELCOME CARD */}
 
-            <div className="relative px-6 py-9 sm:px-10 sm:py-11 lg:px-12 lg:py-14">
+              <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
 
-              <div className="flex flex-wrap items-center gap-2">
+                <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
 
-                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-[11px] font-black text-emerald-700">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  All systems operational
-                </span>
+                <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl" />
 
-                <span className="rounded-full border border-violet-100 bg-violet-50 px-3.5 py-2 text-[11px] font-black text-violet-700">
-                  {services.length} services live
-                </span>
+                <div className="relative">
 
-              </div>
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5">
 
-              <div className="mt-7 max-w-5xl">
+                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
 
-                <p className="text-sm font-black text-violet-600">
-                  Welcome back, {firstName}
-                </p>
-
-                <h1 className="mt-2 text-[42px] font-black leading-[0.98] tracking-[-0.055em] text-slate-950 sm:text-5xl lg:text-[64px]">
-                  Everything you need
-                  <span className="block bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                    to grow online.
-                  </span>
-                </h1>
-
-                <p className="mt-6 max-w-2xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
-                  Discover high-quality social media services,
-                  configure your order and launch your campaign
-                  from one clean workspace.
-                </p>
-
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-
-                <a
-                  href="#new-order"
-                  className="group inline-flex h-12 items-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
-                >
-                  Create New Order
-
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </a>
-
-                <a
-                  href="/services"
-                  className="inline-flex h-12 items-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-800"
-                >
-                  Explore Services
-                </a>
-
-              </div>
-
-            </div>
-          </section>
-
-          {/* ================= STATS ================= */}
-
-          <section className="mt-5 grid gap-4 sm:grid-cols-2">
-
-            <StatCard
-              label="Available Balance"
-              value={`₹${user.balance.toString()}`}
-              description="Ready to use"
-              icon="₹"
-              variant="violet"
-            />
-
-            <StatCard
-              label="Active Services"
-              value={String(services.length)}
-              description="Live services in your catalog"
-              icon="✦"
-              variant="blue"
-            />
-
-          </section>
-
-          {/* ================= ORDER AREA ================= */}
-
-          <section
-            id="new-order"
-            className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]"
-          >
-
-            <div className="overflow-visible rounded-[30px] border border-slate-200 bg-white shadow-[0_20px_65px_rgba(15,23,42,0.06)]">
-
-              <div className="border-b border-slate-100 px-5 py-6 sm:px-7">
-
-                <div className="flex items-center justify-between gap-5">
-
-                  <div className="flex items-center gap-4">
-
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-black text-white shadow-lg shadow-violet-200">
-                      +
-                    </div>
-
-                    <div>
-
-                      <div className="flex flex-wrap items-center gap-2">
-
-                        <h2 className="text-xl font-black tracking-tight text-slate-900">
-                          Create New Order
-                        </h2>
-
-                        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-700">
-                          Live
-                        </span>
-
-                      </div>
-
-                      <p className="mt-1 text-xs font-medium text-slate-500 sm:text-sm">
-                        Search, select and configure your service.
-                      </p>
-
-                    </div>
+                    <span className="text-[8px] font-black uppercase tracking-[0.18em] text-violet-700">
+                      Growth Workspace
+                    </span>
 
                   </div>
 
-                  <div className="hidden text-right sm:block">
+                  <h1 className="max-w-2xl text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
+                    Welcome back, {firstName}.
+                  </h1>
 
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                      Catalog
-                    </p>
+                  <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+                    Build your next order with a clean, fast and powerful
+                    social growth workflow.
+                  </p>
 
-                    <p className="mt-1 text-sm font-black text-slate-700">
-                      {services.length} services
-                    </p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+
+                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
+                      ⚡ Fast delivery
+                    </span>
+
+                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
+                      🛡 Reliable services
+                    </span>
+
+                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
+                      💜 Premium panel
+                    </span>
 
                   </div>
 
                 </div>
-              </div>
-
-              <div className="p-5 sm:p-7 lg:p-8">
-                <OrderForm services={formattedServices} />
-              </div>
-
-            </div>
-
-            {/* ================= RIGHT PANEL ================= */}
-
-            <aside className="space-y-4">
-
-              <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
-
-                <div className="flex items-center justify-between">
-
-                  <div>
-
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                      Services
-                    </p>
-
-                    <p className="mt-1 text-2xl font-black text-slate-900">
-                      {services.length}
-                    </p>
-
-                  </div>
-
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                    ✦
-                  </div>
-
-                </div>
-
-                <p className="mt-4 text-xs font-medium leading-5 text-slate-500">
-                  Active services are ready to use from
-                  your order workspace.
-                </p>
-
-                <a
-                  href="/services"
-                  className="mt-4 flex h-11 items-center justify-center rounded-xl bg-violet-50 text-xs font-black text-violet-800 transition hover:bg-violet-100"
-                >
-                  Browse Services →
-                </a>
 
               </div>
 
-              <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 p-6 text-white shadow-xl">
+              {/* BALANCE CARD */}
 
-                <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-500/30 blur-3xl" />
+              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
+
+                <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
 
                 <div className="relative">
 
                   <div className="flex items-center justify-between">
 
-                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-200/70">
-                      Wallet
-                    </span>
+                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/60">
+                      Available Balance
+                    </p>
 
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
                       ₹
-                    </span>
+                    </div>
 
                   </div>
 
-                  <p className="mt-5 text-xs font-medium text-violet-200/70">
-                    Available balance
+                  <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
+                    ₹{Number(user.balance).toFixed(2)}
                   </p>
 
-                  <p className="mt-1 text-3xl font-black tracking-tight">
-                    ₹{user.balance.toString()}
+                  <p className="mt-2 text-[9px] font-medium text-white/60">
+                    Ready to use for your next order
                   </p>
 
                   <a
                     href="/funds"
-                    className="mt-5 flex h-11 items-center justify-center rounded-xl bg-white text-sm font-black text-slate-900 transition hover:bg-violet-50"
+                    className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-[9px] font-black uppercase tracking-[0.12em] text-violet-700 transition hover:bg-violet-50"
                   >
-                    + Add Funds
+                    Add Funds
                   </a>
 
                 </div>
 
               </div>
 
-              <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
+            </div>
 
-                <div className="flex gap-3">
+          </section>
 
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-black text-blue-700">
-                    ?
+          {/* ================= ORDER SECTION ================= */}
+
+          <section className="mt-7">
+
+            <div className="mb-5 flex items-end justify-between gap-4">
+
+              <div>
+
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-600">
+                  New Order
+                </p>
+
+                <h2 className="mt-1 text-2xl font-black tracking-[-0.035em] text-slate-900">
+                  Create your order
+                </h2>
+
+                <p className="mt-1.5 text-xs font-medium text-slate-500">
+                  Select a platform, choose a service and place your order.
+                </p>
+
+              </div>
+
+              <a
+                href="/orders"
+                className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.1em] text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 sm:inline-flex"
+              >
+                Order History
+              </a>
+
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+
+              {/* ORDER FORM */}
+
+              <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-[#02030a] p-5 shadow-xl sm:p-7">
+
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(139,92,246,.12),transparent_32%),radial-gradient(circle_at_90%_15%,rgba(59,130,246,.08),transparent_28%)]" />
+
+                <div className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:50px_50px]" />
+
+                <div className="relative">
+
+                  <div className="mb-6 flex items-center justify-between">
+
+                    <div>
+
+                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-violet-300/60">
+                        Order Builder
+                      </p>
+
+                      <p className="mt-1 text-lg font-black text-white">
+                        Place a new order
+                      </p>
+
+                    </div>
+
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.03] text-violet-300">
+                      +
+                    </div>
+
                   </div>
 
-                  <div>
+                  <OrderForm services={formattedServices} />
 
-                    <h3 className="text-sm font-black text-slate-900">
-                      Need assistance?
-                    </h3>
+                </div>
 
-                    <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-                      Need help with an order or account?
-                      Create a support ticket.
-                    </p>
+              </div>
+
+              {/* SIDE INFORMATION */}
+
+              <aside className="space-y-4">
+
+                <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                      ✓
+                    </div>
+
+                    <div>
+
+                      <p className="text-sm font-black text-slate-800">
+                        Simple ordering
+                      </p>
+
+                      <p className="mt-1 text-[10px] font-medium text-slate-500">
+                        Everything is handled from one place.
+                      </p>
+
+                    </div>
 
                   </div>
 
                 </div>
 
-                <a
-                  href="/tickets"
-                  className="mt-4 flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
-                >
-                  Create Ticket →
-                </a>
+                <Feature
+                  icon="⚡"
+                  title="Fast processing"
+                  description="Orders are sent directly through your connected service system."
+                />
 
-              </div>
+                <Feature
+                  icon="◈"
+                  title="Transparent pricing"
+                  description="See the service rate, quantity and estimated charge before ordering."
+                />
 
-            </aside>
+                <Feature
+                  icon="↗"
+                  title="Track orders"
+                  description="Open your order history anytime to check previous orders."
+                />
+
+              </aside>
+
+            </div>
 
           </section>
 
-          {/* ================= FEATURES ================= */}
+          {/* ================= QUICK LINKS ================= */}
 
-          <section className="mt-5 grid gap-4 md:grid-cols-3">
+          <section className="mt-7 grid gap-4 sm:grid-cols-3">
 
-            <Feature
-              icon="✓"
-              title="Secure"
-              description="Protected account and order flow."
-            />
+            <a
+              href="/services"
+              className="group rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+            >
 
-            <Feature
-              icon="⚡"
-              title="Fast Processing"
-              description="Designed for quick and reliable ordering."
-            />
+              <div className="flex items-center justify-between">
 
-            <Feature
-              icon="✦"
-              title="Large Catalog"
-              description={`${services.length} active services ready to explore.`}
-            />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                  ◇
+                </div>
+
+                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-500">
+                  →
+                </span>
+
+              </div>
+
+              <p className="mt-4 text-sm font-black text-slate-800">
+                Browse Services
+              </p>
+
+              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
+                Explore all available social growth services.
+              </p>
+
+            </a>
+
+            <a
+              href="/orders"
+              className="group rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+            >
+
+              <div className="flex items-center justify-between">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
+                  #
+                </div>
+
+                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-indigo-500">
+                  →
+                </span>
+
+              </div>
+
+              <p className="mt-4 text-sm font-black text-slate-800">
+                Order History
+              </p>
+
+              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
+                Review your previous orders and their status.
+              </p>
+
+            </a>
+
+            <a
+              href="/funds"
+              className="group rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+            >
+
+              <div className="flex items-center justify-between">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                  ₹
+                </div>
+
+                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-500">
+                  →
+                </span>
+
+              </div>
+
+              <p className="mt-4 text-sm font-black text-slate-800">
+                Add Funds
+              </p>
+
+              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
+                Add balance whenever you need to place more orders.
+              </p>
+
+            </a>
 
           </section>
 
           {/* ================= FOOTER ================= */}
 
-          <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-6 text-xs text-slate-400 sm:flex-row">
+          <footer className="mt-10 border-t border-slate-200 py-6">
 
-            <p>
-              © {new Date().getFullYear()} DreamSMM
-            </p>
+            <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
 
-            <div className="flex items-center gap-5">
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400">
+                DreamSMM
+              </p>
 
-              <a
-                href="/services"
-                className="transition hover:text-slate-700"
-              >
-                Services
-              </a>
-
-              <a
-                href="/orders"
-                className="transition hover:text-slate-700"
-              >
-                Orders
-              </a>
-
-              <a
-                href="/tickets"
-                className="transition hover:text-slate-700"
-              >
-                Support
-              </a>
-
-              <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Operational
-              </span>
+              <p className="text-[9px] font-medium text-slate-400">
+                Your social growth command center
+              </p>
 
             </div>
 
@@ -547,108 +483,6 @@ export default async function DashboardPage() {
         </div>
       </div>
     </main>
-  );
-}
-
-/* =========================================================
-   MENU ITEM
-========================================================= */
-
-function MenuItem({
-  href,
-  icon,
-  title,
-  description,
-  iconClass,
-}: {
-  href: string;
-  icon: string;
-  title: string;
-  description: string;
-  iconClass: string;
-}) {
-  return (
-    <a
-      href={href}
-      className="group/item flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-slate-50"
-    >
-      <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black ${iconClass}`}
-      >
-        {icon}
-      </div>
-
-      <div className="min-w-0 flex-1">
-
-        <p className="text-sm font-black text-slate-800">
-          {title}
-        </p>
-
-        <p className="mt-0.5 truncate text-[10px] font-medium text-slate-400">
-          {description}
-        </p>
-
-      </div>
-
-      <span className="text-slate-300 transition group-hover/item:translate-x-1 group-hover/item:text-slate-700">
-        →
-      </span>
-    </a>
-  );
-}
-
-/* =========================================================
-   STAT CARD
-========================================================= */
-
-function StatCard({
-  label,
-  value,
-  description,
-  icon,
-  variant,
-}: {
-  label: string;
-  value: string;
-  description: string;
-  icon: string;
-  variant: "violet" | "blue";
-}) {
-  const iconClass =
-    variant === "violet"
-      ? "bg-violet-50 text-violet-700"
-      : "bg-blue-50 text-blue-700";
-
-  return (
-    <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-
-      <div className="flex items-start justify-between gap-5">
-
-        <div>
-
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-            {label}
-          </p>
-
-          <p className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950">
-            {value}
-          </p>
-
-          <p className="mt-2 text-xs font-medium text-slate-500">
-            {description}
-          </p>
-
-        </div>
-
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-base font-black ${iconClass}`}
-        >
-          {icon}
-        </div>
-
-      </div>
-
-    </div>
   );
 }
 

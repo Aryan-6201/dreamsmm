@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Eye,
@@ -67,26 +67,6 @@ export default function OrderForm({
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
-
-  useEffect(() => {
-  async function loadCategoryConfigs() {
-    try {
-      const response = await fetch("/api/categories", {
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setCategoryConfigs(data.categories || []);
-      }
-    } catch (error) {
-      console.error("Failed to load category configs:", error);
-    }
-  }
-
-  loadCategoryConfigs();
-}, []);
 
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -409,9 +389,9 @@ const categories = useMemo(() => {
           onChange={(event) =>
             setSearch(event.target.value)
           }
-          placeholder={category ? "Search services..." : "Search categories..."}
+          placeholder="Search"
           aria-label="Search services"
-          className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-11 text-sm font-medium text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-100"
+          className="h-12 w-full rounded-xl border border-slate-200 bg-[#eaf6f6] pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100"
         />
 
         {search && (
@@ -431,14 +411,9 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       <section>
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <label className="block text-sm font-black text-slate-700">
-            Category
-          </label>
-          <span className="text-[10px] font-semibold text-slate-400">
-            {categories.length} available
-          </span>
-        </div>
+        <label className="mb-2 block text-sm font-black text-slate-700">
+          Category
+        </label>
 
         <div className="relative">
           <button
@@ -448,7 +423,7 @@ const categories = useMemo(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[58px] w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 text-left shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50/40"
+            className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
           >
             <span
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm transition-all"
@@ -535,7 +510,7 @@ const categories = useMemo(() => {
           </button>
 
           {categoryOpen && (
-            <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_20px_55px_rgba(15,23,42,0.16)]">
+            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
               <div className="max-h-[320px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                 {filteredCategories.map(
                   (item) => {
@@ -669,14 +644,9 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       <section>
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <label className="block text-sm font-black text-slate-700">
-            Service
-          </label>
-          <span className="text-[10px] font-semibold text-slate-400">
-            {category ? `${categoryServices.length} available` : "Choose category first"}
-          </span>
-        </div>
+        <label className="mb-2 block text-sm font-black text-slate-700">
+          Service
+        </label>
 
         <div className="relative">
           <button
@@ -691,9 +661,9 @@ const categories = useMemo(() => {
               setCategoryOpen(false);
             }}
             aria-expanded={serviceOpen}
-            className={`flex min-h-[58px] w-full items-center gap-3 rounded-2xl border px-3.5 text-left shadow-sm transition ${
+            className={`flex min-h-[50px] w-full items-center gap-3 rounded-xl border px-3 text-left transition ${
               category
-                ? "border-cyan-200 bg-white hover:border-cyan-300 hover:bg-cyan-50/40"
+                ? "border-cyan-100 bg-[#dff1f1] hover:bg-[#d8eeee]"
                 : "cursor-not-allowed border-slate-200 bg-slate-100"
             }`}
           >
@@ -751,7 +721,7 @@ const categories = useMemo(() => {
 
           {serviceOpen &&
             category && (
-              <div className="absolute left-0 right-0 z-40 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_20px_55px_rgba(15,23,42,0.16)]">
+              <div className="absolute left-0 right-0 z-40 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
                 <div className="max-h-[360px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                   {filteredServices.map(
                     (service) => {
@@ -768,7 +738,7 @@ const categories = useMemo(() => {
                               service.id
                             )
                           }
-                          className={`w-full border-b border-slate-100 px-3.5 py-3 text-left transition last:border-b-0 ${
+                          className={`w-full border-b border-slate-100 px-3 py-2.5 text-left transition last:border-b-0 ${
                             active
                               ? "bg-[#63c9d0] text-white"
                               : "text-slate-700 hover:bg-[#edf9f9]"
@@ -982,35 +952,22 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       {selectedService && (
-        <section>
-          <label className="mb-2 block text-sm font-black text-slate-700">
-            Charge
-          </label>
+  <section>
+    <label className="mb-2 block text-sm font-black text-slate-700">
+      Charge
+    </label>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                Rate
-              </p>
-              <p className="mt-1 text-sm font-black text-slate-700">
-                &#8377;{selectedService.rate}
-                <span className="ml-1 text-[9px] font-semibold text-slate-400">
-                  / 1K
-                </span>
-              </p>
-            </div>
+    <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+      <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+        Charge
+      </p>
 
-            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                Total
-              </p>
-              <p className="mt-1 text-sm font-black text-slate-700">
-                &#8377;{total.toFixed(2)}
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
+      <p className="mt-1 text-sm font-black text-slate-700">
+        &#8377;{total.toFixed(2)}
+      </p>
+    </div>
+  </section>
+)}
 
       {/* =====================================================
           FEEDBACK
@@ -1035,29 +992,21 @@ const categories = useMemo(() => {
    {/* =====================================================
     ORDER BUTTON
 ===================================================== */}
-       <div className="sticky bottom-3 z-30 rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-[0_14px_40px_rgba(15,23,42,0.12)] backdrop-blur">
-         <button
-           type="submit"
-           disabled={
-             submitting ||
-             !selectedService ||
-             !link.trim() ||
-             !validQuantity
-           }
-           className="h-14 w-full rounded-xl bg-[#35bfc9] px-4 text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-         >
-           {submitting
-             ? "Placing Order..."
-             : selectedService
-               ? "Place Order"
-               : "Select a service to order"}
-         </button>
-         {!selectedService && (
-           <p className="px-2 pt-1.5 text-center text-[10px] font-semibold text-slate-400">
-             Choose a category and service first
-           </p>
-         )}
-       </div>
+{selectedService && (
+  <button
+    type="submit"
+    disabled={
+      submitting ||
+      !link.trim() ||
+      !validQuantity
+    }
+    className="h-14 w-full rounded-xl bg-[#35bfc9] text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#a8dfe2] disabled:text-white disabled:opacity-100 disabled:shadow-none"
+  >
+    {submitting
+      ? "Placing Order..."
+      : "Place Order"}
+  </button>
+)}
 
 </form>
   );
