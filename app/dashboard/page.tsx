@@ -162,58 +162,57 @@ export default async function DashboardPage() {
 
             <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
 
-              {/* WELCOME CARD */}
+           {/* WELCOME CARD */}
 
-              <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+<div className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-indigo-50 to-violet-100 p-6 shadow-sm">
+  <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
 
-                <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
+  <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl" />
 
-                <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl" />
+  <div className="relative">
 
-                <div className="relative">
+    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-3 py-1.5">
 
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5">
+      <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
 
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+      <span className="text-[8px] font-black uppercase tracking-[0.18em] text-violet-700">
+        Growth Workspace
+      </span>
 
-                    <span className="text-[8px] font-black uppercase tracking-[0.18em] text-violet-700">
-                      Growth Workspace
-                    </span>
+    </div>
 
-                  </div>
+    <h1 className="max-w-2xl text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
+      Welcome back, {firstName}.
+    </h1>
 
-                  <h1 className="max-w-2xl text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
-                    Welcome back, {firstName}.
-                  </h1>
+    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-600">
+      Build your next order with a clean, fast and powerful
+      social growth workflow.
+    </p>
 
-                  <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
-                    Build your next order with a clean, fast and powerful
-                    social growth workflow.
-                  </p>
+    <div className="mt-6 flex flex-wrap gap-2">
 
-                  <div className="mt-6 flex flex-wrap gap-2">
+      <span className="rounded-xl border border-violet-100 bg-white/70 px-3 py-2 text-[9px] font-bold text-violet-700">
+        ⚡ Fast delivery
+      </span>
 
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      ⚡ Fast delivery
-                    </span>
+      <span className="rounded-xl border border-violet-100 bg-white/70 px-3 py-2 text-[9px] font-bold text-violet-700">
+        🛡 Reliable services
+      </span>
 
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      🛡 Reliable services
-                    </span>
+      <span className="rounded-xl border border-violet-100 bg-white/70 px-3 py-2 text-[9px] font-bold text-violet-700">
+        💜 Premium panel
+      </span>
 
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      💜 Premium panel
-                    </span>
+    </div>
 
-                  </div>
+  </div>
 
-                </div>
-
-              </div>
+</div>
 
               {/* BALANCE CARD */}
 
-              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
+              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#17132f] via-[#3b176f] to-[#7c3aed] p-6 text-white shadow-xl shadow-violet-200">
 
                 <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
 
@@ -305,9 +304,9 @@ export default async function DashboardPage() {
                         Order Builder
                       </p>
 
-                      <p className="mt-1 text-lg font-black text-white">
-                        Place a new order
-                      </p>
+                      <p className="mt-1 text-lg font-black text-violet-600">
+  Place a new order
+</p>
 
                     </div>
 

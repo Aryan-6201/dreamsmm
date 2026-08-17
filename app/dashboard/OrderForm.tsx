@@ -1000,8 +1000,7 @@ const categories = useMemo(() => {
       !link.trim() ||
       !validQuantity
     }
-    className="h-14 w-full rounded-xl bg-[#35bfc9] text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#a8dfe2] disabled:text-white disabled:opacity-100 disabled:shadow-none"
-  >
+  className="h-14 w-full rounded-xl bg-violet-600 text-base font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(124,58,237,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
     {submitting
       ? "Placing Order..."
       : "Place Order"}
