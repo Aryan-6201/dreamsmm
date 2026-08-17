@@ -15,6 +15,20 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
+
+import {
+  SiInstagram,
+  SiYoutube,
+  SiTiktok,
+  SiFacebook,
+  SiTelegram,
+  SiX,
+  SiSpotify,
+  SiReddit,
+} from "react-icons/si";
+
+import type { IconType } from "react-icons";
+
 type CategoryConfig = {
   id: number;
   name: string;
@@ -24,7 +38,7 @@ type CategoryConfig = {
   glowEnabled: boolean;
   glowIntensity: number;
   badge: string | null;
-    sortOrder: number;
+  sortOrder: number;
   enabled: boolean;
 };
 type Service = {
@@ -432,49 +446,77 @@ const categories = useMemo(() => {
             className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
           >
             <span
-  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm transition-all"
-  style={(() => {
-    const config = categoryConfigs.find(
-      (item) =>
-        item.name.toLowerCase() ===
-        category.toLowerCase()
-    );
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm transition-all"
+              style={(() => {
+                const config = categoryConfigs.find(
+                  (item) =>
+                    item.name.toLowerCase() ===
+                    category.toLowerCase()
+                );
 
-    if (!config?.glowEnabled) {
-      return undefined;
-    }
+                if (!config?.glowEnabled) {
+                  return undefined;
+                }
 
-    const intensity = Math.max(
-      0,
-      Math.min(100, config.glowIntensity)
-    );
+                const intensity = Math.max(
+                  0,
+                  Math.min(100, config.glowIntensity)
+                );
 
-    return {
-      boxShadow: `0 0 ${8 + intensity * 0.16}px rgba(34, 211, 238, ${
-        0.12 + intensity * 0.004
-      })`,
-    };
-  })()}
->
-  {(() => {
-    const config = categoryConfigs.find(
-      (item) =>
-        item.name.toLowerCase() ===
-        category.toLowerCase()
-    );
+                return {
+                  boxShadow: `0 0 ${
+                    8 + intensity * 0.16
+                  }px rgba(34, 211, 238, ${
+                    0.12 + intensity * 0.004
+                  })`,
+                };
+              })()}
+            >
+              {(() => {
+                const platform = getCategoryPlatform(
+                  category,
+                  categoryConfigs,
+                  services
+                );
 
-    const Icon = config
-      ? getCategoryLucideIcon(config.icon)
-      : categoryIcon(category);
+                const BrandIcon =
+                  getPlatformIcon(platform);
 
-    return (
-      <Icon
-        className="h-4 w-4"
-        strokeWidth={2.2}
-      />
-    );
-  })()}
-</span>
+                const config = categoryConfigs.find(
+                  (item) =>
+                    item.name.toLowerCase() ===
+                    category.toLowerCase()
+                );
+
+                const intensity = Math.max(
+                  0,
+                  Math.min(
+                    100,
+                    config?.glowIntensity ?? 50
+                  )
+                );
+
+                return BrandIcon ? (
+                  <BrandIcon
+                    className="h-4 w-4"
+                    style={
+                      config?.glowEnabled
+                        ? {
+                            filter: `drop-shadow(0 0 ${
+                              3 + intensity * 0.08
+                            }px rgba(34,211,238,${
+                              0.25 +
+                              intensity * 0.006
+                            }))`,
+                          }
+                        : undefined
+                    }
+                  />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                );
+              })()}
+            </span>
 
             <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
               {category || "Select category"}
@@ -516,29 +558,77 @@ const categories = useMemo(() => {
                         }`}
                       >
                         <span
-                          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-[#eaf6f6] text-cyan-700"
-                          }`}
-                        >
-                          {(() => {
-  const Icon =
-    categoryIcons.get(key) ||
-    categoryIcon(item);
+  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
+    active
+      ? "bg-white/20 text-white"
+      : "bg-[#eaf6f6] text-cyan-700"
+  }`}
+>
+  {(() => {
+    const platform = getCategoryPlatform(
+      item,
+      categoryConfigs,
+      services
+    );
 
-  return (
-    <Icon
-      className="h-4 w-4"
-      strokeWidth={2.2}
-    />
-  );
-})()}
-                        </span>
+    const BrandIcon = getPlatformIcon(platform);
+
+    const config = categoryConfigs.find(
+      (itemConfig) =>
+        itemConfig.name.toLowerCase() ===
+        item.toLowerCase()
+    );
+
+    const intensity = Math.max(
+      0,
+      Math.min(100, config?.glowIntensity ?? 50)
+    );
+
+    return BrandIcon ? (
+      <BrandIcon
+        className="h-4 w-4"
+        style={
+          config?.glowEnabled
+            ? {
+                filter: `drop-shadow(0 0 ${
+                  3 + intensity * 0.08
+                }px rgba(34,211,238,${
+                  0.25 + intensity * 0.006
+                }))`,
+              }
+            : undefined
+        }
+      />
+    ) : (
+      <Sparkles className="h-4 w-4" />
+    );
+  })()}
+</span>
+                      
 
                         <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                           {item}
                         </span>
+
+                        {(() => {
+                          const config = categoryConfigs.find(
+                            (itemConfig) =>
+                              itemConfig.name.toLowerCase() ===
+                              item.toLowerCase()
+                          );
+
+                          return config?.badge ? (
+                            <span
+                              className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-black ${
+                                active
+                                  ? "bg-white/20 text-white"
+                                  : "bg-cyan-100 text-cyan-700"
+                              }`}
+                            >
+                              {config.badge}
+                            </span>
+                          ) : null;
+                        })()}
 
                         <span
                           className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
@@ -603,9 +693,17 @@ const categories = useMemo(() => {
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-cyan-700 shadow-sm">
               {selectedService
-                ? platformIcon(
-                    selectedService.platform
-                  )
+                ? (() => {
+                    const BrandIcon = getPlatformIcon(
+                      selectedService.platform
+                    );
+
+                    return BrandIcon ? (
+                      <BrandIcon className="h-4 w-4" />
+                    ) : (
+                      "+"
+                    );
+                  })()
                 : "+"}
             </span>
 
@@ -671,11 +769,22 @@ const categories = useMemo(() => {
                                   : "bg-[#eaf6f6] text-cyan-700"
                               }`}
                             >
-                              {active
-                                ? "✓"
-                                : platformIcon(
-                                    service.platform
-                                  )}
+                              {active ? (
+                                "✓"
+                              ) : (
+                                (() => {
+                                  const BrandIcon =
+                                    getPlatformIcon(
+                                      service.platform
+                                    );
+
+                                  return BrandIcon ? (
+                                    <BrandIcon className="h-4 w-4" />
+                                  ) : (
+                                    "+"
+                                  );
+                                })()
+                              )}
                             </span>
 
                             <span className="min-w-0 flex-1">
@@ -929,21 +1038,42 @@ const categories = useMemo(() => {
 /* =========================================================
    PLATFORM ICON
 ========================================================= */
-
-function platformIcon(platform: string) {
+function getPlatformIcon(platform: string): IconType | null {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "IG";
-  if (value.includes("youtube")) return "YT";
-  if (value.includes("facebook")) return "FB";
-  if (value.includes("tiktok")) return "TK";
-  if (value.includes("telegram")) return "TG";
-  if (value.includes("twitter") || value === "x") return "X";
-  if (value.includes("spotify")) return "SP";
-  if (value.includes("linkedin")) return "IN";
-  if (value.includes("reddit")) return "RD";
+  if (value.includes("instagram")) return SiInstagram;
+  if (value.includes("youtube")) return SiYoutube;
+  if (value.includes("facebook")) return SiFacebook;
+  if (value.includes("tiktok")) return SiTiktok;
+  if (value.includes("telegram")) return SiTelegram;
+  if (value.includes("twitter") || value === "x") return SiX;
+  if (value.includes("spotify")) return SiSpotify;
+  if (value.includes("reddit")) return SiReddit;
 
-  return "+";
+  return null;
+}
+
+function getCategoryPlatform(
+  categoryName: string,
+  categoryConfigs: CategoryConfig[],
+  services: Service[]
+) {
+  const config = categoryConfigs.find(
+    (item) =>
+      item.name.toLowerCase() === categoryName.toLowerCase()
+  );
+
+  if (config?.platform) {
+    return config.platform;
+  }
+
+  const service = services.find(
+    (item) =>
+      (item.category?.trim() || "Other").toLowerCase() ===
+      categoryName.toLowerCase()
+  );
+
+  return service?.platform || "";
 }
 /* =========================================================
    CATEGORY ICON
