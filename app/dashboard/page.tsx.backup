@@ -114,7 +114,7 @@ export default async function DashboardPage() {
 
                 <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-slate-200 bg-white text-xl font-black leading-none text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 [&::-webkit-details-marker]:hidden">
                   <span className="mb-1">
-                    ⋮
+                    ÃƒÂ¢Ã¢â‚¬Â¹Ã‚Â®
                   </span>
                 </summary>
 
@@ -194,15 +194,15 @@ export default async function DashboardPage() {
                   <div className="mt-6 flex flex-wrap gap-2">
 
                     <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      ⚡ Fast delivery
+                      ÃƒÂ¢Ã…Â¡Ã‚Â¡ Fast delivery
                     </span>
 
                     <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      🛡 Reliable services
+                      ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂºÃ‚Â¡ Reliable services
                     </span>
 
                     <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      💜 Premium panel
+                      ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã…â€œ Premium panel
                     </span>
 
                   </div>
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
 
               {/* BALANCE CARD */}
 
-              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
+              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#17152a] via-[#211b46] to-violet-700 p-6 text-white shadow-xl shadow-violet-200">
 
                 <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
 
@@ -226,13 +226,13 @@ export default async function DashboardPage() {
                     </p>
 
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                      ₹
+                      ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹
                     </div>
 
                   </div>
 
                   <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
-                    ₹{Number(user.balance).toFixed(2)}
+                    ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹{Number(user.balance).toFixed(2)}
                   </p>
 
                   <p className="mt-2 text-[9px] font-medium text-white/60">
@@ -332,7 +332,7 @@ export default async function DashboardPage() {
                   <div className="flex items-center gap-3">
 
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                      ✓
+                      ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“
                     </div>
 
                     <div>
@@ -352,19 +352,19 @@ export default async function DashboardPage() {
                 </div>
 
                 <Feature
-                  icon="⚡"
+                  icon="ÃƒÂ¢Ã…Â¡Ã‚Â¡"
                   title="Fast processing"
                   description="Orders are sent directly through your connected service system."
                 />
 
                 <Feature
-                  icon="◈"
+                  icon="ÃƒÂ¢Ã¢â‚¬â€Ã‹â€ "
                   title="Transparent pricing"
                   description="See the service rate, quantity and estimated charge before ordering."
                 />
 
                 <Feature
-                  icon="↗"
+                  icon="ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â€"
                   title="Track orders"
                   description="Open your order history anytime to check previous orders."
                 />
@@ -387,11 +387,11 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between">
 
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                  ◇
+                  ÃƒÂ¢Ã¢â‚¬â€Ã¢â‚¬Â¡
                 </div>
 
                 <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-500">
-                  →
+                  ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
                 </span>
 
               </div>
@@ -418,7 +418,7 @@ export default async function DashboardPage() {
                 </div>
 
                 <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-indigo-500">
-                  →
+                  ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
                 </span>
 
               </div>
@@ -441,11 +441,11 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between">
 
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                  ₹
+                  ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹
                 </div>
 
                 <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-500">
-                  →
+                  ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
                 </span>
 
               </div>
