@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/app/components/Sidebar";
-
+export const dynamic = "force-dynamic";
 function normalize(value: string | null | undefined) {
   return (value || "").trim().toLowerCase().replace(/\s+/g, " ");
 }

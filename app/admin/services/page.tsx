@@ -427,16 +427,23 @@ export default function AdminServicesPage() {
                   />
                 </Field>
 
-                <Field label="Category">
-                  <input
-                    value={form.category}
-                    onChange={(e) =>
-                      updateForm("category", e.target.value)
-                    }
-                    className={inputClass}
-                    placeholder="Followers"
-                  />
-                </Field>
+            <Field label="Category">
+  <select
+    value={form.category}
+    onChange={(e) =>
+      updateForm("category", e.target.value)
+    }
+    className={inputClass}
+  >
+    <option value="">Select category</option>
+    <option value="Followers">Followers</option>
+    <option value="Likes">Likes</option>
+    <option value="Views">Views</option>
+    <option value="Comments">Comments</option>
+    <option value="Shares">Shares</option>
+    <option value="Saves">Saves</option>
+  </select>
+</Field>
               </div>
 
               <Field label="Description">

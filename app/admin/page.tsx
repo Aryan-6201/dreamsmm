@@ -192,6 +192,13 @@ export default function AdminDashboard() {
             />
 
             <AdminLink
+  href="/admin/categories"
+  icon="✨"
+  title="Manage Categories"
+  description="Create categories, change icons, glow and display order."
+/>
+
+            <AdminLink
               href="/admin/users"
               icon="🔐"
               title="User Accounts"

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Eye,
@@ -15,7 +15,18 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
-
+type CategoryConfig = {
+  id: number;
+  name: string;
+  platform: string;
+  icon: string;
+  iconStyle: string;
+  glowEnabled: boolean;
+  glowIntensity: number;
+  badge: string | null;
+    sortOrder: number;
+  enabled: boolean;
+};
 type Service = {
   id: number;
   name: string;
@@ -33,12 +44,35 @@ export default function OrderForm({
 }: {
   services: Service[];
 }) {
+  const [categoryConfigs, setCategoryConfigs] =
+    useState<CategoryConfig[]>([]);
+
   const [category, setCategory] = useState("");
   const [serviceId, setServiceId] = useState<number | "">("");
 
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
+
+  useEffect(() => {
+  async function loadCategoryConfigs() {
+    try {
+      const response = await fetch("/api/categories", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCategoryConfigs(data.categories || []);
+      }
+    } catch (error) {
+      console.error("Failed to load category configs:", error);
+    }
+  }
+
+  loadCategoryConfigs();
+}, []);
 
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -54,24 +88,47 @@ export default function OrderForm({
      This matches the reference UI: the user chooses the
      service category first, then chooses a service.
   ========================================================= */
+const categories = useMemo(() => {
+  const serviceCategories = new Map<string, string>();
 
-  const categories = useMemo(() => {
-    const map = new Map<string, string>();
+  services.forEach((service) => {
+    const value = service.category?.trim() || "Other";
+    const key = value.toLowerCase();
 
-    services.forEach((service) => {
-      const value = service.category?.trim() || "Other";
-      const key = value.toLowerCase();
+    if (!serviceCategories.has(key)) {
+      serviceCategories.set(key, value);
+    }
+  });
 
-      if (!map.has(key)) {
-        map.set(key, value);
-      }
-    });
+  const configured = categoryConfigs
+    .filter((config) => config.name.trim())
+    .filter((config) => {
+      const key = config.name.trim().toLowerCase();
+      return serviceCategories.has(key);
+    })
+    .sort((a, b) => {
+  if (a.sortOrder !== b.sortOrder) {
+    return a.sortOrder - b.sortOrder;
+  }
 
-    return Array.from(map.values()).sort((a, b) =>
-      a.localeCompare(b)
-    );
-  }, [services]);
+  return a.name.localeCompare(b.name);
+});
 
+  const configuredNames = new Set(
+    configured.map((config) => config.name.trim().toLowerCase())
+  );
+
+  const remaining = Array.from(serviceCategories.values())
+    .filter(
+      (name) => !configuredNames.has(name.toLowerCase())
+    )
+    .sort((a, b) => a.localeCompare(b));
+
+  return [
+    ...configured.map((config) => config.name.trim()),
+    ...remaining,
+  ];
+}, [services, categoryConfigs]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
 
@@ -84,24 +141,33 @@ export default function OrderForm({
     return counts;
   }, [services]);
 
-  const categoryIcons = useMemo(() => {
-    const icons = new Map<string, LucideIcon>();
+ const categoryIcons = useMemo(() => {
+  const icons = new Map<string, LucideIcon>();
 
-    services.forEach((service) => {
-      const categoryName =
-        service.category?.trim() || "Other";
-      const key = categoryName.toLowerCase();
+  services.forEach((service) => {
+    const categoryName =
+      service.category?.trim() || "Other";
 
-      if (!icons.has(key)) {
-        icons.set(
-          key,
-          categoryIcon(categoryName)
-        );
-      }
-    });
+    const key = categoryName.toLowerCase();
 
-    return icons;
-  }, [services]);
+    if (icons.has(key)) return;
+
+    const config = categoryConfigs.find(
+      (item) =>
+        item.name.toLowerCase() ===
+        categoryName.toLowerCase()
+    );
+
+    icons.set(
+      key,
+      config
+        ? getCategoryLucideIcon(config.icon)
+        : categoryIcon(categoryName)
+    );
+  });
+
+  return icons;
+}, [services, categoryConfigs]);
 
   const categoryQuery = search.trim().toLowerCase();
 
@@ -365,19 +431,50 @@ export default function OrderForm({
             aria-expanded={categoryOpen}
             className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm">
-              
-{(() => {
-  const Icon = category ? categoryIcon(category) : Sparkles;
+            <span
+  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm transition-all"
+  style={(() => {
+    const config = categoryConfigs.find(
+      (item) =>
+        item.name.toLowerCase() ===
+        category.toLowerCase()
+    );
 
-  return (
-    <Icon
-      className="h-4 w-4"
-      strokeWidth={2.2}
-    />
-  );
-})()}
-            </span>
+    if (!config?.glowEnabled) {
+      return undefined;
+    }
+
+    const intensity = Math.max(
+      0,
+      Math.min(100, config.glowIntensity)
+    );
+
+    return {
+      boxShadow: `0 0 ${8 + intensity * 0.16}px rgba(34, 211, 238, ${
+        0.12 + intensity * 0.004
+      })`,
+    };
+  })()}
+>
+  {(() => {
+    const config = categoryConfigs.find(
+      (item) =>
+        item.name.toLowerCase() ===
+        category.toLowerCase()
+    );
+
+    const Icon = config
+      ? getCategoryLucideIcon(config.icon)
+      : categoryIcon(category);
+
+    return (
+      <Icon
+        className="h-4 w-4"
+        strokeWidth={2.2}
+      />
+    );
+  })()}
+</span>
 
             <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
               {category || "Select category"}
@@ -806,26 +903,26 @@ export default function OrderForm({
         </div>
       )}
 
-      {/* =====================================================
-          ORDER BUTTON
-      ===================================================== */}
+   {/* =====================================================
+    ORDER BUTTON
+===================================================== */}
+{selectedService && (
+  <button
+    type="submit"
+    disabled={
+      submitting ||
+      !link.trim() ||
+      !validQuantity
+    }
+    className="h-14 w-full rounded-xl bg-[#35bfc9] text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#a8dfe2] disabled:text-white disabled:opacity-100 disabled:shadow-none"
+  >
+    {submitting
+      ? "Placing Order..."
+      : "Place Order"}
+  </button>
+)}
 
-      {selectedService && (
-        <button
-          type="submit"
-          disabled={
-            submitting ||
-            !link.trim() ||
-            !validQuantity
-          }
-          className="h-12 w-full rounded-xl bg-[#5fc7ce] text-sm font-black text-white shadow-[0_8px_22px_rgba(54,180,190,0.22)] transition hover:bg-[#50bbc3] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {submitting
-            ? "Placing Order..."
-            : "Place Order"}
-        </button>
-      )}
-    </form>
+</form>
   );
 }
 
@@ -868,4 +965,29 @@ function categoryIcon(category: string) {
   if (value.includes("member")) return Users;
 
   return Sparkles;
+}
+function getCategoryLucideIcon(icon: string): LucideIcon {
+  switch (icon.toLowerCase()) {
+    case "eye":
+      return Eye;
+    case "heart":
+      return Heart;
+    case "messagecircle":
+      return MessageCircle;
+    case "share2":
+      return Share2;
+    case "bookmark":
+      return Bookmark;
+    case "users":
+      return Users;
+    case "play":
+      return Play;
+    case "send":
+      return Send;
+    case "userplus":
+      return UserPlus;
+    case "sparkles":
+    default:
+      return Sparkles;
+  }
 }
