@@ -499,18 +499,14 @@ const categories = useMemo(() => {
                 return BrandIcon ? (
                   <BrandIcon
                     className="h-4 w-4"
-                    style={
-                      config?.glowEnabled
-                        ? {
-                            filter: `drop-shadow(0 0 ${
-                              3 + intensity * 0.08
-                            }px rgba(34,211,238,${
-                              0.25 +
-                              intensity * 0.006
-                            }))`,
-                          }
-                        : undefined
-                    }
+                    style={{
+                      color: getPlatformColor(platform),
+                      filter: config?.glowEnabled
+                        ? `drop-shadow(0 0 ${
+                            3 + intensity * 0.08
+                          }px ${getPlatformColor(platform)})`
+                        : undefined,
+                    }}
                   />
                 ) : (
                   <Sparkles className="h-4 w-4" />
@@ -699,7 +695,14 @@ const categories = useMemo(() => {
                     );
 
                     return BrandIcon ? (
-                      <BrandIcon className="h-4 w-4" />
+                      <BrandIcon
+                                      className="h-4 w-4"
+                                      style={{
+                                        color: getPlatformColor(
+                                          selectedService.platform
+                                        ),
+                                      }}
+                                    />
                     ) : (
                       "+"
                     );
@@ -779,7 +782,14 @@ const categories = useMemo(() => {
                                     );
 
                                   return BrandIcon ? (
-                                    <BrandIcon className="h-4 w-4" />
+                                    <BrandIcon
+                        className="h-4 w-4"
+                        style={{
+                          color: getPlatformColor(
+                            service.platform
+                          ),
+                        }}
+                      />
                                   ) : (
                                     "+"
                                   );
@@ -1038,6 +1048,21 @@ const categories = useMemo(() => {
 /* =========================================================
    PLATFORM ICON
 ========================================================= */
+function getPlatformColor(platform: string): string {
+  const value = platform.toLowerCase();
+
+  if (value.includes("instagram")) return "#E4405F";
+  if (value.includes("youtube")) return "#FF0000";
+  if (value.includes("facebook")) return "#1877F2";
+  if (value.includes("tiktok")) return "#25F4EE";
+  if (value.includes("telegram")) return "#229ED9";
+  if (value.includes("twitter") || value === "x") return "#111111";
+  if (value.includes("spotify")) return "#1DB954";
+  if (value.includes("reddit")) return "#FF4500";
+
+  return "#06B6D4";
+}
+
 function getPlatformIcon(platform: string): IconType | null {
   const value = platform.toLowerCase();
 
