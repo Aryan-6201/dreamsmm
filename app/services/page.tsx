@@ -14,6 +14,19 @@ function titleCase(value: string) {
 }
 
 export default async function ServicesPage() {
+  const categories = await prisma.category.findMany({
+    where: {
+      enabled: true,
+    },
+    orderBy: [
+      {
+        sortOrder: "asc",
+      },
+      {
+        name: "asc",
+      },
+    ],
+  });
   const services = await prisma.service.findMany({
     where: {
       enabled: true,
@@ -37,6 +50,12 @@ export default async function ServicesPage() {
    * Two records are treated as duplicates when they have the same:
    * platform + category + name.
    */
+ const categoryConfig = new Map(
+  categories.map((category) => [
+    normalize(category.name),
+    category,
+  ])
+);
   const uniqueServices = Array.from(
     new Map(
       services.map((service) => {
@@ -84,11 +103,15 @@ export default async function ServicesPage() {
     const platformGroup = platformGroups.get(platformKey)!;
 
     const categoryKey =
-      normalize(service.category) || "general";
+  normalize(service.category) || "general";
 
-    const categoryLabel = service.category?.trim()
-      ? service.category.trim()
-      : "General";
+const config = categoryConfig.get(categoryKey);
+
+const categoryLabel = config?.name
+  ? config.name
+  : service.category?.trim()
+    ? service.category.trim()
+    : "General";
 
     if (!platformGroup.categories.has(categoryKey)) {
       platformGroup.categories.set(categoryKey, {
@@ -619,9 +642,9 @@ function PremiumServiceCard({
         className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${serviceAccent(index)} opacity-80 blur-3xl transition group-hover:opacity-100`}
       />
 
-      <div className="relative">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
+      <div className="relative min-w-0">
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <div className="flex min-w-0 max-w-full items-start gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-lg font-black text-violet-600 ring-1 ring-violet-100">
               {platformIcon(service.platform)}
             </div>
@@ -641,7 +664,7 @@ function PremiumServiceCard({
                 </span>
               </div>
 
-              <h4 className="mt-2 text-sm font-black leading-5 text-slate-900 sm:text-[15px]">
+              <h4 className="mt-2 min-w-0 max-w-full break-words whitespace-normal text-sm font-black leading-5 text-slate-900 sm:text-[15px]">
                 {service.name}
               </h4>
             </div>
