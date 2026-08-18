@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -14,17 +14,6 @@ declare global {
             callback: (response: { credential: string }) => void;
           }) => void;
           prompt: () => void;
-          renderButton: (
-            parent: HTMLElement,
-            options: {
-              type?: string;
-              theme?: string;
-              size?: string;
-              text?: string;
-              shape?: string;
-              width?: number;
-            }
-          ) => void;
         };
       };
     };
@@ -40,7 +29,6 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -118,18 +106,6 @@ export default function Home() {
         handleGoogleLogin(response.credential);
       },
     });
-
-    if (googleButtonRef.current) {
-      googleButtonRef.current.innerHTML = "";
-      google.accounts.id.renderButton(googleButtonRef.current, {
-        type: "standard",
-        theme: "filled_black",
-        size: "large",
-        text: "continue_with",
-        shape: "pill",
-        width: 380,
-      });
-    }
   }
 
   function startGoogleLogin() {
@@ -148,15 +124,10 @@ export default function Home() {
   }
 
   initializeGoogle();
+  window.google.accounts.id.prompt();
 }
 
   const busy = loading || googleLoading;
-
-  useEffect(() => {
-    if (window.google) {
-      initializeGoogle();
-    }
-  }, []);
 
   return (
     <>
@@ -262,20 +233,18 @@ export default function Home() {
 
                     {/* Social login */}
                     <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div
-                        ref={googleButtonRef}
-                        className="flex min-h-12 items-center justify-center overflow-hidden rounded-2xl"
+                      <button
+                        type="button"
+                        onClick={startGoogleLogin}
+                        disabled={busy}
+                        className="group relative h-12 w-full overflow-hidden rounded-2xl border border-white/[0.10] bg-white/[0.045] text-sm font-bold text-white/80 transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400/30 hover:bg-violet-500/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <button
-                          type="button"
-                          onClick={startGoogleLogin}
-                          disabled={busy}
-                          className="h-12 w-full rounded-2xl border border-white/[0.10] bg-white/[0.045] text-sm font-bold text-white/80 transition-all hover:border-white/[0.18] hover:bg-white/[0.075] disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <span className="mr-2 font-black text-red-400">G</span>
+                        <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                        <span className="relative flex items-center justify-center gap-2.5">
+                          <span className="text-base font-black text-red-400">G</span>
                           Continue with Google
-                        </button>
-                      </div>
+                        </span>
+                      </button>
 
                       <button
                         type="button"
