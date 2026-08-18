@@ -1,5 +1,18 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  Bell,
+  ClipboardList,
+  Headphones,
+  LogOut,
+  Plus,
+  ShoppingBag,
+  Sparkles,
+  UserRound,
+  Wallet,
+  Zap,
+} from "lucide-react";
+
 import { verifySession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/app/components/Sidebar";
@@ -28,14 +41,21 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const services = await prisma.service.findMany({
-    where: {
-      enabled: true,
-    },
-    orderBy: {
-      id: "asc",
-    },
-  });
+  const [services, orderCount] = await Promise.all([
+    prisma.service.findMany({
+      where: {
+        enabled: true,
+      },
+      orderBy: {
+        id: "asc",
+      },
+    }),
+    prisma.order.count({
+      where: {
+        userId: session.userId,
+      },
+    }),
+  ]);
 
   const formattedServices = services.map((service) => ({
     id: service.id,
@@ -59,472 +79,348 @@ export default async function DashboardPage() {
     .slice(0, 2)
     .toUpperCase();
 
+  const balance = user.balance.toString();
+
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-slate-900">
+    <main className="min-h-screen overflow-x-hidden bg-[#f7f5ff] text-slate-800">
       <Sidebar />
 
       <div className="lg:ml-[250px]">
-        <div className="mx-auto max-w-[1500px] px-4 py-5 sm:px-6 sm:py-7 lg:px-10 lg:py-8">
+        {/* Aqua top strip */}
+        <div className="h-2 bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-700" />
 
-          {/* ================= HEADER ================= */}
-
-          <header className="relative z-50 flex items-center justify-between gap-4">
-
+        <div className="mx-auto max-w-[1550px] px-4 py-4 sm:px-6 lg:px-8">
+          {/* TOP BAR */}
+          <header className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-
-              <div className="flex items-center gap-2">
-
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                </span>
-
-                <span className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 sm:text-[11px]">
-                  DreamSMM Dashboard
-                </span>
-
-              </div>
-
-              <p className="mt-1.5 hidden text-sm font-medium text-slate-500 sm:block">
-                Your social growth command center
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                DreamSMM
               </p>
-
+              <h1 className="mt-1 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+                New Order
+              </h1>
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-
-              {/* ADD FUNDS */}
+              <a
+                href="/funds"
+                className="hidden h-10 items-center gap-2 rounded-xl bg-white px-3.5 text-sm font-black text-violet-900 shadow-sm ring-1 ring-violet-200 transition hover:-translate-y-0.5 hover:ring-violet-400 sm:inline-flex"
+              >
+                <Wallet className="h-4 w-4 text-violet-600" />
+                <span>₹{balance}</span>
+              </a>
 
               <a
                 href="/funds"
-                className="group inline-flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-200 sm:px-5"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-500 px-3.5 text-sm font-black text-white shadow-lg shadow-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-600"
               >
-                <span className="text-lg font-black leading-none transition-transform group-hover:rotate-90">
-                  +
-                </span>
-
-                <span>
-                  Add Funds
-                </span>
+                <Plus className="h-4 w-4" />
+                Add Funds
               </a>
 
-              {/* THREE DOT MENU */}
-
-              <details className="group relative">
-
-                <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-slate-200 bg-white text-xl font-black leading-none text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 [&::-webkit-details-marker]:hidden">
-                  <span className="mb-1">
-                    ⋮
-                  </span>
-                </summary>
-
-                <div className="absolute right-0 top-14 z-50 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-200/70">
-
-                  <a
-                    href="/orders"
-                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-                  >
-                    Orders
-                  </a>
-
-                  <a
-                    href="/services"
-                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-                  >
-                    Services
-                  </a>
-
-                  <a
-                    href="/transactions"
-                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-                  >
-                    Transactions
-                  </a>
-
-                  <a
-                    href="/tickets"
-                    className="flex items-center rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
-                  >
-                    Support
-                  </a>
-
+              <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-slate-200 sm:flex">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-sky-500 text-[9px] font-black text-white">
+                  {initials}
                 </div>
-
-              </details>
-
+                <div className="max-w-[130px]">
+                  <p className="truncate text-[11px] font-black text-slate-800">
+                    {user.name || "User"}
+                  </p>
+                  <p className="truncate text-[9px] font-medium text-slate-400">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
             </div>
-
           </header>
 
-          {/* ================= WELCOME ================= */}
-
-          <section className="mt-7">
-
-            <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-
-              {/* WELCOME CARD */}
-
-              <div className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-indigo-50 to-violet-100 p-6 shadow-sm sm:p-8">
-
-                <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
-
-                <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl" />
-
-                <div className="relative">
-
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5">
-
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-
-                    <span className="text-[8px] font-black uppercase tracking-[0.18em] text-violet-700">
-                      Growth Workspace
-                    </span>
-
-                  </div>
-
-                  <h1 className="max-w-2xl text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
-                    Welcome back, {firstName}.
-                  </h1>
-
-                  <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
-                    Build your next order with a clean, fast and powerful
-                    social growth workflow.
-                  </p>
-
-                  <div className="mt-6 flex flex-wrap gap-2">
-
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      ⚡ Fast delivery
-                    </span>
-
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      🛡 Reliable services
-                    </span>
-
-                    <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[9px] font-bold text-slate-500">
-                      💜 Premium panel
-                    </span>
-
-                  </div>
-
+          {/* WELCOME */}
+          <section className="mt-5 overflow-hidden rounded-[28px] bg-gradient-to-r from-cyan-500 via-sky-500 to-teal-400 p-5 text-white shadow-[0_18px_50px_rgba(14,165,183,0.22)] sm:p-7">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-200" />
+                  System operational
                 </div>
 
-              </div>
-{/* BALANCE CARD */}
-
-<div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
-
-  <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
-
-  <div className="relative">
-
-    <div className="flex items-center justify-between">
-
-      <div className="inline-flex rounded-lg border border-violet-300/30 bg-violet-500/20 px-3 py-1.5">
-        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-violet-100">
-          Available Balance
-        </p>
-      </div>
-
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-        ₹
-      </div>
-
-    </div>
-
-    <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
-      ₹{Number(user.balance).toFixed(2)}
-    </p>
-
-    <p className="mt-2 text-[9px] font-medium text-white/60">
-      Ready to use for your next order
-    </p>
-
-    <a
-      href="/funds"
-      className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-[9px] font-black uppercase tracking-[0.12em] text-violet-700 transition hover:bg-violet-50"
-    >
-      Add Funds
-    </a>
-
-  </div>
-
-</div>
-              
-            
-
-            </div>
-
-          </section>
-
-          {/* ================= ORDER SECTION ================= */}
-
-          <section className="mt-7">
-
-            <div className="mb-5 flex items-end justify-between gap-4">
-
-              <div>
-
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-600">
-                  New Order
-                </p>
-
-                <h2 className="mt-1 text-2xl font-black tracking-[-0.035em] text-slate-900">
-                  Create your order
+                <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                  Welcome back, {firstName}
                 </h2>
 
-                <p className="mt-1.5 text-xs font-medium text-slate-500">
-                  Select a platform, choose a service and place your order.
+                <p className="mt-1 max-w-2xl text-sm font-medium text-white/80">
+                  Place your social media order quickly from one clean workspace.
                 </p>
-
               </div>
 
               <a
                 href="/orders"
-                className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.1em] text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 sm:inline-flex"
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-black text-cyan-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
               >
+                <ClipboardList className="h-4 w-4" />
                 Order History
               </a>
+            </div>
+          </section>
 
+          {/* STATS */}
+          <section className="mt-4 grid gap-3 md:grid-cols-3">
+            <DashboardStat
+              icon={<UserRound className="h-5 w-5" />}
+              value={user.name || "User"}
+              label="Welcome to panel"
+              tone="blue"
+            />
+
+            <DashboardStat
+              icon={<ShoppingBag className="h-5 w-5" />}
+              value={orderCount.toLocaleString()}
+              label="Panel orders"
+              tone="cyan"
+            />
+
+            <DashboardStat
+              icon={<Wallet className="h-5 w-5" />}
+              value={`₹${balance}`}
+              label="Account balance"
+              tone="teal"
+            />
+          </section>
+
+          {/* MAIN WORKSPACE */}
+          <section
+            id="new-order"
+            className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_310px]"
+          >
+            {/* ORDER FORM */}
+            <div className="overflow-visible rounded-[26px] border border-violet-100 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
+              <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+                      <ShoppingBag className="h-5 w-5" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-lg font-black text-slate-900">
+                          Create New Order
+                        </h2>
+                        <span className="rounded-full bg-emerald-50 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-emerald-700">
+                          Live
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-xs font-medium text-slate-400">
+                        Search, select and configure your service.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="hidden text-right sm:block">
+                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
+                      Catalog
+                    </p>
+                    <p className="mt-1 text-sm font-black text-slate-700">
+                      {services.length} services
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 sm:p-6 lg:p-7">
+                <OrderForm services={formattedServices} />
+              </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+            {/* RIGHT COLUMN */}
+            <aside className="space-y-4">
+              <div className="rounded-[24px] border border-violet-100 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
+                      Quick access
+                    </p>
+                    <h3 className="mt-1 text-base font-black text-slate-900">
+                      Manage account
+                    </h3>
+                  </div>
 
-              {/* ORDER FORM */}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                </div>
 
-              <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-[#02030a] p-5 shadow-xl sm:p-7">
+                <div className="mt-4 space-y-2">
+                  <QuickLink
+                    href="/services"
+                    icon={<Zap className="h-4 w-4" />}
+                    title="Browse Services"
+                    description="Explore available services"
+                  />
+                  <QuickLink
+                    href="/orders"
+                    icon={<ClipboardList className="h-4 w-4" />}
+                    title="Order History"
+                    description="Track your orders"
+                  />
+                  <QuickLink
+                    href="/tickets"
+                    icon={<Headphones className="h-4 w-4" />}
+                    title="Support Tickets"
+                    description="Get help when needed"
+                  />
+                </div>
+              </div>
 
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(139,92,246,.12),transparent_32%),radial-gradient(circle_at_90%_15%,rgba(59,130,246,.08),transparent_28%)]" />
-
-                <div className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:50px_50px]" />
+              <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#2e1065] via-violet-800 to-indigo-900 p-5 text-white shadow-[0_18px_45px_rgba(76,29,149,0.28)]">
+                <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-white/20 blur-3xl" />
 
                 <div className="relative">
-
-                  <div className="mb-6 flex items-center justify-between">
-
-                    <div>
-
-                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-violet-300/60">
-                        Order Builder
-                      </p>
-
-                      <p className="mt-1 text-lg font-black text-white">
-                        Place a new order
-                      </p>
-
-                    </div>
-
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.03] text-violet-300">
-                      +
-                    </div>
-
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white/70">
+                      Wallet
+                    </span>
+                    <Wallet className="h-5 w-5 text-white/80" />
                   </div>
 
-                  <OrderForm services={formattedServices} />
+                  <p className="mt-5 text-xs font-medium text-white/70">
+                    Available balance
+                  </p>
 
+                  <p className="mt-1 text-3xl font-black tracking-tight">
+                    ₹{balance}
+                  </p>
+
+                  <a
+                    href="/funds"
+                    className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-black text-cyan-700 transition hover:bg-violet-50"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Funds
+                  </a>
                 </div>
-
               </div>
 
-              {/* SIDE INFORMATION */}
-
-              <aside className="space-y-4">
-
-                <div className="rounded-[24px] border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-5 shadow-sm">
-
-                  <div className="flex items-center gap-3">
-
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                      ✓
-                    </div>
-
-                    <div>
-
-                      <p className="text-sm font-black text-slate-800">
-                        Simple ordering
-                      </p>
-
-                      <p className="mt-1 text-[10px] font-medium text-slate-500">
-                        Everything is handled from one place.
-                      </p>
-
-                    </div>
-
+              <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                    <Headphones className="h-4 w-4" />
                   </div>
 
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900">
+                      Need assistance?
+                    </h3>
+                    <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                      Need help with an order or account? Create a support ticket.
+                    </p>
+                  </div>
                 </div>
 
-                <Feature
-                  icon="⚡"
-                  title="Fast processing"
-                  description="Orders are sent directly through your connected service system."
-                />
-
-                <Feature
-                  icon="◈"
-                  title="Transparent pricing"
-                  description="See the service rate, quantity and estimated charge before ordering."
-                />
-
-                <Feature
-                  icon="↗"
-                  title="Track orders"
-                  description="Open your order history anytime to check previous orders."
-                />
-
-              </aside>
-
-            </div>
-
+                <a
+                  href="/tickets"
+                  className="mt-4 flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-cyan-200 hover:bg-violet-50 hover:text-cyan-700"
+                >
+                  Create Ticket
+                </a>
+              </div>
+            </aside>
           </section>
 
-          {/* ================= QUICK LINKS ================= */}
+          <footer className="mt-7 flex flex-col items-center justify-between gap-3 border-t border-violet-100 py-5 text-[10px] font-medium text-slate-400 sm:flex-row">
+            <p>© {new Date().getFullYear()} DreamSMM</p>
 
-          <section className="mt-7 grid gap-4 sm:grid-cols-3">
-
-            <a
-              href="/services"
-              className="group rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
-            >
-
-              <div className="flex items-center justify-between">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                  ◇
-                </div>
-
-                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-500">
-                  →
-                </span>
-
-              </div>
-
-              <p className="mt-4 text-sm font-black text-slate-800">
-                Browse Services
-              </p>
-
-              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
-                Explore all available social growth services.
-              </p>
-
-            </a>
-
-            <a
-              href="/orders"
-              className="group rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
-            >
-
-              <div className="flex items-center justify-between">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
-                  #
-                </div>
-
-                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-indigo-500">
-                  →
-                </span>
-
-              </div>
-
-              <p className="mt-4 text-sm font-black text-slate-800">
-                Order History
-              </p>
-
-              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
-                Review your previous orders and their status.
-              </p>
-
-            </a>
-
-            <a
-              href="/funds"
-              className="group rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
-            >
-
-              <div className="flex items-center justify-between">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                  ₹
-                </div>
-
-                <span className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-500">
-                  →
-                </span>
-
-              </div>
-
-              <p className="mt-4 text-sm font-black text-slate-800">
-                Add Funds
-              </p>
-
-              <p className="mt-1 text-[10px] font-medium leading-5 text-slate-500">
-                Add balance whenever you need to place more orders.
-              </p>
-
-            </a>
-
-          </section>
-
-          {/* ================= FOOTER ================= */}
-
-          <footer className="mt-10 border-t border-slate-200 py-6">
-
-            <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-
-              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                DreamSMM
-              </p>
-
-              <p className="text-[9px] font-medium text-slate-400">
-                Your social growth command center
-              </p>
-
+            <div className="flex items-center gap-4">
+              <a href="/services" className="hover:text-violet-600">
+                Services
+              </a>
+              <a href="/orders" className="hover:text-violet-600">
+                Orders
+              </a>
+              <a href="/tickets" className="hover:text-violet-600">
+                Support
+              </a>
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Operational
+              </span>
             </div>
-
           </footer>
-
         </div>
       </div>
     </main>
   );
 }
 
-/* =========================================================
-   FEATURE
-========================================================= */
+function DashboardStat({
+  icon,
+  value,
+  label,
+  tone,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+  tone: "blue" | "cyan" | "teal";
+}) {
+  const toneClass =
+    tone === "blue"
+      ? "bg-blue-50 text-blue-600"
+      : tone === "cyan"
+        ? "bg-violet-50 text-violet-600"
+        : "bg-teal-50 text-teal-600";
 
-function Feature({
+  return (
+    <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
+      <div className="flex items-center gap-3">
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${toneClass}`}>
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <p className="truncate text-xl font-black tracking-tight text-slate-800">
+            {value}
+          </p>
+          <p className="mt-0.5 truncate text-[10px] font-semibold text-slate-400">
+            {label}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuickLink({
+  href,
   icon,
   title,
   description,
 }: {
-  icon: string;
+  href: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
-    <div className="rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white p-5 shadow-sm">
-
-      <div className="flex items-center gap-3">
-
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-700">
-          {icon}
-        </div>
-
-        <div>
-
-          <h3 className="text-sm font-black text-slate-800">
-            {title}
-          </h3>
-
-          <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-            {description}
-          </p>
-
-        </div>
-
+    <a
+      href={href}
+      className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:border-violet-100 hover:bg-violet-50"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-violet-600 shadow-sm">
+        {icon}
       </div>
 
-    </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-black text-slate-800">
+          {title}
+        </p>
+        <p className="mt-0.5 truncate text-[9px] font-medium text-slate-400">
+          {description}
+        </p>
+      </div>
+
+      <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600">
+        →
+      </span>
+    </a>
   );
 }
