@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   Bell,
+  Clipboard,
   Headphones,
   LogOut,
   Plus,
@@ -229,7 +230,7 @@ export default async function DashboardPage() {
                   />
                   <QuickLink
                     href="/orders"
-                    icon={<ClipboardList className="h-4 w-4" />}
+                    icon={<Clipboard className="h-4 w-4" />}
                     title="Order History"
                     description="Track your orders"
                   />
