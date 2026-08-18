@@ -1,7 +1,7 @@
-
 "use client";
+
 import Script from "next/script";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -131,27 +131,42 @@ export default function Home() {
       shape: "pill",
       width: 380,
     });
+    googleReadyRef.current = true;
   }
 
-  googleReadyRef.current = true;
-  return true;
+  return googleReadyRef.current;
 }
 
 function startGoogleLogin() {
   setError("");
 
-  if (!window.google) {
-    setError("Google Sign-In is still loading. Please wait a moment.");
-    return;
+  if (!googleReadyRef.current) {
+    if (!initializeGoogle()) {
+      setError("Google Sign-In is still loading. Please wait a moment.");
+    }
   }
-
-  if (!initializeGoogle()) {
-    return;
-  }
-
-  // The invisible official GIS button is rendered over our custom button.
-  // Calling initialize here guarantees it exists before the user's click.
 }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const tryInitialize = () => {
+      if (cancelled) return;
+
+      if (window.google) {
+        initializeGoogle();
+        return;
+      }
+
+      window.setTimeout(tryInitialize, 250);
+    };
+
+    tryInitialize();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const busy = loading || googleLoading;
 
@@ -273,7 +288,7 @@ function startGoogleLogin() {
 
                         <div
                           ref={googleButtonRef}
-                          className="absolute inset-0 z-10 flex h-12 w-full items-center justify-center overflow-hidden opacity-0"
+                          className="absolute inset-0 z-10 flex h-12 w-full items-center justify-center overflow-hidden opacity-0 cursor-pointer"
                           aria-label="Continue with Google"
                         />
                       </div>
