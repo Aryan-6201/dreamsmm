@@ -123,11 +123,11 @@ export default function Home() {
       googleButtonRef.current.innerHTML = "";
       google.accounts.id.renderButton(googleButtonRef.current, {
         type: "standard",
-        theme: "filled_black",
+        theme: "outline",
         size: "large",
         text: "continue_with",
         shape: "pill",
-        width: 380,
+        width: 320,
       });
     }
   }
