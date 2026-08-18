@@ -411,7 +411,7 @@ const categories = useMemo(() => {
           }
           placeholder="Search"
           aria-label="Search services"
-          className="h-12 w-full rounded-xl border border-slate-200 bg-[#eaf6f6] pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+          className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
         />
 
         {search && (
@@ -443,10 +443,10 @@ const categories = useMemo(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-cyan-100 bg-[#dff1f1] px-3 text-left transition hover:bg-[#d8eeee]"
+            className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-violet-100 bg-violet-50 px-3 text-left transition hover:bg-violet-100"
           >
             <span
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-cyan-700 shadow-sm transition-all"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm transition-all"
               style={(() => {
                 const config = categoryConfigs.find(
                   (item) =>
@@ -557,7 +557,7 @@ const categories = useMemo(() => {
   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
     active
       ? "bg-white/20 text-white"
-      : "bg-[#eaf6f6] text-cyan-700"
+      : "bg-violet-50 text-violet-700"
   }`}
 >
   {(() => {
@@ -618,7 +618,7 @@ const categories = useMemo(() => {
                               className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-black ${
                                 active
                                   ? "bg-white/20 text-white"
-                                  : "bg-cyan-100 text-cyan-700"
+                                  : "bg-violet-100 text-violet-700"
                               }`}
                             >
                               {config.badge}
@@ -769,7 +769,7 @@ const categories = useMemo(() => {
                               className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
                                 active
                                   ? "bg-white/20 text-white"
-                                  : "bg-[#eaf6f6] text-cyan-700"
+                                  : "bg-violet-50 text-violet-700"
                               }`}
                             >
                               {active ? (
@@ -887,7 +887,7 @@ const categories = useMemo(() => {
             Description
           </label>
 
-          <div className="rounded-xl border border-cyan-100 bg-[#e7f5f5] px-4 py-4">
+          <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-4">
             <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-5 text-slate-600">
               {selectedService.description ||
                 "No description available."}
@@ -913,7 +913,7 @@ const categories = useMemo(() => {
               setLink(event.target.value)
             }
             placeholder="https://instagram.com/username"
-            className="h-12 w-full rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+            className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
           />
         </section>
       )}
@@ -943,7 +943,7 @@ const categories = useMemo(() => {
               quantity &&
               !validQuantity
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                : "border-cyan-100 focus:border-cyan-300 focus:ring-cyan-100"
+                : "border-violet-100 focus:border-violet-300 focus:ring-violet-100"
             }`}
           />
 
@@ -978,7 +978,7 @@ const categories = useMemo(() => {
           </label>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
               <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                 Rate
               </p>
@@ -990,7 +990,7 @@ const categories = useMemo(() => {
               </p>
             </div>
 
-            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
               <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                 Total
               </p>
@@ -1033,7 +1033,7 @@ const categories = useMemo(() => {
       !link.trim() ||
       !validQuantity
     }
-    className="h-14 w-full rounded-xl bg-[#35bfc9] text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#a8dfe2] disabled:text-white disabled:opacity-100 disabled:shadow-none"
+    className="h-14 w-full rounded-xl bg-violet-600 text-base font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(124,58,237,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
   >
     {submitting
       ? "Placing Order..."

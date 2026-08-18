@@ -210,45 +210,48 @@ export default async function DashboardPage() {
                 </div>
 
               </div>
+{/* BALANCE CARD */}
 
-              {/* BALANCE CARD */}
+<div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
 
-              <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-indigo-700 to-blue-700 p-6 text-white shadow-xl shadow-violet-200">
+  <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
 
-                <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+  <div className="relative">
 
-                <div className="relative">
+    <div className="flex items-center justify-between">
 
-                  <div className="flex items-center justify-between">
+      <div className="inline-flex rounded-lg border border-violet-300/30 bg-violet-500/20 px-3 py-1.5">
+        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-violet-100">
+          Available Balance
+        </p>
+      </div>
 
-                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/60">
-                      Available Balance
-                    </p>
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
+        ₹
+      </div>
 
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                      ₹
-                    </div>
+    </div>
 
-                  </div>
+    <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
+      ₹{Number(user.balance).toFixed(2)}
+    </p>
 
-                  <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
-                    ₹{Number(user.balance).toFixed(2)}
-                  </p>
+    <p className="mt-2 text-[9px] font-medium text-white/60">
+      Ready to use for your next order
+    </p>
 
-                  <p className="mt-2 text-[9px] font-medium text-white/60">
-                    Ready to use for your next order
-                  </p>
+    <a
+      href="/funds"
+      className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-[9px] font-black uppercase tracking-[0.12em] text-violet-700 transition hover:bg-violet-50"
+    >
+      Add Funds
+    </a>
 
-                  <a
-                    href="/funds"
-                    className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-[9px] font-black uppercase tracking-[0.12em] text-violet-700 transition hover:bg-violet-50"
-                  >
-                    Add Funds
-                  </a>
+  </div>
 
-                </div>
-
-              </div>
+</div>
+              
+            
 
             </div>
 
