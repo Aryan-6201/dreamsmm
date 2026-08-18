@@ -223,6 +223,30 @@ const categories = useMemo(() => {
     services,
   ]);
 
+  useEffect(() => {
+  if (!category && categories.length > 0) {
+    setCategory(categories[0]);
+  }
+}, [categories, category]);
+
+useEffect(() => {
+  if (!category) return;
+
+  const firstService = services.find((service) => {
+    const serviceCategory =
+      service.category?.trim() || "Other";
+
+    return (
+      serviceCategory.toLowerCase() ===
+      category.toLowerCase()
+    );
+  });
+
+  if (firstService && serviceId === "") {
+    setServiceId(firstService.id);
+  }
+}, [category, services, serviceId]);
+
   /* =========================================================
      SERVICES FOR CATEGORY
   ========================================================= */
