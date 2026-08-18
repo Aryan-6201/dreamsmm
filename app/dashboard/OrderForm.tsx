@@ -414,7 +414,7 @@ useEffect(() => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5"
+      className="w-full min-w-0 max-w-full space-y-5 overflow-x-hidden"
     >
       {/* =====================================================
           SEARCH
@@ -459,7 +459,7 @@ useEffect(() => {
           Category
         </label>
 
-        <div className="relative">
+        <div className="relative min-w-0 max-w-full">
           <button
             type="button"
             onClick={() => {
@@ -467,7 +467,7 @@ useEffect(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[70px] w-full items-center gap-3 rounded-2xl border-2 border-violet-100 bg-violet-50 px-4 text-left shadow-sm transition hover:border-violet-300 hover:bg-violet-100 hover:shadow-md"
+            className="flex min-h-[70px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border-2 border-violet-100 bg-violet-50 px-4 text-left shadow-sm transition hover:border-violet-300 hover:bg-violet-100 hover:shadow-md"
           >
             <span
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm transition-all"
@@ -626,7 +626,7 @@ useEffect(() => {
 </span>
                       
 
-                        <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                        <span className="min-w-0 max-w-full flex-1 break-words whitespace-normal text-[13px] font-medium">
                           {item}
                         </span>
 
@@ -692,7 +692,7 @@ useEffect(() => {
           Service
         </label>
 
-        <div className="relative">
+        <div className="relative min-w-0 max-w-full">
           <button
             type="button"
             disabled={!category}
@@ -705,7 +705,7 @@ useEffect(() => {
               setCategoryOpen(false);
             }}
             aria-expanded={serviceOpen}
-            className={`flex min-h-[70px] w-full items-center gap-3 rounded-2xl border-2 px-4 text-left shadow-sm transition ${
+            className={`flex min-h-[70px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border-2 px-4 text-left shadow-sm transition ${
               category
                 ? "border-violet-100 bg-violet-50 hover:border-violet-300 hover:bg-violet-100"
                 : "cursor-not-allowed border-slate-200 bg-slate-100"
@@ -735,7 +735,7 @@ useEffect(() => {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-slate-700">
+              <span className="block min-w-0 max-w-full break-words whitespace-normal text-sm font-medium text-slate-700">
                 {selectedService
                   ? selectedService.name
                   : category
@@ -824,7 +824,7 @@ useEffect(() => {
                             <span className="min-w-0 flex-1">
                               <span className="flex items-start gap-2">
                                 <span
-                                  className={`min-w-0 flex-1 text-[12px] font-medium leading-5 ${
+                                  className={`min-w-0 max-w-full flex-1 break-words whitespace-normal text-[12px] font-medium leading-5 ${
                                     active
                                       ? "text-white"
                                       : "text-slate-700"
