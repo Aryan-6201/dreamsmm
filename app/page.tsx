@@ -1,5 +1,5 @@
-"use client";
 
+"use client";
 import Script from "next/script";
 import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -41,6 +41,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement>(null);
+  const googleReadyRef = useRef(false);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -98,56 +99,58 @@ export default function Home() {
   }
 
   function initializeGoogle() {
-    const google = window.google;
+  const google = window.google;
 
-    if (!google) {
-      console.error("Google Identity Services failed to load.");
-      return;
-    }
-
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-    if (!clientId) {
-      setError("Google login is not configured.");
-      return;
-    }
-
-    google.accounts.id.initialize({
-      client_id: clientId,
-      callback: (response) => {
-        handleGoogleLogin(response.credential);
-      },
-    });
-
-    if (googleButtonRef.current) {
-      googleButtonRef.current.innerHTML = "";
-      google.accounts.id.renderButton(googleButtonRef.current, {
-        type: "standard",
-        theme: "filled_black",
-        size: "large",
-        text: "continue_with",
-        shape: "pill",
-        width: 380,
-      });
-    }
-  }
-
-  function startGoogleLogin() {
-  setError("");
-
-  if (!window.google) {
-    setError("Google Sign-In is still loading. Please refresh and try again.");
-    return;
+  if (!google) {
+    googleReadyRef.current = false;
+    return false;
   }
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   if (!clientId) {
     setError("Google login is not configured.");
+    googleReadyRef.current = false;
+    return false;
+  }
+
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: (response) => {
+      handleGoogleLogin(response.credential);
+    },
+  });
+
+  if (googleButtonRef.current) {
+    googleButtonRef.current.innerHTML = "";
+    google.accounts.id.renderButton(googleButtonRef.current, {
+      type: "standard",
+      theme: "filled_black",
+      size: "large",
+      text: "continue_with",
+      shape: "pill",
+      width: 380,
+    });
+  }
+
+  googleReadyRef.current = true;
+  return true;
+}
+
+function startGoogleLogin() {
+  setError("");
+
+  if (!window.google) {
+    setError("Google Sign-In is still loading. Please wait a moment.");
     return;
   }
 
-  initializeGoogle();
+  if (!initializeGoogle()) {
+    return;
+  }
+
+  // The invisible official GIS button is rendered over our custom button.
+  // Calling initialize here guarantees it exists before the user's click.
 }
 
   const busy = loading || googleLoading;
@@ -157,7 +160,7 @@ export default function Home() {
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={initializeGoogle}
+        onLoad={() => initializeGoogle()}
       />
 
       <main className="min-h-screen overflow-hidden bg-[#05030a] text-white selection:bg-violet-500/30">
