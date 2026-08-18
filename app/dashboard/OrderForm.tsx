@@ -401,7 +401,7 @@ const categories = useMemo(() => {
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-500"
           aria-hidden="true"
         >
-          ⌕
+          
         </span>
 
         <input
@@ -530,7 +530,7 @@ const categories = useMemo(() => {
           </button>
 
           {categoryOpen && (
-            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-violet-200 bg-violet-50 shadow-[0_18px_45px_rgba(124,58,237,0.16)]">
               <div className="max-h-[320px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                 {filteredCategories.map(
                   (item) => {
@@ -549,8 +549,8 @@ const categories = useMemo(() => {
                         }
                         className={`flex min-h-[44px] w-full items-center gap-2.5 px-3 text-left transition ${
                           active
-                            ? "bg-[#63c9d0] text-white"
-                            : "text-slate-700 hover:bg-[#edf9f9]"
+                            ? "bg-violet-600 text-white"
+                            : "text-slate-700 hover:bg-violet-100"
                         }`}
                       >
                         <span
@@ -630,7 +630,7 @@ const categories = useMemo(() => {
                           className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
                             active
                               ? "bg-white/15 text-white"
-                              : "bg-slate-100 text-slate-500"
+                              : "bg-violet-100 text-violet-600"
                           }`}
                         >
                           {categoryCounts.get(
@@ -683,11 +683,11 @@ const categories = useMemo(() => {
             aria-expanded={serviceOpen}
             className={`flex min-h-[50px] w-full items-center gap-3 rounded-xl border px-3 text-left transition ${
               category
-                ? "border-cyan-100 bg-[#dff1f1] hover:bg-[#d8eeee]"
+                ? "border-violet-100 bg-violet-50 hover:bg-violet-100"
                 : "cursor-not-allowed border-slate-200 bg-slate-100"
             }`}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-cyan-700 shadow-sm">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-violet-700 shadow-sm">
               {selectedService
                 ? (() => {
                     const BrandIcon = getPlatformIcon(
@@ -741,7 +741,7 @@ const categories = useMemo(() => {
 
           {serviceOpen &&
             category && (
-              <div className="absolute left-0 right-0 z-40 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+          <div className="absolute left-0 right-0 z-40 mt-1 overflow-hidden rounded-xl border border-violet-200 bg-violet-50 shadow-[0_18px_45px_rgba(124,58,237,0.16)]">
                 <div className="max-h-[360px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                   {filteredServices.map(
                     (service) => {
@@ -758,10 +758,10 @@ const categories = useMemo(() => {
                               service.id
                             )
                           }
-                          className={`w-full border-b border-slate-100 px-3 py-2.5 text-left transition last:border-b-0 ${
+                          className={`w-full border-b border-violet-100 px-3 py-2.5 text-left transition last:border-b-0 ${
                             active
-                              ? "bg-[#63c9d0] text-white"
-                              : "text-slate-700 hover:bg-[#edf9f9]"
+                              ? "bg-violet-600 text-white"
+                              : "text-slate-700 hover:bg-violet-100"
                           }`}
                         >
                           <div className="flex items-start gap-2.5">
@@ -813,7 +813,7 @@ const categories = useMemo(() => {
                                   className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
                                     active
                                       ? "bg-white/15 text-white"
-                                      : "bg-slate-100 text-slate-500"
+                                      : "bg-violet-100 text-violet-600"
                                   }`}
                                 >
                                   #{service.id}
@@ -825,7 +825,7 @@ const categories = useMemo(() => {
                                   className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
                                     active
                                       ? "bg-white/15 text-white/80"
-                                      : "bg-slate-50 text-slate-400"
+                                      : "bg-violet-100 text-violet-600"
                                   }`}
                                 >
                                   Min{" "}
@@ -836,7 +836,7 @@ const categories = useMemo(() => {
                                   className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
                                     active
                                       ? "bg-white/15 text-white/80"
-                                      : "bg-slate-50 text-slate-400"
+                                      : "bg-violet-100 text-violet-600"
                                   }`}
                                 >
                                   Max{" "}
@@ -939,7 +939,7 @@ const categories = useMemo(() => {
               )
             }
             placeholder="Enter quantity"
-            className={`h-12 w-full rounded-xl border bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+            className={`h-12 w-full rounded-xl border bg-violet-50 px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-violet-50 focus:ring-2 ${
               quantity &&
               !validQuantity
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
