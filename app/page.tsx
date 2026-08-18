@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -14,6 +14,17 @@ declare global {
             callback: (response: { credential: string }) => void;
           }) => void;
           prompt: () => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: string;
+              theme?: string;
+              size?: string;
+              text?: string;
+              shape?: string;
+              width?: number;
+            }
+          ) => void;
         };
       };
     };
@@ -29,6 +40,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -86,38 +98,45 @@ export default function Home() {
   }
 
   function initializeGoogle() {
-  const google = window.google;
+    const google = window.google;
 
-  if (!google) {
-    console.error("Google Identity Services failed to load.");
-    return;
+    if (!google) {
+      console.error("Google Identity Services failed to load.");
+      return;
+    }
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      setError("Google login is not configured.");
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: (response) => {
+        handleGoogleLogin(response.credential);
+      },
+    });
+
+    if (googleButtonRef.current) {
+      googleButtonRef.current.innerHTML = "";
+      google.accounts.id.renderButton(googleButtonRef.current, {
+        type: "standard",
+        theme: "filled_black",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        width: 380,
+      });
+    }
   }
 
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-  if (!clientId) {
-    setError("Google login is not configured.");
-    return;
-  }
-
-  google.accounts.id.initialize({
-    client_id: clientId,
-    callback: (response) => {
-      handleGoogleLogin(response.credential);
-    },
-  });
-}
-  
-function startGoogleLogin() {
+  function startGoogleLogin() {
   setError("");
 
   if (!window.google) {
-    setError(
-      "Google Sign-In is still loading. Refresh the page and try again."
-    );
-    console.error(
-      "Google Identity Services script is not available."
-    );
+    setError("Google Sign-In is still loading. Please refresh and try again.");
     return;
   }
 
@@ -129,11 +148,15 @@ function startGoogleLogin() {
   }
 
   initializeGoogle();
-
-  window.google.accounts.id.prompt();
 }
 
   const busy = loading || googleLoading;
+
+  useEffect(() => {
+    if (window.google) {
+      initializeGoogle();
+    }
+  }, []);
 
   return (
     <>
@@ -239,15 +262,20 @@ function startGoogleLogin() {
 
                     {/* Social login */}
                     <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <button
-                        type="button"
-                        onClick={startGoogleLogin}
-                        disabled={busy}
-                        className="group h-12 rounded-2xl border border-white/[0.10] bg-white/[0.045] text-sm font-bold text-white/80 transition-all hover:-translate-y-0.5 hover:border-white/[0.18] hover:bg-white/[0.075] disabled:cursor-not-allowed disabled:opacity-50"
+                      <div
+                        ref={googleButtonRef}
+                        className="flex min-h-12 items-center justify-center overflow-hidden rounded-2xl"
                       >
-                        <span className="mr-2 font-black text-red-400">G</span>
-                        Continue with Google
-                      </button>
+                        <button
+                          type="button"
+                          onClick={startGoogleLogin}
+                          disabled={busy}
+                          className="h-12 w-full rounded-2xl border border-white/[0.10] bg-white/[0.045] text-sm font-bold text-white/80 transition-all hover:border-white/[0.18] hover:bg-white/[0.075] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <span className="mr-2 font-black text-red-400">G</span>
+                          Continue with Google
+                        </button>
+                      </div>
 
                       <button
                         type="button"
