@@ -19,121 +19,134 @@ export default function Sidebar() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
 
-    document.addEventListener("mousedown", handleOutside);
     document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = open ? "hidden" : "";
 
     return () => {
-      document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
     };
-  }, []);
+  }, [open]);
 
   return (
     <div ref={menuRef} className="fixed right-5 top-5 z-[100]">
-      {/* Large menu button */}
+      {/* Always-fixed menu button */}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Open navigation menu"
         aria-expanded={open}
-        className={`flex h-12 w-12 items-center justify-center rounded-2xl border shadow-lg transition-all duration-200 ${
+        className={`relative z-[120] flex h-12 w-12 items-center justify-center rounded-2xl border shadow-lg transition-all duration-300 ${
           open
-            ? "border-violet-400 bg-violet-600 text-white shadow-violet-500/25"
+            ? "border-violet-400 bg-violet-600 text-white shadow-violet-500/30"
             : "border-violet-200 bg-white text-violet-700 shadow-violet-900/10 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50"
         }`}
       >
-        <span className="text-[25px] leading-none">{open ? "×" : "☰"}</span>
+        <span
+          className={`text-[25px] leading-none transition-transform duration-300 ${
+            open ? "rotate-90" : "rotate-0"
+          }`}
+        >
+          {open ? "×" : "☰"}
+        </span>
       </button>
 
-      {/* Navigation panel */}
+      {/* Full-screen navigation */}
       {open && (
-        <div className="absolute right-0 top-[60px] w-[300px] overflow-hidden rounded-3xl border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(76,29,149,0.18)]">
-          <div className="mb-2 flex items-center gap-3 rounded-2xl bg-violet-50 px-4 py-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-500 font-black text-white">
-              D
-            </div>
+        <div className="fixed inset-0 z-[110]">
+          {/* Backdrop */}
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-[3px]"
+          />
 
-            <div>
-              <p className="text-base font-black text-slate-900">
-                Dream<span className="text-violet-600">SMM</span>
+          {/* Full-screen panel */}
+          <div className="absolute inset-0 overflow-y-auto bg-gradient-to-br from-white via-[#faf8ff] to-violet-50 px-5 pb-8 pt-24 sm:px-10 sm:pt-28">
+            <div className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-5xl flex-col">
+              <div className="mb-8 flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-purple-500 text-xl font-black text-white shadow-lg shadow-violet-500/20">
+                  D
+                </div>
+
+                <div>
+                  <p className="text-2xl font-black tracking-tight text-slate-900">
+                    Dream<span className="text-violet-600">SMM</span>
+                  </p>
+                  <p className="text-[10px] font-bold tracking-[0.2em] text-slate-400">
+                    SOCIAL MEDIA PANEL
+                  </p>
+                </div>
+              </div>
+
+              <p className="mb-4 text-[11px] font-black uppercase tracking-[0.2em] text-violet-500">
+                Menu
               </p>
-              <p className="text-[9px] font-bold tracking-[0.16em] text-slate-400">
-                SOCIAL MEDIA PANEL
-              </p>
-            </div>
-          </div>
 
-          <p className="px-3 pb-2 pt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-            Menu
-          </p>
+              <nav className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {menu.map((item) => {
+                  const active =
+                    pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`);
 
-          <nav className="space-y-1">
-            {menu.map((item) => {
-              const active =
-                pathname === item.href ||
-                pathname.startsWith(`${item.href}/`);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={`group flex min-h-[82px] items-center gap-4 rounded-2xl border p-4 transition-all duration-200 ${
+                        active
+                          ? "border-violet-200 bg-violet-100 text-violet-800 shadow-sm"
+                          : "border-slate-200 bg-white text-slate-600 shadow-sm hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg ${
+                          active
+                            ? "bg-violet-200 text-violet-700"
+                            : "bg-slate-100 text-slate-400 group-hover:bg-violet-100 group-hover:text-violet-600"
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 rounded-2xl px-3 py-3.5 text-sm font-bold transition-all ${
-                    active
-                      ? "bg-violet-100 text-violet-800"
-                      : "text-slate-600 hover:bg-violet-50 hover:text-violet-700"
-                  }`}
-                >
-                  <span
-                    className={`flex h-10 w-10 items-center justify-center rounded-xl text-base ${
-                      active
-                        ? "bg-violet-200 text-violet-700"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
+                      <span className="flex-1 text-base font-black">
+                        {item.name}
+                      </span>
+
+                      <span className="text-xl text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-violet-500">
+                        →
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="mt-auto pt-10">
+                <div className="flex flex-col gap-4 rounded-3xl border border-violet-100 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Account Balance
+                    </p>
+                    <p className="mt-1 text-2xl font-black text-violet-800">
+                      ₹0.00
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/funds"
+                    onClick={() => setOpen(false)}
+                    className="flex h-11 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white transition hover:bg-violet-700"
                   >
-                    {item.icon}
-                  </span>
-
-                  <span className="flex-1">{item.name}</span>
-
-                  {active && (
-                    <span className="h-2 w-2 rounded-full bg-violet-600" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="mt-3 border-t border-violet-100 pt-3">
-            <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-white to-violet-50 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Account Balance
-              </p>
-
-              <p className="mt-1 text-xl font-black text-violet-800">
-                ₹0.00
-              </p>
-
-              <Link
-                href="/funds"
-                onClick={() => setOpen(false)}
-                className="mt-3 flex h-10 items-center justify-center rounded-xl bg-violet-600 text-xs font-bold text-white transition hover:bg-violet-700"
-              >
-                Add Funds
-              </Link>
+                    Add Funds
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
