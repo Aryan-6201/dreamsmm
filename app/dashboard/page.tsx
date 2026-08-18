@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   Bell,
-  ClipboardList,
   Headphones,
   LogOut,
   Plus,
@@ -82,7 +81,7 @@ export default async function DashboardPage() {
   const balance = user.balance.toString();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f7f5ff] text-slate-800">
+    <main className="min-h-screen overflow-x-hidden bg-[#f3edff] text-slate-800">
       <Sidebar />
 
       <div className="lg:ml-[250px]">
@@ -93,10 +92,10 @@ export default async function DashboardPage() {
           {/* TOP BAR */}
           <header className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-violet-400">
                 DreamSMM
               </p>
-              <h1 className="mt-1 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+              <h1 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
                 New Order
               </h1>
             </div>
@@ -112,13 +111,13 @@ export default async function DashboardPage() {
 
               <a
                 href="/funds"
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-500 px-3.5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
               >
                 <Plus className="h-4 w-4" />
                 Add Funds
               </a>
 
-              <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-slate-200 sm:flex">
+              <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-violet-100 sm:flex">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-[9px] font-black text-white">
                   {initials}
                 </div>
@@ -134,36 +133,8 @@ export default async function DashboardPage() {
             </div>
           </header>
 
-          {/* WELCOME */}
-          <section className="mt-6 overflow-hidden rounded-[24px] bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 p-6 text-white shadow-[0_18px_50px_rgba(109,40,217,0.22)] sm:p-8">
-            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-200" />
-                  System operational
-                </div>
-
-                <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
-                  Welcome back, {firstName}
-                </h2>
-
-                <p className="mt-1 max-w-2xl text-sm font-medium text-white/80">
-                  Place your social media order quickly from one clean workspace.
-                </p>
-              </div>
-
-              <a
-                href="/orders"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
-              >
-                <ClipboardList className="h-4 w-4" />
-                Order History
-              </a>
-            </div>
-          </section>
-
           {/* STATS */}
-          <section className="mt-4 grid gap-3 md:grid-cols-3">
+          <section className="mt-5 grid gap-4 md:grid-cols-3">
             <DashboardStat
               icon={<UserRound className="h-5 w-5" />}
               value={user.name || "User"}
@@ -189,11 +160,11 @@ export default async function DashboardPage() {
           {/* MAIN WORKSPACE */}
           <section
             id="new-order"
-            className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]"
+            className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]"
           >
             {/* ORDER FORM */}
             <div className="overflow-visible rounded-[22px] border border-violet-100 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
-              <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
+              <div className="border-b border-violet-100 px-5 py-6 sm:px-7">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
@@ -370,17 +341,23 @@ function DashboardStat({
         : "bg-indigo-50 text-indigo-600";
 
   return (
-    <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
-      <div className="flex items-center gap-3">
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${toneClass}`}>
+    <div className="rounded-[24px] border border-violet-100 bg-white p-6 shadow-[0_14px_40px_rgba(91,33,182,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(91,33,182,0.11)] sm:p-7">
+      <div className="flex items-center gap-5">
+        <div
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
+            tone === "blue"
+              ? "bg-violet-50 text-violet-700"
+              : tone === "cyan"
+                ? "bg-indigo-50 text-indigo-700"
+                : "bg-purple-50 text-purple-700"
+          }`}
+        >
           {icon}
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-xl font-black tracking-tight text-slate-800">
-            {value}
-          </p>
-          <p className="mt-0.5 truncate text-[10px] font-semibold text-slate-400">
+          <p className="truncate text-2xl font-black tracking-tight text-slate-950 sm:text-[28px]">{value}</p>
+          <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
             {label}
           </p>
         </div>

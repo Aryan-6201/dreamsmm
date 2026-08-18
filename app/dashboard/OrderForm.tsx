@@ -390,7 +390,7 @@ const categories = useMemo(() => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 rounded-[28px] border border-violet-500/20 bg-gradient-to-br from-[#100b24] via-[#171035] to-[#24104a] p-5 shadow-[0_24px_70px_rgba(76,29,149,0.28)] sm:p-6"
+      className="space-y-5"
     >
       {/* =====================================================
           SEARCH
@@ -398,10 +398,10 @@ const categories = useMemo(() => {
 
       <div className="relative">
         <span
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-violet-200/60"
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-500"
           aria-hidden="true"
         >
-          
+          ⌕
         </span>
 
         <input
@@ -411,7 +411,7 @@ const categories = useMemo(() => {
           }
           placeholder="Search"
           aria-label="Search services"
-          className="h-12 w-full rounded-xl border border-violet-400/30 bg-[#130d2c] pl-11 pr-11 text-sm font-medium text-violet-50 outline-none transition placeholder:text-violet-200/40 focus:border-violet-400 focus:bg-white/[0.09] focus:ring-2 focus:ring-violet-500/20"
+          className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
         />
 
         {search && (
@@ -419,7 +419,7 @@ const categories = useMemo(() => {
             type="button"
             onClick={() => setSearch("")}
             aria-label="Clear search"
-            className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-lg font-bold text-violet-200/45 hover:bg-[#130d2c]0/15 hover:text-violet-200"
+            className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-lg font-bold text-slate-400 hover:bg-white hover:text-slate-700"
           >
             ×
           </button>
@@ -431,7 +431,7 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       <section>
-        <label className="mb-2 block text-sm font-black text-violet-100">
+        <label className="mb-2 block text-sm font-black text-slate-700">
           Category
         </label>
 
@@ -443,10 +443,10 @@ const categories = useMemo(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border border-violet-400/30 bg-[#130d2c] px-3 text-left transition hover:bg-[#130d2c]0/15"
+            className="flex min-h-[70px] w-full items-center gap-3 rounded-2xl border-2 border-violet-100 bg-violet-50 px-4 text-left shadow-sm transition hover:border-violet-300 hover:bg-violet-100 hover:shadow-md"
           >
             <span
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-violet-200 shadow-sm transition-all"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm transition-all"
               style={(() => {
                 const config = categoryConfigs.find(
                   (item) =>
@@ -514,12 +514,12 @@ const categories = useMemo(() => {
               })()}
             </span>
 
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-violet-50">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
               {category || "Select category"}
             </span>
 
             <span
-              className={`shrink-0 text-sm font-black text-violet-200/45 transition-transform ${
+              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
                 categoryOpen
                   ? "rotate-180"
                   : ""
@@ -530,8 +530,8 @@ const categories = useMemo(() => {
           </button>
 
           {categoryOpen && (
-            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-violet-400/30 bg-[#130d2c] shadow-[0_18px_45px_rgba(124,58,237,0.16)]">
-              <div className="max-h-[320px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
+            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+              <div className="max-h-[420px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                 {filteredCategories.map(
                   (item) => {
                     const key =
@@ -547,17 +547,17 @@ const categories = useMemo(() => {
                         onClick={() =>
                           selectCategory(item)
                         }
-                        className={`flex min-h-[44px] w-full items-center gap-2.5 px-3 text-left transition ${
+                        className={`flex min-h-[54px] w-full items-center gap-2.5 px-4 text-left transition ${
                           active
                             ? "bg-violet-600 text-white"
-                            : "text-violet-50 hover:bg-[#130d2c]0/15"
+                            : "text-slate-700 hover:bg-violet-50"
                         }`}
                       >
                         <span
   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
     active
-      ? "bg-white/15 text-white"
-      : "bg-[#130d2c] text-violet-200"
+      ? "bg-white/20 text-white"
+      : "bg-violet-50 text-violet-700"
   }`}
 >
   {(() => {
@@ -617,8 +617,8 @@ const categories = useMemo(() => {
                             <span
                               className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-black ${
                                 active
-                                  ? "bg-white/15 text-white"
-                                  : "bg-violet-500/15 text-violet-200"
+                                  ? "bg-white/20 text-white"
+                                  : "bg-violet-100 text-violet-700"
                               }`}
                             >
                               {config.badge}
@@ -630,7 +630,7 @@ const categories = useMemo(() => {
                           className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
                             active
                               ? "bg-white/15 text-white"
-                              : "bg-violet-500/15 text-violet-200"
+                              : "bg-slate-100 text-slate-500"
                           }`}
                         >
                           {categoryCounts.get(
@@ -645,10 +645,10 @@ const categories = useMemo(() => {
                 {filteredCategories.length ===
                   0 && (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-sm font-bold text-violet-100/70">
+                    <p className="text-sm font-bold text-slate-600">
                       No category found
                     </p>
-                    <p className="mt-1 text-xs text-violet-200/45">
+                    <p className="mt-1 text-xs text-slate-400">
                       Try another search.
                     </p>
                   </div>
@@ -664,7 +664,7 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       <section>
-        <label className="mb-2 block text-sm font-black text-violet-100">
+        <label className="mb-2 block text-sm font-black text-slate-700">
           Service
         </label>
 
@@ -681,13 +681,13 @@ const categories = useMemo(() => {
               setCategoryOpen(false);
             }}
             aria-expanded={serviceOpen}
-            className={`flex min-h-[50px] w-full items-center gap-3 rounded-xl border px-3 text-left transition ${
+            className={`flex min-h-[70px] w-full items-center gap-3 rounded-2xl border-2 px-4 text-left shadow-sm transition ${
               category
-                ? "border-violet-400/30 bg-[#130d2c] hover:bg-[#130d2c]0/15"
-                : "cursor-not-allowed border-violet-400/25 bg-violet-500/15"
+                ? "border-violet-100 bg-violet-50 hover:border-violet-300 hover:bg-violet-100"
+                : "cursor-not-allowed border-slate-200 bg-slate-100"
             }`}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-violet-200 shadow-sm">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-violet-700 shadow-sm">
               {selectedService
                 ? (() => {
                     const BrandIcon = getPlatformIcon(
@@ -711,7 +711,7 @@ const categories = useMemo(() => {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-violet-50">
+              <span className="block truncate text-sm font-medium text-slate-700">
                 {selectedService
                   ? selectedService.name
                   : category
@@ -720,7 +720,7 @@ const categories = useMemo(() => {
               </span>
 
               {selectedService && (
-                <span className="mt-0.5 block truncate text-[9px] font-medium text-violet-200/45">
+                <span className="mt-0.5 block truncate text-[9px] font-medium text-slate-400">
                   #{selectedService.id}
                   {" · "}
                   {selectedService.platform}
@@ -729,7 +729,7 @@ const categories = useMemo(() => {
             </span>
 
             <span
-              className={`shrink-0 text-sm font-black text-violet-200/45 transition-transform ${
+              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
                 serviceOpen
                   ? "rotate-180"
                   : ""
@@ -741,8 +741,8 @@ const categories = useMemo(() => {
 
           {serviceOpen &&
             category && (
-          <div className="absolute left-0 right-0 z-40 mt-1 overflow-hidden rounded-xl border border-violet-400/30 bg-[#130d2c] shadow-[0_18px_45px_rgba(124,58,237,0.16)]">
-                <div className="max-h-[360px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
+              <div className="absolute left-0 right-0 z-[60] mt-1 overflow-hidden rounded-2xl border border-violet-200 bg-white shadow-[0_20px_50px_rgba(91,33,182,0.18)]">
+                <div className="max-h-[440px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                   {filteredServices.map(
                     (service) => {
                       const active =
@@ -758,18 +758,18 @@ const categories = useMemo(() => {
                               service.id
                             )
                           }
-                          className={`w-full border-b border-violet-300 px-3 py-2.5 text-left transition last:border-b-0 ${
+                          className={`w-full border-b border-slate-100 px-4 py-3.5 text-left transition last:border-b-0 ${
                             active
                               ? "bg-violet-600 text-white"
-                              : "text-violet-50 hover:bg-[#130d2c]0/15"
+                              : "text-slate-700 hover:bg-violet-50"
                           }`}
                         >
                           <div className="flex items-start gap-2.5">
                             <span
                               className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
                                 active
-                                  ? "bg-white/15 text-white"
-                                  : "bg-[#130d2c] text-violet-200"
+                                  ? "bg-white/20 text-white"
+                                  : "bg-violet-50 text-violet-700"
                               }`}
                             >
                               {active ? (
@@ -803,7 +803,7 @@ const categories = useMemo(() => {
                                   className={`min-w-0 flex-1 text-[12px] font-medium leading-5 ${
                                     active
                                       ? "text-white"
-                                      : "text-violet-50"
+                                      : "text-slate-700"
                                   }`}
                                 >
                                   {service.name}
@@ -813,7 +813,7 @@ const categories = useMemo(() => {
                                   className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
                                     active
                                       ? "bg-white/15 text-white"
-                                      : "bg-violet-500/15 text-violet-200"
+                                      : "bg-slate-100 text-slate-500"
                                   }`}
                                 >
                                   #{service.id}
@@ -825,7 +825,7 @@ const categories = useMemo(() => {
                                   className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
                                     active
                                       ? "bg-white/15 text-white/80"
-                                      : "bg-violet-500/15 text-violet-200"
+                                      : "bg-slate-50 text-slate-400"
                                   }`}
                                 >
                                   Min{" "}
@@ -836,7 +836,7 @@ const categories = useMemo(() => {
                                   className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
                                     active
                                       ? "bg-white/15 text-white/80"
-                                      : "bg-violet-500/15 text-violet-200"
+                                      : "bg-slate-50 text-slate-400"
                                   }`}
                                 >
                                   Max{" "}
@@ -863,10 +863,10 @@ const categories = useMemo(() => {
                   {filteredServices.length ===
                     0 && (
                     <div className="px-4 py-8 text-center">
-                      <p className="text-sm font-bold text-violet-100/70">
+                      <p className="text-sm font-bold text-slate-600">
                         No service found
                       </p>
-                      <p className="mt-1 text-xs text-violet-200/45">
+                      <p className="mt-1 text-xs text-slate-400">
                         Try another search or category.
                       </p>
                     </div>
@@ -883,12 +883,12 @@ const categories = useMemo(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-violet-100">
+          <label className="mb-2 block text-sm font-black text-slate-700">
             Description
           </label>
 
-          <div className="rounded-xl border border-violet-400/30 bg-[#130d2c] px-4 py-4">
-            <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-5 text-violet-100/70">
+          <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-4">
+            <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-5 text-slate-600">
               {selectedService.description ||
                 "No description available."}
             </div>
@@ -902,7 +902,7 @@ const categories = useMemo(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-violet-100">
+          <label className="mb-2 block text-sm font-black text-slate-700">
             Link
           </label>
 
@@ -913,7 +913,7 @@ const categories = useMemo(() => {
               setLink(event.target.value)
             }
             placeholder="https://instagram.com/username"
-            className="h-12 w-full rounded-xl border border-violet-400/30 bg-[#130d2c] px-4 text-sm font-medium text-violet-50 outline-none transition placeholder:text-violet-200/40 focus:border-violet-400 focus:bg-white/[0.09] focus:ring-2 focus:ring-violet-500/20"
+            className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
           />
         </section>
       )}
@@ -924,7 +924,7 @@ const categories = useMemo(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-violet-100">
+          <label className="mb-2 block text-sm font-black text-slate-700">
             Quantity
           </label>
 
@@ -939,15 +939,15 @@ const categories = useMemo(() => {
               )
             }
             placeholder="Enter quantity"
-            className={`h-12 w-full rounded-xl border bg-[#130d2c] px-4 text-sm font-medium text-violet-50 outline-none transition placeholder:text-violet-200/40 focus:bg-white/[0.09] focus:ring-2 ${
+            className={`h-12 w-full rounded-xl border bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
               quantity &&
               !validQuantity
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                : "border-violet-300 focus:border-violet-400 focus:ring-violet-500/20"
+                : "border-violet-100 focus:border-violet-300 focus:ring-violet-100"
             }`}
           />
 
-          <p className="mt-2 text-xs font-medium text-violet-200/60">
+          <p className="mt-2 text-xs font-medium text-slate-500">
             Min:{" "}
             {selectedService.min.toLocaleString()}
             {" - "}
@@ -973,28 +973,28 @@ const categories = useMemo(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-violet-100">
+          <label className="mb-2 block text-sm font-black text-slate-700">
             Charge
           </label>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-violet-400/30 bg-[#130d2c] px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-violet-200/45">
+            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                 Rate
               </p>
-              <p className="mt-1 text-sm font-black text-violet-100">
+              <p className="mt-1 text-sm font-black text-slate-700">
                 &#8377;{selectedService.rate}
-                <span className="ml-1 text-[9px] font-semibold text-violet-200/45">
+                <span className="ml-1 text-[9px] font-semibold text-slate-400">
                   / 1K
                 </span>
               </p>
             </div>
 
-            <div className="rounded-xl border border-violet-400/30 bg-[#130d2c] px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-violet-200/45">
+            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                 Total
               </p>
-              <p className="mt-1 text-sm font-black text-violet-100">
+              <p className="mt-1 text-sm font-black text-slate-700">
                 &#8377;{total.toFixed(2)}
               </p>
             </div>
@@ -1007,16 +1007,16 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       {error && (
-        <div className="rounded-xl border border-red-400/25 bg-red-500/10 px-4 py-3">
-          <p className="text-xs font-bold text-red-200">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <p className="text-xs font-bold text-red-700">
             {error}
           </p>
         </div>
       )}
 
       {success && (
-        <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3">
-          <p className="text-xs font-bold text-emerald-200">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <p className="text-xs font-bold text-emerald-700">
             ✓ {success}
           </p>
         </div>
@@ -1033,7 +1033,7 @@ const categories = useMemo(() => {
       !link.trim() ||
       !validQuantity
     }
-    className="h-14 w-full rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-base font-black text-white shadow-[0_12px_32px_rgba(124,58,237,0.38)] transition-all duration-200 hover:-translate-y-0.5 hover:from-violet-500 hover:via-purple-500 hover:to-fuchsia-500 hover:shadow-[0_16px_38px_rgba(124,58,237,0.48)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-300 disabled:text-white disabled:opacity-100 disabled:shadow-none"
+    className="h-14 w-full rounded-xl bg-violet-600 text-base font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(124,58,237,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
   >
     {submitting
       ? "Placing Order..."
@@ -1060,7 +1060,7 @@ function getPlatformColor(platform: string): string {
   if (value.includes("spotify")) return "#1DB954";
   if (value.includes("reddit")) return "#FF4500";
 
-  return "#7C3AED";
+  return "#06B6D4";
 }
 
 function getPlatformIcon(platform: string): IconType | null {
