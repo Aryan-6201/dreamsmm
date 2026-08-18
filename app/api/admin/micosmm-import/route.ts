@@ -1,32 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-import { verifySession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth";
 import { getMicoSmmService } from "@/lib/providers/micosmm";
 
-function getPlatform(service: {
-  name?: string;
-  category?: string;
-  type?: string;
-}) {
-  const value =
-    `${service.name || ""} ${service.category || ""} ${service.type || ""}`
-      .toLowerCase();
-
-  if (value.includes("instagram")) return "Instagram";
-  if (value.includes("youtube")) return "YouTube";
-  if (value.includes("facebook")) return "Facebook";
-  if (value.includes("tiktok")) return "TikTok";
-  if (value.includes("telegram")) return "Telegram";
-  if (value.includes("spotify")) return "Spotify";
-  if (value.includes("reddit")) return "Reddit";
-  if (value.includes("twitter") || value.includes(" x ")) return "X";
-
-  return "Other";
-}
-
-async function requireAdmin() {
+async function getAdmin() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
 
@@ -53,14 +32,37 @@ async function requireAdmin() {
   return user;
 }
 
+function getPlatform(service: {
+  name?: string;
+  category?: string;
+  type?: string;
+}) {
+  const value =
+    `${service.name || ""} ${service.category || ""} ${
+      service.type || ""
+    }`.toLowerCase();
+
+  if (value.includes("instagram")) return "Instagram";
+  if (value.includes("youtube")) return "YouTube";
+  if (value.includes("facebook")) return "Facebook";
+  if (value.includes("tiktok")) return "TikTok";
+  if (value.includes("telegram")) return "Telegram";
+  if (value.includes("spotify")) return "Spotify";
+  if (value.includes("reddit")) return "Reddit";
+  if (value.includes("twitter") || value.includes(" x "))
+    return "X";
+
+  return "Other";
+}
+
 export async function POST(request: Request) {
   try {
-    const admin = await requireAdmin();
+    const admin = await getAdmin();
 
     if (!admin) {
       return NextResponse.json(
-        { error: "Unauthorized." },
-        { status: 401 }
+        { error: "Admin access required." },
+        { status: 403 }
       );
     }
 
@@ -78,7 +80,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch service directly from MicoSMM
+    // Fetch service from MicoSMM
     const provider = await getMicoSmmService(serviceId);
 
     const service = {
@@ -95,20 +97,19 @@ export async function POST(request: Request) {
         provider.refill === "true",
     };
 
-    // Only fetch/preview
+    // Fetch only
     if (action === "fetch") {
       return NextResponse.json({
+        success: true,
         service,
       });
     }
 
-    // -----------------------------
-    // IMPORT
-    // -----------------------------
+    // -------------------------
+    // IMPORT SERVICE
+    // -------------------------
 
-    const markupPercent = Number(
-      body.markupPercent
-    );
+    const markupPercent = Number(body.markupPercent);
 
     if (
       !Number.isFinite(markupPercent) ||
@@ -116,8 +117,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error:
-            "Markup must be 0 or greater.",
+          error: "Markup must be 0 or greater.",
         },
         { status: 400 }
       );
@@ -131,8 +131,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error:
-            "MicoSMM returned an invalid rate.",
+          error: "MicoSMM returned an invalid rate.",
         },
         { status: 400 }
       );
@@ -144,19 +143,18 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error:
-            "MicoSMM returned invalid service limits.",
+          error: "MicoSMM returned invalid service limits.",
         },
         { status: 400 }
       );
     }
 
-    // Provider rate + YOUR editable markup
+    // Your editable markup
     const sellingRate =
       providerRate *
       (1 + markupPercent / 100);
 
-    // Prevent duplicate provider service
+    // Prevent duplicate imports
     const existing =
       await prisma.service.findFirst({
         where: {
@@ -184,10 +182,12 @@ export async function POST(request: Request) {
         data: {
           name: service.name,
           platform: getPlatform(service),
+
           category:
             service.category ||
             service.type ||
             null,
+
           description:
             service.description || null,
 
@@ -205,21 +205,26 @@ export async function POST(request: Request) {
           providerRate: providerRate,
           markupPercent: markupPercent,
 
-          autoSync:
-            Boolean(body.autoSync),
+          autoSync: Boolean(body.autoSync),
         },
       });
 
     return NextResponse.json({
+      success: true,
+
       service: {
         id: created.id,
         name: created.name,
         providerId: created.providerId,
+
         providerRate:
           created.providerRate?.toString() ?? null,
+
         markupPercent:
           created.markupPercent?.toString() ?? null,
+
         rate: created.rate.toString(),
+
         autoSync: created.autoSync,
       },
     });
