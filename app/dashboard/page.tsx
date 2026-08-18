@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         {/* Aqua top strip */}
         <div className="h-2 bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-700" />
 
-        <div className="mx-auto max-w-[1550px] px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1480px] px-4 py-5 sm:px-6 lg:px-8">
           {/* TOP BAR */}
           <header className="flex items-center justify-between gap-3">
             <div className="min-w-0">
@@ -112,14 +112,14 @@ export default async function DashboardPage() {
 
               <a
                 href="/funds"
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-500 px-3.5 text-sm font-black text-white shadow-lg shadow-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-600"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-500 px-3.5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
               >
                 <Plus className="h-4 w-4" />
                 Add Funds
               </a>
 
               <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-slate-200 sm:flex">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-sky-500 text-[9px] font-black text-white">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-[9px] font-black text-white">
                   {initials}
                 </div>
                 <div className="max-w-[130px]">
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
           </header>
 
           {/* WELCOME */}
-          <section className="mt-5 overflow-hidden rounded-[28px] bg-gradient-to-r from-cyan-500 via-sky-500 to-teal-400 p-5 text-white shadow-[0_18px_50px_rgba(14,165,183,0.22)] sm:p-7">
+          <section className="mt-6 overflow-hidden rounded-[24px] bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 p-6 text-white shadow-[0_18px_50px_rgba(109,40,217,0.22)] sm:p-8">
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider backdrop-blur">
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
 
               <a
                 href="/orders"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-black text-cyan-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
               >
                 <ClipboardList className="h-4 w-4" />
                 Order History
@@ -189,10 +189,10 @@ export default async function DashboardPage() {
           {/* MAIN WORKSPACE */}
           <section
             id="new-order"
-            className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_310px]"
+            className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]"
           >
             {/* ORDER FORM */}
-            <div className="overflow-visible rounded-[26px] border border-violet-100 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
+            <div className="overflow-visible rounded-[22px] border border-violet-100 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
               <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
@@ -233,7 +233,7 @@ export default async function DashboardPage() {
 
             {/* RIGHT COLUMN */}
             <aside className="space-y-4">
-              <div className="rounded-[24px] border border-violet-100 bg-white p-5 shadow-sm">
+              <div className="rounded-[20px] border border-violet-100 bg-white p-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#2e1065] via-violet-800 to-indigo-900 p-5 text-white shadow-[0_18px_45px_rgba(76,29,149,0.28)]">
+              <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#241044] via-violet-800 to-indigo-900 p-5 text-white shadow-[0_18px_45px_rgba(76,29,149,0.28)]">
                 <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-white/20 blur-3xl" />
 
                 <div className="relative">
@@ -292,7 +292,7 @@ export default async function DashboardPage() {
 
                   <a
                     href="/funds"
-                    className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-black text-cyan-700 transition hover:bg-violet-50"
+                    className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-black text-violet-700 transition hover:bg-violet-50"
                   >
                     <Plus className="h-4 w-4" />
                     Add Funds
@@ -318,7 +318,7 @@ export default async function DashboardPage() {
 
                 <a
                   href="/tickets"
-                  className="mt-4 flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-cyan-200 hover:bg-violet-50 hover:text-cyan-700"
+                  className="mt-4 flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
                 >
                   Create Ticket
                 </a>
@@ -364,10 +364,10 @@ function DashboardStat({
 }) {
   const toneClass =
     tone === "blue"
-      ? "bg-blue-50 text-blue-600"
+      ? "bg-violet-50 text-violet-600"
       : tone === "cyan"
         ? "bg-violet-50 text-violet-600"
-        : "bg-teal-50 text-teal-600";
+        : "bg-indigo-50 text-indigo-600";
 
   return (
     <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
