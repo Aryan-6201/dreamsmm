@@ -82,12 +82,12 @@ export default async function DashboardPage() {
   const balance = user.balance.toString();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f3edff] text-slate-800">
+    <main className="min-h-screen overflow-x-hidden bg-[#06040b] text-[#f8f7ff]">
       <Sidebar />
 
       <div className="lg:ml-[250px]">
         {/* Aqua top strip */}
-        <div className="h-2 bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-700" />
+        <div className="h-2 bg-gradient-to-r from-[#7c3aed] via-[#a855f7] to-[#7c3aed]" />
 
         <div className="mx-auto max-w-[1480px] px-4 py-5 sm:px-6 lg:px-8">
           {/* TOP BAR */}
@@ -96,7 +96,7 @@ export default async function DashboardPage() {
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-violet-400">
                 DreamSMM
               </p>
-              <h1 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+              <h1 className="mt-1 text-xl font-black tracking-tight text-[#f8f7ff] sm:text-2xl">
                 New Order
               </h1>
             </div>
@@ -104,26 +104,26 @@ export default async function DashboardPage() {
             <div className="flex shrink-0 items-center gap-2">
               <a
                 href="/funds"
-                className="hidden h-10 items-center gap-2 rounded-xl bg-white px-3.5 text-sm font-black text-violet-900 shadow-sm ring-1 ring-violet-200 transition hover:-translate-y-0.5 hover:ring-violet-400 sm:inline-flex"
+                className="hidden h-10 items-center gap-2 rounded-xl bg-[#100b1a] px-3.5 text-sm font-black text-[#f8f7ff] shadow-sm ring-1 ring-[#251b35] transition hover:-translate-y-0.5 hover:ring-violet-400 sm:inline-flex"
               >
-                <Wallet className="h-4 w-4 text-violet-600" />
+                <Wallet className="h-4 w-4 text-[#a855f7]" />
                 <span>₹{balance}</span>
               </a>
 
               <a
                 href="/funds"
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#7c3aed] px-3.5 text-sm font-black text-white shadow-lg shadow-violet-900/30 transition hover:-translate-y-0.5 hover:bg-[#a855f7]"
               >
                 <Plus className="h-4 w-4" />
                 Add Funds
               </a>
 
-              <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-violet-100 sm:flex">
+              <div className="hidden h-10 items-center gap-2 rounded-xl bg-[#100b1a] px-2.5 shadow-sm ring-1 ring-[#251b35] sm:flex">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-[9px] font-black text-white">
                   {initials}
                 </div>
                 <div className="max-w-[130px]">
-                  <p className="truncate text-[11px] font-black text-slate-800">
+                  <p className="truncate text-[11px] font-black text-[#f8f7ff]">
                     {user.name || "User"}
                   </p>
                   <p className="truncate text-[9px] font-medium text-slate-400">
@@ -164,20 +164,20 @@ export default async function DashboardPage() {
             className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]"
           >
             {/* ORDER FORM */}
-            <div className="overflow-visible rounded-[22px] border border-violet-100 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
-              <div className="border-b border-violet-100 px-5 py-6 sm:px-7">
+            <div className="overflow-visible rounded-[22px] border border-[#251b35] bg-[#100b1a] shadow-[0_18px_55px_rgba(0,0,0,0.35)]">
+              <div className="border-b border-[#251b35] px-5 py-6 sm:px-7">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#241044] text-[#c084fc]">
                       <ShoppingBag className="h-5 w-5" />
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-lg font-black text-slate-900">
+                        <h2 className="text-lg font-black text-[#f8f7ff]">
                           Create New Order
                         </h2>
-                        <span className="rounded-full bg-emerald-50 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-emerald-700">
+                        <span className="rounded-full bg-emerald-950/40 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-emerald-300">
                           Live
                         </span>
                       </div>
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
                       Catalog
                     </p>
-                    <p className="mt-1 text-sm font-black text-slate-700">
+                    <p className="mt-1 text-sm font-black text-[#e9e5f2]">
                       {services.length} services
                     </p>
                   </div>
@@ -205,18 +205,18 @@ export default async function DashboardPage() {
 
             {/* RIGHT COLUMN */}
             <aside className="space-y-4">
-              <div className="rounded-[20px] border border-violet-100 bg-white p-5 shadow-sm">
+              <div className="rounded-[20px] border border-[#251b35] bg-[#100b1a] p-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
                       Quick access
                     </p>
-                    <h3 className="mt-1 text-base font-black text-slate-900">
+                    <h3 className="mt-1 text-base font-black text-[#f8f7ff]">
                       Manage account
                     </h3>
                   </div>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#241044] text-[#c084fc]">
                     <Sparkles className="h-4 w-4" />
                   </div>
                 </div>
@@ -243,8 +243,8 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#241044] via-violet-800 to-indigo-900 p-5 text-white shadow-[0_18px_45px_rgba(76,29,149,0.28)]">
-                <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-white/20 blur-3xl" />
+              <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#241044] via-[#7c3aed] to-[#151022] p-5 text-white shadow-[0_18px_45px_rgba(76,29,149,0.28)]">
+                <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-[#100b1a]/20 blur-3xl" />
 
                 <div className="relative">
                   <div className="flex items-center justify-between">
@@ -264,7 +264,7 @@ export default async function DashboardPage() {
 
                   <a
                     href="/funds"
-                    className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-black text-violet-700 transition hover:bg-violet-50"
+                    className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-[#100b1a] text-sm font-black text-[#c084fc] transition hover:bg-[#241044]"
                   >
                     <Plus className="h-4 w-4" />
                     Add Funds
@@ -272,17 +272,17 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="rounded-[24px] border border-[#251b35] bg-[#100b1a] p-5 shadow-sm">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#241044] text-[#c084fc]">
                     <Headphones className="h-4 w-4" />
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-black text-slate-900">
+                    <h3 className="text-sm font-black text-[#f8f7ff]">
                       Need assistance?
                     </h3>
-                    <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                    <p className="mt-1 text-xs font-medium leading-5 text-[#a7a0b5]">
                       Need help with an order or account? Create a support ticket.
                     </p>
                   </div>
@@ -290,7 +290,7 @@ export default async function DashboardPage() {
 
                 <a
                   href="/tickets"
-                  className="mt-4 flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                  className="mt-4 flex h-10 items-center justify-center rounded-xl border border-[#251b35] bg-[#151022] text-xs font-black text-[#e9e5f2] transition hover:border-violet-200 hover:bg-[#241044] hover:text-[#c084fc]"
                 >
                   Create Ticket
                 </a>
@@ -298,17 +298,17 @@ export default async function DashboardPage() {
             </aside>
           </section>
 
-          <footer className="mt-7 flex flex-col items-center justify-between gap-3 border-t border-violet-100 py-5 text-[10px] font-medium text-slate-400 sm:flex-row">
+          <footer className="mt-7 flex flex-col items-center justify-between gap-3 border-t border-[#251b35] py-5 text-[10px] font-medium text-slate-400 sm:flex-row">
             <p>© {new Date().getFullYear()} DreamSMM</p>
 
             <div className="flex items-center gap-4">
-              <a href="/services" className="hover:text-violet-600">
+              <a href="/services" className="hover:text-[#a855f7]">
                 Services
               </a>
-              <a href="/orders" className="hover:text-violet-600">
+              <a href="/orders" className="hover:text-[#a855f7]">
                 Orders
               </a>
-              <a href="/tickets" className="hover:text-violet-600">
+              <a href="/tickets" className="hover:text-[#a855f7]">
                 Support
               </a>
               <span className="flex items-center gap-1.5">
@@ -336,28 +336,28 @@ function DashboardStat({
 }) {
   const toneClass =
     tone === "blue"
-      ? "bg-violet-50 text-violet-600"
+      ? "bg-[#241044] text-[#c084fc]"
       : tone === "cyan"
-        ? "bg-violet-50 text-violet-600"
-        : "bg-indigo-50 text-indigo-600";
+        ? "bg-[#241044] text-[#c084fc]"
+        : "bg-[#241044] text-[#c084fc]";
 
   return (
-    <div className="rounded-[24px] border border-violet-100 bg-white p-6 shadow-[0_14px_40px_rgba(91,33,182,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(91,33,182,0.11)] sm:p-7">
+    <div className="rounded-[24px] border border-[#251b35] bg-[#100b1a] p-6 shadow-[0_14px_40px_rgba(91,33,182,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(91,33,182,0.11)] sm:p-7">
       <div className="flex items-center gap-5">
         <div
           className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
             tone === "blue"
-              ? "bg-violet-50 text-violet-700"
+              ? "bg-[#241044] text-[#c084fc]"
               : tone === "cyan"
-                ? "bg-indigo-50 text-indigo-700"
-                : "bg-purple-50 text-purple-700"
+                ? "bg-[#241044] text-[#c084fc]"
+                : "bg-[#241044] text-[#c084fc]"
           }`}
         >
           {icon}
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-2xl font-black tracking-tight text-slate-950 sm:text-[28px]">{value}</p>
+          <p className="truncate text-2xl font-black tracking-tight text-[#f8f7ff] sm:text-[28px]">{value}</p>
           <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
             {label}
           </p>
@@ -381,14 +381,14 @@ function QuickLink({
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:border-violet-100 hover:bg-violet-50"
+      className="group flex items-center gap-3 rounded-xl border border-[#251b35] bg-[#151022] p-3 transition hover:border-[#251b35] hover:bg-[#241044]"
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-violet-600 shadow-sm">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#241044] text-[#c084fc] shadow-sm">
         {icon}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-black text-slate-800">
+        <p className="truncate text-xs font-black text-[#f8f7ff]">
           {title}
         </p>
         <p className="mt-0.5 truncate text-[9px] font-medium text-slate-400">
@@ -396,7 +396,7 @@ function QuickLink({
         </p>
       </div>
 
-      <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600">
+      <span className="text-[#6f6680] transition group-hover:translate-x-0.5 group-hover:text-[#a855f7]">
         →
       </span>
     </a>
