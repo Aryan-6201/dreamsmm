@@ -42,7 +42,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <div ref={menuRef} className="fixed left-5 top-5 z-[100]">
+    <div ref={menuRef} className="fixed right-5 top-5 z-[100]">
       {/* Large menu button */}
       <button
         type="button"
@@ -60,7 +60,7 @@ export default function Sidebar() {
 
       {/* Navigation panel */}
       {open && (
-        <div className="absolute left-0 top-[60px] w-[300px] overflow-hidden rounded-3xl border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(76,29,149,0.18)]">
+        <div className="absolute right-0 top-[60px] w-[300px] overflow-hidden rounded-3xl border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(76,29,149,0.18)]">
           <div className="mb-2 flex items-center gap-3 rounded-2xl bg-violet-50 px-4 py-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-500 font-black text-white">
               D

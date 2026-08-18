@@ -5,7 +5,6 @@ import {
   Clipboard,
   Headphones,
   LogOut,
-  Plus,
   ShoppingBag,
   Sparkles,
   UserRound,
@@ -108,14 +107,6 @@ export default async function DashboardPage() {
               >
                 <Wallet className="h-4 w-4 text-violet-600" />
                 <span>₹{balance}</span>
-              </a>
-
-              <a
-                href="/funds"
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
-              >
-                <Plus className="h-4 w-4" />
-                Add Funds
               </a>
 
               <div className="hidden h-10 items-center gap-2 rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-violet-100 sm:flex">
