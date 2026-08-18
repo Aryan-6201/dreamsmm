@@ -86,32 +86,52 @@ export default function Home() {
   }
 
   function initializeGoogle() {
-    if (!window.google) return;
+  const google = window.google;
 
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-    if (!clientId) {
-      setError("Google login is not configured.");
-      return;
-    }
-
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: (response) => handleGoogleLogin(response.credential),
-    });
+  if (!google) {
+    console.error("Google Identity Services failed to load.");
+    return;
   }
 
-  function startGoogleLogin() {
-    setError("");
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-    if (!window.google) {
-      setError("Google login is still loading. Please try again.");
-      return;
-    }
-
-    initializeGoogle();
-    window.google.accounts.id.prompt();
+  if (!clientId) {
+    setError("Google login is not configured.");
+    return;
   }
+
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: (response) => {
+      handleGoogleLogin(response.credential);
+    },
+  });
+}
+  
+function startGoogleLogin() {
+  setError("");
+
+  if (!window.google) {
+    setError(
+      "Google Sign-In is still loading. Refresh the page and try again."
+    );
+    console.error(
+      "Google Identity Services script is not available."
+    );
+    return;
+  }
+
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    setError("Google login is not configured.");
+    return;
+  }
+
+  initializeGoogle();
+
+  window.google.accounts.id.prompt();
+}
 
   const busy = loading || googleLoading;
 
