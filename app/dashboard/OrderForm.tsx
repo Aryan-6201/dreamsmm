@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Eye,
@@ -67,6 +67,26 @@ export default function OrderForm({
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
+
+  useEffect(() => {
+  async function loadCategoryConfigs() {
+    try {
+      const response = await fetch("/api/categories", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCategoryConfigs(data.categories || []);
+      }
+    } catch (error) {
+      console.error("Failed to load category configs:", error);
+    }
+  }
+
+  loadCategoryConfigs();
+}, []);
 
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -952,22 +972,35 @@ const categories = useMemo(() => {
       ===================================================== */}
 
       {selectedService && (
-  <section>
-    <label className="mb-2 block text-sm font-black text-slate-700">
-      Charge
-    </label>
+        <section>
+          <label className="mb-2 block text-sm font-black text-slate-700">
+            Charge
+          </label>
 
-    <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
-      <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-        Charge
-      </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                Rate
+              </p>
+              <p className="mt-1 text-sm font-black text-slate-700">
+                &#8377;{selectedService.rate}
+                <span className="ml-1 text-[9px] font-semibold text-slate-400">
+                  / 1K
+                </span>
+              </p>
+            </div>
 
-      <p className="mt-1 text-sm font-black text-slate-700">
-        &#8377;{total.toFixed(2)}
-      </p>
-    </div>
-  </section>
-)}
+            <div className="rounded-xl border border-cyan-100 bg-[#eaf6f6] px-4 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                Total
+              </p>
+              <p className="mt-1 text-sm font-black text-slate-700">
+                &#8377;{total.toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* =====================================================
           FEEDBACK
@@ -1000,13 +1033,14 @@ const categories = useMemo(() => {
       !link.trim() ||
       !validQuantity
     }
-    className="h-14 w-full rounded-xl bg-violet-600 text-base font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(124,58,237,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
+    className="h-14 w-full rounded-xl bg-[#35bfc9] text-base font-black text-white shadow-[0_10px_28px_rgba(53,191,201,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#27b3bd] hover:shadow-[0_14px_32px_rgba(53,191,201,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#a8dfe2] disabled:text-white disabled:opacity-100 disabled:shadow-none"
   >
     {submitting
       ? "Placing Order..."
       : "Place Order"}
   </button>
 )}
+
 </form>
   );
 }
