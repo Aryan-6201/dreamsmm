@@ -140,11 +140,27 @@ export default function Home() {
 function startGoogleLogin() {
   setError("");
 
-  if (!googleReadyRef.current) {
-    if (!initializeGoogle()) {
-      setError("Google Sign-In is still loading. Please wait a moment.");
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  const tryGoogleLogin = () => {
+    attempts++;
+
+    if (window.google && initializeGoogle()) {
+      return;
     }
-  }
+
+    if (attempts < maxAttempts) {
+      window.setTimeout(tryGoogleLogin, 500);
+      return;
+    }
+
+    setError(
+      "Google Sign-In could not load. Please refresh the page and try again."
+    );
+  };
+
+  tryGoogleLogin();
 }
 
   useEffect(() => {
