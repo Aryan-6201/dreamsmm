@@ -5,6 +5,7 @@ import {
   Clipboard,
   Headphones,
   LogOut,
+  Plus,
   ShoppingBag,
   Sparkles,
   UserRound,
