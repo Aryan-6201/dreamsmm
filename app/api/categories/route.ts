@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { verifySession } from "@/lib/auth";
@@ -53,6 +53,41 @@ async function requireAdmin() {
   return user;
 }
 
+export async function GET() {
+  try {
+    const admin = await requireAdmin();
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Unauthorized." },
+        { status: 401 }
+      );
+    }
+
+    const categories = await prisma.category.findMany({
+      orderBy: [
+        { sortOrder: "asc" },
+        { name: "asc" },
+      ],
+    });
+
+    return NextResponse.json({
+      categories,
+    });
+  } catch (error) {
+    console.error("GET CATEGORIES ERROR:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to load categories.",
+      },
+      { status: 500 }
+    );
+  }
+}
 export async function POST(request: Request) {
   try {
     const admin = await requireAdmin();

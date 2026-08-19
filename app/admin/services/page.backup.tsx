@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -101,6 +101,10 @@ export default function AdminServicesPage() {
   const [importing, setImporting] = useState(false);
   const [importedService, setImportedService] =
     useState<ImportedProviderService | null>(null);
+  const [vipsmmMarkup, setVipsmmMarkup] = useState("25");
+  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
+  const [vipsmmImporting, setVipsmmImporting] = useState(false);
+  const [vipsmmResult, setVipsmmResult] = useState("");
 
   async function loadServices() {
     setLoading(true);
@@ -262,7 +266,7 @@ useEffect(() => {
       }
 
       setMessage(
-        `Service #${data.service.id} imported successfully at ₹${data.service.rate}/1k.`
+        `Service #${data.service.id} imported successfully at â‚¹${data.service.rate}/1k.`
       );
       setProviderServiceId("");
       setProviderMarkup("");
@@ -279,6 +283,59 @@ useEffect(() => {
     }
   }
 
+
+  async function importAllVipsmmServices() {
+    const markup = Number(vipsmmMarkup);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
+      setMessage("Enter a valid VIPSMMPro markup percentage.");
+      return;
+    }
+
+    setVipsmmImporting(true);
+    setMessage("");
+    setVipsmmResult("");
+
+    try {
+      const response = await fetch("/api/admin/services/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          markupPercent: markup,
+          autoSync: vipsmmAutoSync,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to import VIPSMMPro services."
+        );
+      }
+
+      setVipsmmResult(
+        "Imported: " + (data.created ?? 0) +
+        " · Updated: " + (data.updated ?? 0) +
+        " · Skipped: " + (data.skipped ?? 0) +
+        " · Categories: " + (data.categoriesCreated ?? 0)
+      );
+
+      setMessage("VIPSMMPro services imported successfully.");
+      await loadServices();
+      await loadCategories();
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to import VIPSMMPro services."
+      );
+    } finally {
+      setVipsmmImporting(false);
+    }
+  }
   async function saveService(event: React.FormEvent) {
     event.preventDefault();
 
@@ -504,7 +561,7 @@ useEffect(() => {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-400 hover:text-white"
             >
-              Ã—
+              Ãƒâ€”
             </button>
           </div>
         )}
@@ -568,7 +625,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{importedService.service}
                     {importedService.category
-                      ? ` · ${importedService.category}`
+                      ? ` Â· ${importedService.category}`
                       : ""}
                   </p>
                 </div>
@@ -587,7 +644,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Provider Rate</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{importedService.rate}/1k
+                    â‚¹{importedService.rate}/1k
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -599,7 +656,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Selling Rate</p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    â‚¹{(
                       Number(importedService.rate) *
                       (1 + (Number(providerMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -609,7 +666,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Limits</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {importedService.min.toLocaleString()}–
+                    {importedService.min.toLocaleString()}â€“
                     {importedService.max.toLocaleString()}
                   </p>
                 </div>
@@ -618,6 +675,53 @@ useEffect(() => {
           )}
         </section>
 
+
+        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
+          <h3 className="text-lg font-semibold">Import from VIPSMMPro</h3>
+
+          <p className="mt-1 text-xs text-gray-500">
+            Import all available VIPSMMPro services automatically.
+          </p>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+            <input
+              type="number"
+              min="0"
+              max="1000"
+              step="0.01"
+              value={vipsmmMarkup}
+              onChange={(e) => setVipsmmMarkup(e.target.value)}
+              className={inputClass}
+              placeholder="Markup % e.g. 25"
+            />
+
+            <button
+              type="button"
+              onClick={importAllVipsmmServices}
+              disabled={vipsmmImporting}
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            >
+              {vipsmmImporting
+                ? "Importing..."
+                : "Import All Services"}
+            </button>
+          </div>
+
+          <label className="mt-3 inline-flex items-center gap-2 text-xs text-gray-400">
+            <input
+              type="checkbox"
+              checked={vipsmmAutoSync}
+              onChange={(e) => setVipsmmAutoSync(e.target.checked)}
+            />
+            Automatically update selling prices when VIPSMMPro rates change
+          </label>
+
+          {vipsmmResult && (
+            <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
+              {vipsmmResult}
+            </div>
+          )}
+        </section>
         <div className="grid gap-6 lg:grid-cols-[390px_1fr]">
           <section className="h-fit rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
             <div className="flex items-center justify-between">
@@ -893,17 +997,17 @@ useEffect(() => {
                         <p className="mt-1 text-xs text-gray-500">
                           {service.platform}
                           {service.category
-                            ? ` Â· ${service.category}`
+                            ? ` Ã‚Â· ${service.category}`
                             : ""}
                         </p>
 
                         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate â‚¹{service.rate}/1k
+                            Rate Ã¢â€šÂ¹{service.rate}/1k
                           </span>
 
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            {service.min.toLocaleString()}â€“
+                            {service.min.toLocaleString()}Ã¢â‚¬â€œ
                             {service.max.toLocaleString()}
                           </span>
 
@@ -912,7 +1016,7 @@ useEffect(() => {
                               "No provider"}
 
                             {service.providerId
-                              ? ` Â· ID ${service.providerId}`
+                              ? ` Ã‚Â· ID ${service.providerId}`
                               : ""}
                           </span>
                         </div>
