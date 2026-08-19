@@ -18,6 +18,7 @@ export type VipsmmService = {
   max: string | number;
   refill?: boolean | string;
   cancel?: boolean | string;
+  average_time?: string | number;
 };
 
 async function vipsmmRequest(body: URLSearchParams) {
@@ -25,18 +26,39 @@ async function vipsmmRequest(body: URLSearchParams) {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
     },
-    body,
+    body: body.toString(),
     cache: "no-store",
   });
 
-  if (!response.ok) {
+  const text = await response.text();
+
+  let data: any;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
     throw new Error(
-      `VIPSMMPro API returned HTTP ${response.status}.`
+      `VIPSMMPro returned HTTP ${response.status}: ${text.slice(0, 300)}`
     );
   }
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(
+      `VIPSMMPro API returned HTTP ${response.status}: ${
+        data?.error ||
+        data?.message ||
+        "Authentication/API error"
+      }`
+    );
+  }
+
+  if (data?.error) {
+    throw new Error(`VIPSMMPro API error: ${data.error}`);
+  }
+
+  return data;
 }
 
 export async function getVipsmmServices(): Promise<VipsmmService[]> {
@@ -49,7 +71,8 @@ export async function getVipsmmServices(): Promise<VipsmmService[]> {
 
   if (!Array.isArray(data)) {
     throw new Error(
-      data?.error || "VIPSMMPro returned an invalid service list."
+      data?.error ||
+        "VIPSMMPro returned an invalid service list."
     );
   }
 
@@ -160,4 +183,3 @@ export async function getVipsmmBalance() {
     currency: String(data.currency || ""),
   };
 }
-
