@@ -49,32 +49,21 @@ export async function POST() {
       },
       select: {
         id: true,
-        userId: true,
         providerId: true,
-        service: {
-          select: {
-            providerName: true,
-          },
-        },
-        quantity: true,
-        charge: true,
-        status: true,
       },
       take: 50,
     });
 
     let updated = 0;
-    let refunded = 0;
     let failed = 0;
 
     for (const order of orders) {
       if (!order.providerId) continue;
 
       try {
-        const provider =
-          order.service.providerName === "VIPSMMPro"
-            ? await getVipsmmOrderStatus(order.providerId)
-            : await getMicoSmmOrderStatus(order.providerId);
+        const provider = await getMicoSmmOrderStatus(
+          order.providerId
+        );
 
         const status = provider.status.toUpperCase();
 
@@ -97,74 +86,6 @@ export async function POST() {
           newStatus = "CANCELLED";
         } else if (status === "PENDING") {
           newStatus = "PENDING";
-        }
-
-        const shouldRefund =
-          order.status !== "PARTIAL" &&
-          order.status !== "CANCELLED" &&
-          (newStatus === "CANCELLED" || newStatus === "PARTIAL");
-
-        if (shouldRefund) {
-          let refundAmount = order.charge;
-
-          if (newStatus === "PARTIAL") {
-            const remains = Math.max(
-              0,
-              Math.min(provider.remains ?? 0, order.quantity)
-            );
-
-            refundAmount =
-              order.quantity > 0
-                ? order.charge
-                    .mul(remains)
-                    .div(order.quantity)
-                : order.charge;
-          }
-
-          if (refundAmount.gt(0)) {
-            await prisma.$transaction(async (tx) => {
-              await tx.user.update({
-                where: {
-                  id: order.userId,
-                },
-                data: {
-                  balance: {
-                    increment: refundAmount,
-                  },
-                  totalSpent: {
-                    decrement: refundAmount,
-                  },
-                },
-              });
-
-              await tx.transaction.create({
-                data: {
-                  userId: order.userId,
-                  type: "REFUND",
-                  amount: refundAmount,
-                  note:
-                    newStatus === "PARTIAL"
-                      ? `Partial refund for order #${order.id}`
-                      : `Full refund for cancelled order #${order.id}`,
-                },
-              });
-
-              await tx.order.update({
-                where: {
-                  id: order.id,
-                },
-                data: {
-                  status: "REFUNDED",
-                  remains: provider.remains,
-                  startCount: provider.startCount,
-                },
-              });
-            });
-
-            refunded++;
-            updated++;
-            continue;
-          }
         }
 
         await prisma.order.update({
@@ -193,7 +114,6 @@ export async function POST() {
       success: true,
       checked: orders.length,
       updated,
-      refunded,
       failed,
     });
   } catch (error) {
