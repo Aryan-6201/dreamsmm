@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -288,7 +288,7 @@ useEffect(() => {
     const markup = Number(vipsmmMarkup);
 
     if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
-      setMessage("Enter a valid VIPSMMPro markup percentage.");
+      setMessage("Enter a valid MKAPI markup percentage.");
       return;
     }
 
@@ -312,7 +312,7 @@ useEffect(() => {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Unable to import VIPSMMPro services."
+          data.error || "Unable to import MKAPI services."
         );
       }
 
@@ -323,14 +323,14 @@ useEffect(() => {
         " · Categories: " + (data.categoriesCreated ?? 0)
       );
 
-      setMessage("VIPSMMPro services imported successfully.");
+      setMessage("MKAPI services imported successfully.");
       await loadServices();
       await loadCategories();
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Unable to import VIPSMMPro services."
+          : "Unable to import MKAPI services."
       );
     } finally {
       setVipsmmImporting(false);
@@ -677,10 +677,10 @@ useEffect(() => {
 
 
         <section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
-          <h3 className="text-lg font-semibold">Import from VIPSMMPro</h3>
+          <h3 className="text-lg font-semibold">Import from MKAPI</h3>
 
           <p className="mt-1 text-xs text-gray-500">
-            Import all available VIPSMMPro services automatically.
+            Import all available MKAPI services automatically.
           </p>
 
           <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
@@ -713,7 +713,7 @@ useEffect(() => {
               checked={vipsmmAutoSync}
               onChange={(e) => setVipsmmAutoSync(e.target.checked)}
             />
-            Automatically update selling prices when VIPSMMPro rates change
+            Automatically update selling prices when MKAPI rates change
           </label>
 
           {vipsmmResult && (

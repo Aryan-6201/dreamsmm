@@ -72,7 +72,7 @@ export async function POST() {
 
       try {
         const provider =
-          order.service.providerName === "VIPSMMPro"
+          order.service.providerName === "MKAPI"
             ? await getVipsmmOrderStatus(order.providerId)
             : await getMicoSmmOrderStatus(order.providerId);
 

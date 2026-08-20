@@ -17,9 +17,11 @@ export type MkapiService = {
   min: string | number;
   max: string | number;
   refill?: boolean | string;
+  cancel?: boolean | string;
+  average_time?: string | number;
 };
 
-async function mkapiRequest(body: URLSearchParams) {
+async function vipsmmRequest(body: URLSearchParams) {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -58,7 +60,7 @@ async function mkapiRequest(body: URLSearchParams) {
 }
 
 export async function getMkapiServices(): Promise<MkapiService[]> {
-  const data = await mkapiRequest(
+  const data = await vipsmmRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "services",
@@ -72,8 +74,14 @@ export async function getMkapiServices(): Promise<MkapiService[]> {
   return data;
 }
 
-export async function getMkapiService(serviceId: string) {
+export async function getMkapiService(
+  serviceId: string
+): Promise<MkapiService> {
   const id = serviceId.trim();
+
+  if (!id) {
+    throw new Error("MKAPI service ID is required.");
+  }
 
   const services = await getMkapiServices();
 
@@ -97,7 +105,7 @@ export async function addMkapiOrder({
   link: string;
   quantity: number;
 }) {
-  const data = await mkapiRequest(
+  const data = await vipsmmRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "add",
@@ -108,7 +116,9 @@ export async function addMkapiOrder({
   );
 
   if (data.order === undefined) {
-    throw new Error(data.error || "MKAPI did not return an order ID.");
+    throw new Error(
+      data.error || "MKAPI did not return an order ID."
+    );
   }
 
   return {
@@ -119,7 +129,7 @@ export async function addMkapiOrder({
 export async function getMkapiOrderStatus(
   providerOrderId: string
 ) {
-  const data = await mkapiRequest(
+  const data = await vipsmmRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "status",
@@ -145,7 +155,7 @@ export async function getMkapiOrderStatus(
 }
 
 export async function getMkapiBalance() {
-  const data = await mkapiRequest(
+  const data = await vipsmmRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "balance",
@@ -157,3 +167,4 @@ export async function getMkapiBalance() {
     currency: String(data.currency || ""),
   };
 }
+

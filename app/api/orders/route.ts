@@ -376,7 +376,7 @@ export async function POST(request: Request) {
     try {
       let providerResult;
 
-      if (service.providerName === "VIPSMMPro") {
+      if (service.providerName === "MKAPI") {
         providerResult = await addVipsmmOrder({
           serviceId: service.providerId,
           link,

@@ -176,7 +176,7 @@ export async function POST(request: Request) {
       const existingService =
         await prisma.service.findFirst({
           where: {
-            providerName: "VIPSMMPro",
+            providerName: "MKAPI",
             providerId,
           },
         });
@@ -223,7 +223,7 @@ export async function POST(request: Request) {
               providerService.refill === true ||
               providerService.refill === "true",
             providerId,
-            providerName: "VIPSMMPro",
+            providerName: "MKAPI",
             providerRate,
             markupPercent,
             autoSync,
@@ -236,7 +236,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "VIPSMMPro services imported successfully.",
+      message: "MKAPI services imported successfully.",
       totalFromProvider: providerServices.length,
       created,
       updated,
@@ -246,14 +246,14 @@ export async function POST(request: Request) {
       autoSync,
     });
   } catch (error) {
-    console.error("VIPSMMPro import error:", error);
+    console.error("MKAPI import error:", error);
 
     return NextResponse.json(
       {
         error:
           error instanceof Error
             ? error.message
-            : "Unable to import VIPSMMPro services.",
+            : "Unable to import MKAPI services.",
       },
       { status: 500 }
     );

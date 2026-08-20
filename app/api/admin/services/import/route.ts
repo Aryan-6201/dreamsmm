@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
-import { getVipsmmService } from "@/lib/providers/vipsmm";
+import { getMkapiService } from "@/lib/providers/mkapi";
 
 async function getAdmin() {
   const cookieStore = await cookies();
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
     if (!serviceId) {
       return NextResponse.json(
-        { error: "VIPSMMPro service ID is required." },
+        { error: "MKAPI service ID is required." },
         { status: 400 }
       );
     }
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     /*
      * FETCH ONLY ONE SERVICE
      */
-    const providerService = await getVipsmmService(serviceId);
+    const providerService = await getMkapiService(serviceId);
 
     if (action === "fetch") {
       return NextResponse.json({
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
       max < min
     ) {
       return NextResponse.json(
-        { error: "VIPSMMPro returned invalid service details." },
+        { error: "MKAPI returned invalid service details." },
         { status: 400 }
       );
     }
@@ -218,13 +218,13 @@ export async function POST(request: Request) {
     }
 
     /*
-     * Check if this exact VIPSMMPro service
+     * Check if this exact MKAPI service
      * already exists.
      */
     const existingService =
       await prisma.service.findFirst({
         where: {
-          providerName: "VIPSMMPro",
+          providerName: "MKAPI",
           providerId,
         },
       });
@@ -259,7 +259,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         message:
-          "VIPSMMPro service updated successfully.",
+          "MKAPI service updated successfully.",
         created: false,
         updated: true,
         service: {
@@ -287,7 +287,7 @@ export async function POST(request: Request) {
             providerService.refill === true ||
             providerService.refill === "true",
           providerId,
-          providerName: "VIPSMMPro",
+          providerName: "MKAPI",
           providerRate,
           markupPercent,
           autoSync,
@@ -297,7 +297,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message:
-        "VIPSMMPro service imported successfully.",
+        "MKAPI service imported successfully.",
       created: true,
       updated: false,
       service: {
@@ -307,7 +307,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error(
-      "VIPSMMPro service import error:",
+      "MKAPI service import error:",
       error
     );
 
@@ -316,7 +316,7 @@ export async function POST(request: Request) {
         error:
           error instanceof Error
             ? error.message
-            : "Unable to import VIPSMMPro service.",
+            : "Unable to import MKAPI service.",
       },
       { status: 500 }
     );

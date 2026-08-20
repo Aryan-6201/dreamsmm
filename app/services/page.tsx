@@ -290,7 +290,7 @@ useEffect(() => {
     const serviceId = vipsmmServiceId.trim();
 
     if (!serviceId) {
-      setMessage("Enter a VIPSMMPro service ID first.");
+      setMessage("Enter a MKAPI service ID first.");
       return;
     }
 
@@ -314,7 +314,7 @@ useEffect(() => {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Unable to fetch VIPSMMPro service."
+          data.error || "Unable to fetch MKAPI service."
         );
       }
 
@@ -323,7 +323,7 @@ useEffect(() => {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Unable to fetch VIPSMMPro service."
+          : "Unable to fetch MKAPI service."
       );
     } finally {
       setVipsmmImporting(false);
@@ -361,12 +361,12 @@ useEffect(() => {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Unable to import VIPSMMPro service."
+          data.error || "Unable to import MKAPI service."
         );
       }
 
       setMessage(
-        `VIPSMMPro service #${data.service.id} imported successfully.`
+        `MKAPI service #${data.service.id} imported successfully.`
       );
       setVipsmmServiceId("");
       setVipsmmMarkup("");
@@ -377,7 +377,7 @@ useEffect(() => {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Unable to import VIPSMMPro service."
+          : "Unable to import MKAPI service."
       );
     } finally {
       setVipsmmImporting(false);
@@ -725,7 +725,7 @@ useEffect(() => {
 
         <section className="mb-6 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/[0.08] to-cyan-500/[0.04] p-5">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold">Import from VIPSMMPro</h3>
+            <h3 className="text-lg font-semibold">Import from MKAPI</h3>
             <p className="mt-1 text-xs text-gray-500">
               Enter only the provider service ID. Details are fetched automatically.
             </p>
@@ -739,7 +739,7 @@ useEffect(() => {
                 if (e.key === "Enter") fetchVipsmmService();
               }}
               className={inputClass}
-              placeholder="VIPSMMPro Service ID e.g. 12345"
+              placeholder="MKAPI Service ID e.g. 12345"
               inputMode="numeric"
             />
 
