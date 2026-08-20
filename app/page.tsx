@@ -138,7 +138,7 @@ function startGoogleLogin() {
   return (
     <>
       <Script
-        src="661199063885-pv5931eq4cojnqahn4fvlifrc6jmml11.apps.googleusercontent.com"
+        src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={initializeGoogle}
       />
