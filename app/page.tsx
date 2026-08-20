@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { FormEvent, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -14,6 +14,17 @@ declare global {
             callback: (response: { credential: string }) => void;
           }) => void;
           prompt: () => void;
+            renderButton: (
+              parent: HTMLElement,
+              options: {
+                type?: string;
+                theme?: string;
+                size?: string;
+                text?: string;
+                shape?: string;
+                width?: number;
+              }
+            ) => void;
         };
       };
     };
@@ -29,6 +40,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+  const googleReadyRef = useRef(false);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -86,62 +99,97 @@ export default function Home() {
   }
 
   function initializeGoogle() {
-  const google = window.google;
+    const google = window.google;
 
-  if (!google) {
-    console.error("Google Identity Services failed to load.");
-    return;
+    if (!google) {
+      googleReadyRef.current = false;
+      return false;
+    }
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      setError("Google login is not configured.");
+      googleReadyRef.current = false;
+      return false;
+    }
+
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: (response) => {
+        handleGoogleLogin(response.credential);
+      },
+    });
+
+    if (googleButtonRef.current) {
+      googleButtonRef.current.innerHTML = "";
+
+      google.accounts.id.renderButton(googleButtonRef.current, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        width: 380,
+      });
+
+      googleReadyRef.current = true;
+    }
+
+    return googleReadyRef.current;
   }
 
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  function startGoogleLogin() {
+    setError("");
 
-  if (!clientId) {
-    setError("Google login is not configured.");
-    return;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const tryGoogleLogin = () => {
+      attempts++;
+
+      if (window.google && initializeGoogle()) {
+        return;
+      }
+
+      if (attempts < maxAttempts) {
+        window.setTimeout(tryGoogleLogin, 500);
+        return;
+      }
+
+      setError(
+        "Google Sign-In could not load. Please refresh the page and try again."
+      );
+    };
+
+    tryGoogleLogin();
   }
 
-  google.accounts.id.initialize({
-    client_id: clientId,
-    callback: (response) => {
-      handleGoogleLogin(response.credential);
-    },
-  });
-}
-  
-function startGoogleLogin() {
-  setError("");
+  useEffect(() => {
+    let cancelled = false;
 
-  if (!window.google) {
-    setError(
-      "Google Sign-In is still loading. Refresh the page and try again."
-    );
-    console.error(
-      "Google Identity Services script is not available."
-    );
-    return;
-  }
+    const tryInitialize = () => {
+      if (cancelled) return;
 
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      if (window.google) {
+        initializeGoogle();
+        return;
+      }
 
-  if (!clientId) {
-    setError("Google login is not configured.");
-    return;
-  }
+      window.setTimeout(tryInitialize, 250);
+    };
 
-  initializeGoogle();
+    tryInitialize();
 
-  window.google.accounts.id.prompt();
-}
-
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const busy = loading || googleLoading;
 
   return (
     <>
-      <Script
-        src="https://accounts.google.com/gsi/client"
-        strategy="afterInteractive"
-        onLoad={initializeGoogle}
-      />
+      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => initializeGoogle()} />
 
       <main className="min-h-screen overflow-hidden bg-[#f7f8fc] text-slate-900 selection:bg-violet-500/20">
         {/* Ambient premium background */}
@@ -241,14 +289,18 @@ function startGoogleLogin() {
                     <div className="relative grid grid-cols-1 gap-3">
                       <button
                         type="button"
-                        onClick={startGoogleLogin}
                         disabled={busy}
-                        className="group h-12 rounded-2xl border border-white/[0.10] bg-white text-sm font-bold text-slate-700 transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="pointer-events-none h-12 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-700"
                       >
                         <span className="mr-2 font-black text-red-400">G</span>
                         Continue with Google
                       </button>
 
+                      <div
+                        ref={googleButtonRef}
+                        className="absolute inset-0 z-10 flex h-12 w-full cursor-pointer items-center justify-center overflow-hidden opacity-0"
+                        aria-label="Continue with Google"
+                      />
                     </div>
 
                     {googleLoading && (
