@@ -1,4 +1,4 @@
-﻿const API_URL =
+const API_URL =
   process.env.MKAPI_API_URL || "https://mkapiservices.com/api/v2";
 
 const API_KEY = process.env.MKAPI_API_KEY || "";
@@ -7,7 +7,7 @@ if (!API_KEY) {
   throw new Error("MKAPI_API_KEY is not configured.");
 }
 
-export type VipsmmService = {
+export type MkapiService = {
   service: string | number;
   name: string;
   type?: string;
@@ -17,11 +17,9 @@ export type VipsmmService = {
   min: string | number;
   max: string | number;
   refill?: boolean | string;
-  cancel?: boolean | string;
-  average_time?: string | number;
 };
 
-async function vipsmmRequest(body: URLSearchParams) {
+async function mkapiRequest(body: URLSearchParams) {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -59,8 +57,8 @@ async function vipsmmRequest(body: URLSearchParams) {
   return data;
 }
 
-export async function getVipsmmServices(): Promise<VipsmmService[]> {
-  const data = await vipsmmRequest(
+export async function getMkapiServices(): Promise<MkapiService[]> {
+  const data = await mkapiRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "services",
@@ -74,16 +72,10 @@ export async function getVipsmmServices(): Promise<VipsmmService[]> {
   return data;
 }
 
-export async function getVipsmmService(
-  serviceId: string
-): Promise<VipsmmService> {
+export async function getMkapiService(serviceId: string) {
   const id = serviceId.trim();
 
-  if (!id) {
-    throw new Error("MKAPI service ID is required.");
-  }
-
-  const services = await getVipsmmServices();
+  const services = await getMkapiServices();
 
   const service = services.find(
     (item) => String(item.service) === id
@@ -96,7 +88,7 @@ export async function getVipsmmService(
   return service;
 }
 
-export async function addVipsmmOrder({
+export async function addMkapiOrder({
   serviceId,
   link,
   quantity,
@@ -105,7 +97,7 @@ export async function addVipsmmOrder({
   link: string;
   quantity: number;
 }) {
-  const data = await vipsmmRequest(
+  const data = await mkapiRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "add",
@@ -116,9 +108,7 @@ export async function addVipsmmOrder({
   );
 
   if (data.order === undefined) {
-    throw new Error(
-      data.error || "MKAPI did not return an order ID."
-    );
+    throw new Error(data.error || "MKAPI did not return an order ID.");
   }
 
   return {
@@ -126,10 +116,10 @@ export async function addVipsmmOrder({
   };
 }
 
-export async function getVipsmmOrderStatus(
+export async function getMkapiOrderStatus(
   providerOrderId: string
 ) {
-  const data = await vipsmmRequest(
+  const data = await mkapiRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "status",
@@ -154,8 +144,8 @@ export async function getVipsmmOrderStatus(
   };
 }
 
-export async function getVipsmmBalance() {
-  const data = await vipsmmRequest(
+export async function getMkapiBalance() {
+  const data = await mkapiRequest(
     new URLSearchParams({
       key: API_KEY,
       action: "balance",

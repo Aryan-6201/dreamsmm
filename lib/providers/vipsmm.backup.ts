@@ -1,10 +1,10 @@
 ﻿const API_URL =
-  process.env.MKAPI_API_URL || "https://mkapiservices.com/api/v2";
+  process.env.VIPSMM_API_URL || "https://vipsmmpro.com/api/v2";
 
-const API_KEY = process.env.MKAPI_API_KEY || "";
+const API_KEY = process.env.VIPSMM_API_KEY || "";
 
 if (!API_KEY) {
-  throw new Error("MKAPI_API_KEY is not configured.");
+  throw new Error("VIPSMM_API_KEY is not configured.");
 }
 
 export type VipsmmService = {
@@ -40,35 +40,40 @@ async function vipsmmRequest(body: URLSearchParams) {
     data = JSON.parse(text);
   } catch {
     throw new Error(
-      `MKAPI returned HTTP ${response.status}: ${text.slice(0, 300)}`
+      `VIPSMMPro returned HTTP ${response.status}: ${text.slice(0, 300)}`
     );
   }
 
   if (!response.ok) {
     throw new Error(
-      `MKAPI returned HTTP ${response.status}: ${
-        data?.error || data?.message || "API error"
+      `VIPSMMPro API returned HTTP ${response.status}: ${
+        data?.error ||
+        data?.message ||
+        "Authentication/API error"
       }`
     );
   }
 
   if (data?.error) {
-    throw new Error(`MKAPI error: ${data.error}`);
+    throw new Error(`VIPSMMPro API error: ${data.error}`);
   }
 
   return data;
 }
 
 export async function getVipsmmServices(): Promise<VipsmmService[]> {
-  const data = await vipsmmRequest(
-    new URLSearchParams({
-      key: API_KEY,
-      action: "services",
-    })
-  );
+  const body = new URLSearchParams({
+    key: API_KEY,
+    action: "services",
+  });
+
+  const data = await vipsmmRequest(body);
 
   if (!Array.isArray(data)) {
-    throw new Error("MKAPI returned an invalid service list.");
+    throw new Error(
+      data?.error ||
+        "VIPSMMPro returned an invalid service list."
+    );
   }
 
   return data;
@@ -80,7 +85,7 @@ export async function getVipsmmService(
   const id = serviceId.trim();
 
   if (!id) {
-    throw new Error("MKAPI service ID is required.");
+    throw new Error("VIPSMMPro service ID is required.");
   }
 
   const services = await getVipsmmServices();
@@ -90,7 +95,9 @@ export async function getVipsmmService(
   );
 
   if (!service) {
-    throw new Error(`MKAPI service ${id} was not found.`);
+    throw new Error(
+      `VIPSMMPro service ${id} was not found.`
+    );
   }
 
   return service;
@@ -105,19 +112,20 @@ export async function addVipsmmOrder({
   link: string;
   quantity: number;
 }) {
-  const data = await vipsmmRequest(
-    new URLSearchParams({
-      key: API_KEY,
-      action: "add",
-      service: serviceId,
-      link,
-      quantity: String(quantity),
-    })
-  );
+  const body = new URLSearchParams({
+    key: API_KEY,
+    action: "add",
+    service: serviceId,
+    link,
+    quantity: String(quantity),
+  });
 
-  if (data.order === undefined) {
+  const data = await vipsmmRequest(body);
+
+  if (data.error || data.order === undefined) {
     throw new Error(
-      data.error || "MKAPI did not return an order ID."
+      data.error ||
+        "VIPSMMPro did not return an order ID."
     );
   }
 
@@ -129,13 +137,17 @@ export async function addVipsmmOrder({
 export async function getVipsmmOrderStatus(
   providerOrderId: string
 ) {
-  const data = await vipsmmRequest(
-    new URLSearchParams({
-      key: API_KEY,
-      action: "status",
-      order: providerOrderId,
-    })
-  );
+  const body = new URLSearchParams({
+    key: API_KEY,
+    action: "status",
+    order: providerOrderId,
+  });
+
+  const data = await vipsmmRequest(body);
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
 
   return {
     status: data.status || "Unknown",
@@ -155,12 +167,16 @@ export async function getVipsmmOrderStatus(
 }
 
 export async function getVipsmmBalance() {
-  const data = await vipsmmRequest(
-    new URLSearchParams({
-      key: API_KEY,
-      action: "balance",
-    })
-  );
+  const body = new URLSearchParams({
+    key: API_KEY,
+    action: "balance",
+  });
+
+  const data = await vipsmmRequest(body);
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
 
   return {
     balance: Number(data.balance),
