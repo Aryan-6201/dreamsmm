@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 import { getMicoSmmOrderStatus } from "@/lib/providers/micosmm";
-import { getVipsmmOrderStatus } from "@/lib/providers/vipsmm";
+import { getMkapiOrderStatus } from "@/lib/providers/mkapi";
 
 export async function POST() {
   try {
@@ -73,7 +73,7 @@ export async function POST() {
       try {
         const provider =
           order.service.providerName === "MKAPI"
-            ? await getVipsmmOrderStatus(order.providerId)
+            ? await getMkapiOrderStatus(order.providerId)
             : await getMicoSmmOrderStatus(order.providerId);
 
         const status = provider.status.toUpperCase();

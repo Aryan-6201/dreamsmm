@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
-import { addVipsmmOrder } from "@/lib/providers/vipsmm";
+import { addMkapiOrder } from "@/lib/providers/mkapi";
 
 /**
  * GET /api/orders
@@ -377,7 +377,7 @@ export async function POST(request: Request) {
       let providerResult;
 
       if (service.providerName === "MKAPI") {
-        providerResult = await addVipsmmOrder({
+        providerResult = await addMkapiOrder({
           serviceId: service.providerId,
           link,
           quantity,
