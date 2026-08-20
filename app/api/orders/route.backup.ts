@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
-import { addVipsmmOrder } from "@/lib/providers/vipsmm";
 
 /**
  * GET /api/orders
@@ -246,7 +245,6 @@ export async function POST(request: Request) {
         min: true,
         max: true,
         providerId: true,
-        providerName: true,
       },
     });
 
@@ -374,21 +372,11 @@ export async function POST(request: Request) {
     let providerOrderId: string;
 
     try {
-      let providerResult;
-
-      if (service.providerName === "VIPSMMPro") {
-        providerResult = await addVipsmmOrder({
-          serviceId: service.providerId,
-          link,
-          quantity,
-        });
-      } else {
-        providerResult = await addMicoSmmOrder({
-          serviceId: service.providerId,
-          link,
-          quantity,
-        });
-      }
+      const providerResult = await addMicoSmmOrder({
+        serviceId: service.providerId,
+        link,
+        quantity,
+      });
 
       providerOrderId = providerResult.providerOrderId;
     } catch (providerError) {

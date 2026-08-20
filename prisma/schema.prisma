@@ -7,6 +7,210 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id              String           @id @default(cuid())
+  name            String?
+  email           String           @unique
+  passwordHash    String
+  role            UserRole         @default(USER)
+  balance         Decimal          @default(0) @db.Decimal(12, 2)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  lastLoginAt     DateTime?
+  lastSeenAt      DateTime?
+  status          UserStatus       @default(ACTIVE)
+  totalSpent      Decimal          @default(0) @db.Decimal(12, 2)
+  bonuses         Bonus[]
+  couponUses      CouponUse[]
+  depositRequests DepositRequest[]
+  orders          Order[]
+  tickets         Ticket[]
+  transactions    Transaction[]
+}
+
+model Service {
+  id            Int      @id @default(autoincrement())
+  name          String
+  platform      String
+  description   String?
+  rate          Decimal  @db.Decimal(12, 4)
+  min           Int
+  max           Int
+  enabled       Boolean  @default(true)
+  refill        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  category      String?
+  providerId    String?
+  providerName  String?
+  autoSync      Boolean  @default(false)
+  markupPercent Decimal? @db.Decimal(8, 2)
+  providerRate  Decimal? @db.Decimal(12, 4)
+  orders        Order[]
+
+  @@index([providerName])
+  @@index([providerId])
+  @@index([autoSync])
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  userId     String
+  serviceId  Int
+  link       String
+  quantity   Int
+  charge     Decimal     @db.Decimal(12, 2)
+  status     OrderStatus @default(PENDING)
+  providerId String?
+  startCount Int?
+  remains    Int?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  service    Service     @relation(fields: [serviceId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([status])
+}
+
+model Transaction {
+  id        Int             @id @default(autoincrement())
+  userId    String
+  type      TransactionType
+  amount    Decimal         @db.Decimal(12, 2)
+  note      String?
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model DepositRequest {
+  id         Int           @id @default(autoincrement())
+  userId     String
+  amount     Decimal       @db.Decimal(12, 2)
+  utr        String        @unique
+  note       String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  reviewedAt DateTime?
+  reviewedBy String?
+  status     DepositStatus @default(PENDING)
+  user       User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Bonus {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  amount    Decimal  @db.Decimal(12, 2)
+  reason    String?
+  createdBy String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Coupon {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique
+  type        DiscountType
+  value       Decimal      @db.Decimal(12, 2)
+  minAmount   Decimal?     @db.Decimal(12, 2)
+  maxDiscount Decimal?     @db.Decimal(12, 2)
+  usageLimit  Int?
+  usedCount   Int          @default(0)
+  status      CouponStatus @default(ACTIVE)
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  uses        CouponUse[]
+
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model CouponUse {
+  id        Int      @id @default(autoincrement())
+  couponId  Int
+  userId    String
+  discount  Decimal  @db.Decimal(12, 2)
+  createdAt DateTime @default(now())
+  coupon    Coupon   @relation(fields: [couponId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([couponId, userId])
+  @@index([userId])
+}
+
+model Ticket {
+  id        Int          @id @default(autoincrement())
+  userId    String
+  subject   String
+  message   String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  status    TicketStatus @default(OPEN)
+  user      User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model AdminAction {
+  id         Int      @id @default(autoincrement())
+  adminId    String
+  action     String
+  targetType String?
+  targetId   String?
+  amount     Decimal? @db.Decimal(12, 2)
+  reason     String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([targetType])
+  @@index([createdAt])
+}
+
+model PanelSetting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id            Int      @id @default(autoincrement())
+  name          String
+  platform      String
+  icon          String   @default("Sparkles")
+  iconStyle     String   @default("outline")
+  glowEnabled   Boolean  @default(true)
+  glowIntensity Int      @default(50)
+  badge         String?
+  description   String?
+  enabled       Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([platform])
+  @@index([enabled])
+  @@index([sortOrder])
+}
+
 enum UserRole {
   USER
   ADMIN
@@ -57,270 +261,4 @@ enum TicketStatus {
   OPEN
   IN_PROGRESS
   CLOSED
-}
-
-model User {
-  id              String      @id @default(cuid())
-  name            String?
-  email           String      @unique
-  passwordHash    String
-  role            UserRole    @default(USER)
-  status          UserStatus  @default(ACTIVE)
-
-  balance         Decimal     @default(0) @db.Decimal(12, 2)
-  totalSpent      Decimal     @default(0) @db.Decimal(12, 2)
-
-  lastSeenAt      DateTime?
-  lastLoginAt     DateTime?
-
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  orders          Order[]
-  transactions    Transaction[]
-  tickets         Ticket[]
-  depositRequests DepositRequest[]
-  bonuses         Bonus[]
-  couponUses      CouponUse[]
-}
-
-model Service {
-  id            Int       @id @default(autoincrement())
-  name          String
-  platform      String
-  category      String?
-  description   String?
-
-  // Customer-facing selling price per 1000
-  rate          Decimal   @db.Decimal(12, 4)
-
-  min           Int
-  max           Int
-
-  enabled       Boolean   @default(true)
-  refill        Boolean   @default(false)
-
-  // Provider connection
-  providerId    String?
-  providerName  String?
-
-  // Provider's actual cost per 1000
-  providerRate  Decimal?  @db.Decimal(12, 4)
-
-  // Your editable markup percentage
-  // Example:
-  // providerRate = 10
-  // markupPercent = 30
-  // rate = 13
-  markupPercent Decimal?  @db.Decimal(8, 2)
-
-  // If true, provider rate changes will automatically
-  // recalculate the customer-facing rate.
-  autoSync      Boolean   @default(false)
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  orders        Order[]
-
-  @@index([providerName])
-  @@index([providerId])
-  @@index([autoSync])
-}
-
-model Order {
-  id          Int         @id @default(autoincrement())
-  userId      String
-  serviceId   Int
-
-  link        String
-  quantity    Int
-
-  charge      Decimal     @db.Decimal(12, 2)
-
-  status      OrderStatus @default(PENDING)
-
-  providerId  String?
-  startCount  Int?
-  remains     Int?
-
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  user        User        @relation(fields: [userId], references: [id])
-  service     Service     @relation(fields: [serviceId], references: [id])
-
-  @@index([userId])
-  @@index([serviceId])
-  @@index([status])
-}
-
-model Transaction {
-  id          Int             @id @default(autoincrement())
-  userId      String
-
-  type        TransactionType
-  amount      Decimal         @db.Decimal(12, 2)
-
-  note        String?
-
-  createdAt   DateTime        @default(now())
-
-  user        User            @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([type])
-  @@index([createdAt])
-}
-
-model DepositRequest {
-  id          Int           @id @default(autoincrement())
-  userId      String
-
-  amount      Decimal       @db.Decimal(12, 2)
-  utr         String        @unique
-
-  status      DepositStatus @default(PENDING)
-  note        String?
-
-  reviewedAt  DateTime?
-  reviewedBy  String?
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  user        User          @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-model Bonus {
-  id          Int       @id @default(autoincrement())
-  userId      String
-
-  amount      Decimal   @db.Decimal(12, 2)
-  reason      String?
-
-  createdBy   String?
-  createdAt   DateTime  @default(now())
-
-  user        User      @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([createdAt])
-}
-
-model Coupon {
-  id          Int          @id @default(autoincrement())
-
-  code        String       @unique
-  type        DiscountType
-  value       Decimal      @db.Decimal(12, 2)
-
-  minAmount   Decimal?     @db.Decimal(12, 2)
-  maxDiscount Decimal?     @db.Decimal(12, 2)
-
-  usageLimit  Int?
-  usedCount   Int          @default(0)
-
-  status      CouponStatus  @default(ACTIVE)
-
-  startsAt    DateTime?
-  expiresAt   DateTime?
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  uses        CouponUse[]
-
-  @@index([status])
-  @@index([expiresAt])
-}
-
-model CouponUse {
-  id          Int       @id @default(autoincrement())
-  couponId    Int
-  userId      String
-
-  discount    Decimal   @db.Decimal(12, 2)
-
-  createdAt   DateTime  @default(now())
-
-  coupon      Coupon    @relation(fields: [couponId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
-
-  @@unique([couponId, userId])
-  @@index([userId])
-}
-
-model Ticket {
-  id          Int          @id @default(autoincrement())
-  userId      String
-
-  subject     String
-  message     String
-
-  status      TicketStatus @default(OPEN)
-
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  user        User         @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([status])
-}
-
-model AdminAction {
-  id          Int       @id @default(autoincrement())
-
-  adminId     String
-  action      String
-  targetType  String?
-  targetId    String?
-
-  amount      Decimal?  @db.Decimal(12, 2)
-  reason      String?
-
-  metadata    Json?
-
-  createdAt   DateTime  @default(now())
-
-  @@index([adminId])
-  @@index([action])
-  @@index([targetType])
-  @@index([createdAt])
-}
-
-model PanelSetting {
-  id          Int       @id @default(autoincrement())
-
-  key         String    @unique
-  value       String
-  description String?
-
-  updatedAt   DateTime  @updatedAt
-}
-
-model Category {
-  id             Int      @id @default(autoincrement())
-  name           String
-  platform       String
-  icon           String   @default("Sparkles")
-  iconStyle      String   @default("outline")
-  glowEnabled    Boolean  @default(true)
-  glowIntensity  Int      @default(50)
-  badge          String?
-  description    String?
-  enabled        Boolean  @default(true)
-  sortOrder      Int      @default(0)
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@index([platform])
-  @@index([enabled])
-  @@index([sortOrder])
 }
