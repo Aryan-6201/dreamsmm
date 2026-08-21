@@ -1,217 +1,560 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import Script from "next/script";
+import {
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (options: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+          }) => void;
+
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: string;
+              theme?: string;
+              size?: string;
+              text?: string;
+              shape?: string;
+              width?: number;
+              logo_alignment?: string;
+            }
+          ) => void;
+        };
+      };
+    };
+  }
+}
+
+export default function Home() {
+  const router = useRouter();
+
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+  const googleInitializedRef = useRef(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
+  const [error, setError] = useState("");
+
+  const busy = loading || googleLoading;
+
+  /* ================================
+     NORMAL EMAIL LOGIN
+  ================================= */
+
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (busy) return;
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setError(data.error || "Invalid email or password.");
+        return;
+      }
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Unable to connect to the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /* ================================
+     GOOGLE CREDENTIAL LOGIN
+  ================================= */
+
+  async function handleGoogleCredential(credential: string) {
+    setError("");
+    setGoogleLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setError(data.error || "Google login failed.");
+        return;
+      }
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Unable to connect to the server.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
+
+  /* ================================
+     GOOGLE INITIALIZATION
+     NO prompt()
+  ================================= */
+
+  function initializeGoogle() {
+    const google = window.google;
+    const clientId =
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!google || !googleButtonRef.current) {
+      return false;
+    }
+
+    if (!clientId) {
+      setError(
+        "Google login is not configured. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID."
+      );
+      return false;
+    }
+
+    if (googleInitializedRef.current) {
+      return true;
+    }
+
+    google.accounts.id.initialize({
+      client_id: clientId,
+
+      callback: (response) => {
+        if (response?.credential) {
+          handleGoogleCredential(response.credential);
+        }
+      },
+    });
+
+    googleButtonRef.current.innerHTML = "";
+
+    google.accounts.id.renderButton(
+      googleButtonRef.current,
+      {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "rectangular",
+        width: 390,
+        logo_alignment: "left",
+      }
+    );
+
+    googleInitializedRef.current = true;
+    setGoogleReady(true);
+
+    return true;
+  }
+
+  /* ================================
+     WAIT FOR GOOGLE SCRIPT
+  ================================= */
+
+  useEffect(() => {
+    let cancelled = false;
+
+    function waitForGoogle() {
+      if (cancelled) return;
+
+      if (
+        window.google &&
+        googleButtonRef.current
+      ) {
+        initializeGoogle();
+        return;
+      }
+
+      window.setTimeout(
+        waitForGoogle,
+        250
+      );
+    }
+
+    waitForGoogle();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-violet-700 via-violet-600 to-purple-500 flex items-center justify-center px-4 py-8">
-      {/* Background decoration */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 right-10 w-20 h-20 border border-white/10 rounded-full" />
-        <div className="absolute bottom-1/4 left-10 w-12 h-12 border border-white/10 rounded-full" />
-      </div>
+    <>
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+        onLoad={initializeGoogle}
+      />
 
-      <section className="relative w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-7">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-xl mb-4">
-            <span className="text-3xl font-black text-violet-600">D</span>
-          </div>
+      <main className="min-h-screen overflow-hidden bg-gradient-to-br from-violet-100 via-white to-indigo-100 text-slate-900">
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            DreamSMM
-          </h1>
+        {/* ================================
+            BACKGROUND
+        ================================= */}
 
-          <p className="text-white/80 mt-2 text-sm sm:text-base">
-            Grow your social media with ease.
-          </p>
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
+
+          <div className="absolute -left-32 -top-32 h-[420px] w-[420px] rounded-full bg-violet-300/40 blur-[100px]" />
+
+          <div className="absolute -right-32 top-0 h-[430px] w-[430px] rounded-full bg-fuchsia-200/50 blur-[110px]" />
+
+          <div className="absolute bottom-[-180px] left-[20%] h-[500px] w-[500px] rounded-full bg-indigo-200/50 blur-[120px]" />
+
         </div>
 
-        {/* Login Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8">
-          <div className="mb-7">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Welcome back
-            </h2>
+        {/* ================================
+            HEADER
+        ================================= */}
 
-            <p className="text-gray-500 mt-1 text-sm">
-              Sign in to continue to your account
-            </p>
-          </div>
+        <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
 
-          {/* Google */}
-          <button
-            type="button"
-            className="w-full h-12 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition flex items-center justify-center gap-3 text-gray-800 font-semibold shadow-sm"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                fill="#4285F4"
-                d="M21.35 12.27c0-.71-.06-1.4-.18-2.05H12v3.88h5.22a4.46 4.46 0 0 1-1.94 2.93v2.43h3.14c1.84-1.69 2.93-4.18 2.93-7.19z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 21.75c2.63 0 4.84-.87 6.45-2.35l-3.14-2.43c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.29v2.5A9.74 9.74 0 0 0 12 21.75z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M6.54 13.86A5.86 5.86 0 0 1 6.23 12c0-.65.11-1.28.31-1.86v-2.5H3.29A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.04 4.36l3.25-2.5z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 6.11c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.21 14.63 2.25 12 2.25a9.74 9.74 0 0 0-8.71 5.39l3.25 2.5C7.31 7.83 9.46 6.11 12 6.11z"
-              />
-            </svg>
+          <div className="flex items-center gap-3">
 
-            Continue with Google
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="h-px bg-gray-200 flex-1" />
-            <span className="text-xs font-medium text-gray-400">
-              OR CONTINUE WITH
-            </span>
-            <div className="h-px bg-gray-200 flex-1" />
-          </div>
-
-          <form className="space-y-5">
-            {/* Username / Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-gray-800 mb-2"
-              >
-                Email or Username
-              </label>
-
-              <input
-                id="email"
-                name="email"
-                type="text"
-                placeholder="Enter your email or username"
-                className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 outline-none transition focus:bg-white focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-              />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-lg font-black text-white shadow-lg shadow-violet-300/40">
+              D
             </div>
 
-            {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-semibold text-gray-800"
-                >
-                  Password
-                </label>
-
-                <Link
-                  href="/forgot-password"
-                  className="text-sm font-semibold text-violet-600 hover:text-violet-700"
-                >
-                  Forgot password?
-                </Link>
+              <div className="text-lg font-black tracking-tight text-slate-950">
+                Dream<span className="text-violet-600">SMM</span>
               </div>
 
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="w-full h-12 px-4 pr-12 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 outline-none transition focus:bg-white focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
+              <div className="text-[8px] font-bold tracking-[0.2em] text-slate-400">
+                SOCIAL MEDIA PANEL
+              </div>
+            </div>
+
+          </div>
+
+        </header>
+
+        {/* ================================
+            MAIN
+        ================================= */}
+
+        <section className="relative z-10 mx-auto grid min-h-[calc(100vh-75px)] max-w-6xl items-center gap-10 px-4 pb-8 sm:px-6 lg:grid-cols-[1fr_460px] lg:gap-20 lg:px-10">
+
+          {/* ================================
+              DESKTOP BRANDING
+          ================================= */}
+
+          <div className="hidden lg:block">
+
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-[9px] font-black uppercase tracking-[0.18em] text-violet-700 shadow-sm backdrop-blur">
+
+              <span className="h-2 w-2 rounded-full bg-violet-500" />
+
+              Premium Social Media Panel
+
+            </div>
+
+            <h1 className="max-w-xl text-6xl font-black leading-[.98] tracking-[-0.06em] text-slate-950">
+
+              Grow smarter.
+
+              <span className="mt-3 block bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 bg-clip-text text-transparent">
+                Manage everything.
+              </span>
+
+            </h1>
+
+            <p className="mt-6 max-w-lg text-sm leading-7 text-slate-500">
+              One modern workspace for your social media services,
+              orders, balance and support.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+
+              <span className="rounded-xl border border-white bg-white/80 px-3 py-2 text-[10px] font-bold text-slate-600 shadow-sm">
+                ⚡ Fast orders
+              </span>
+
+              <span className="rounded-xl border border-white bg-white/80 px-3 py-2 text-[10px] font-bold text-slate-600 shadow-sm">
+                🚀 1000+ services
+              </span>
+
+              <span className="rounded-xl border border-white bg-white/80 px-3 py-2 text-[10px] font-bold text-slate-600 shadow-sm">
+                🔒 Secure
+              </span>
+
+              <span className="rounded-xl border border-white bg-white/80 px-3 py-2 text-[10px] font-bold text-slate-600 shadow-sm">
+                🎧 24/7 support
+              </span>
+
+            </div>
+
+          </div>
+
+          {/* ================================
+              LOGIN CARD
+          ================================= */}
+
+          <div
+            id="login-card"
+            className="w-full"
+          >
+
+            <div className="rounded-[30px] border border-white/90 bg-white/95 p-5 shadow-[0_30px_90px_rgba(76,29,149,.15)] backdrop-blur-xl sm:rounded-[32px] sm:p-8">
+
+              {/* Login Header */}
+
+              <div className="mb-6 text-center">
+
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 text-xl shadow-sm">
+                  🔐
+                </div>
+
+                <h2 className="text-3xl font-black tracking-tight text-slate-950">
+                  Welcome back
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Sign in to continue to your DreamSMM workspace.
+                </p>
+
+              </div>
+
+              {/* ================================
+                  REAL GOOGLE BUTTON
+              ================================= */}
+
+              <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+
+                <div
+                  ref={googleButtonRef}
+                  className="flex min-h-[44px] w-full items-center justify-center overflow-hidden"
                 />
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-violet-600"
-                  aria-label={
-                    showPassword ? "Hide password" : "Show password"
-                  }
-                >
-                  {showPassword ? (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M3 3l18 18" />
-                      <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
-                      <path d="M9.88 5.09A9.77 9.77 0 0 1 12 4.87c5 0 8.27 4.27 9.5 7.13a10.7 10.7 0 0 1-2.02 3.04" />
-                      <path d="M6.61 6.61C4.62 7.96 3.22 10.02 2.5 12c1.23 2.86 4.5 7.13 9.5 7.13a9.8 9.8 0 0 0 3.02-.47" />
-                    </svg>
-                  ) : (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
-                </button>
               </div>
+
+              {!googleReady && !googleLoading && (
+                <p className="mt-2 text-center text-[10px] font-semibold text-slate-400">
+                  Loading Google Sign-In...
+                </p>
+              )}
+
+              {googleLoading && (
+                <div className="mt-3 rounded-2xl bg-violet-50 px-4 py-3 text-center text-xs font-bold text-violet-600">
+                  Signing in with Google...
+                </div>
+              )}
+
+              {/* ================================
+                  DIVIDER
+              ================================= */}
+
+              <div className="my-5 flex items-center gap-3">
+
+                <div className="h-px flex-1 bg-slate-200" />
+
+                <span className="whitespace-nowrap text-[8px] font-black tracking-[0.16em] text-slate-400">
+                  OR CONTINUE WITH EMAIL
+                </span>
+
+                <div className="h-px flex-1 bg-slate-200" />
+
+              </div>
+
+              {/* ================================
+                  ERROR
+              ================================= */}
+
+              {error && (
+                <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-600">
+                  {error}
+                </div>
+              )}
+
+              {/* ================================
+                  EMAIL LOGIN
+              ================================= */}
+
+              <form onSubmit={handleLogin}>
+
+                {/* Email */}
+
+                <div className="mb-4">
+
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-xs font-black text-slate-700"
+                  >
+                    Email address
+                  </label>
+
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) =>
+                      setEmail(e.target.value)
+                    }
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    inputMode="email"
+                    required
+                    disabled={busy}
+                    className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-violet-200 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
+                  />
+
+                </div>
+
+                {/* Password */}
+
+                <div className="mb-5">
+
+                  <div className="mb-2 flex items-center justify-between">
+
+                    <label
+                      htmlFor="password"
+                      className="text-xs font-black text-slate-700"
+                    >
+                      Password
+                    </label>
+
+                    <button
+                      type="button"
+                      className="text-xs font-bold text-violet-600 hover:text-violet-700"
+                    >
+                      Forgot password?
+                    </button>
+
+                  </div>
+
+                  <div className="relative">
+
+                    <input
+                      id="password"
+                      type={
+                        showPassword
+                          ? "text"
+                          : "password"
+                      }
+                      value={password}
+                      onChange={(e) =>
+                        setPassword(e.target.value)
+                      }
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      required
+                      disabled={busy}
+                      className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 pr-20 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-violet-200 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowPassword(
+                          (value) => !value
+                        )
+                      }
+                      disabled={busy}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg px-3 py-2 text-[10px] font-black text-slate-400 hover:bg-violet-50 hover:text-violet-600"
+                    >
+                      {showPassword
+                        ? "Hide"
+                        : "Show"}
+                    </button>
+
+                  </div>
+
+                </div>
+
+                {/* Submit */}
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="group relative h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_40px_rgba(109,74,255,.28)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(109,74,255,.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+
+                  <span className="relative">
+                    {loading
+                      ? "Signing in..."
+                      : "Sign in →"}
+                  </span>
+
+                </button>
+
+              </form>
+
+              {/* Register */}
+
+              <div className="mt-5 border-t border-slate-100 pt-5 text-center">
+
+                <p className="text-sm text-slate-500">
+
+                  Don&apos;t have an account?
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push("/register")
+                    }
+                    className="ml-1 font-black text-violet-600 hover:text-violet-700"
+                  >
+                    Create account
+                  </button>
+
+                </p>
+
+              </div>
+
             </div>
 
-            {/* Remember me */}
-            <div className="flex items-center gap-2">
-              <input
-                id="remember"
-                type="checkbox"
-                className="w-4 h-4 accent-violet-600"
-              />
+            <div className="mt-3 flex items-center justify-center gap-2 text-[9px] font-bold uppercase tracking-wider text-slate-400">
 
-              <label
-                htmlFor="remember"
-                className="text-sm text-gray-600 cursor-pointer"
-              >
-                Remember me
-              </label>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+
+              Secure DreamSMM workspace
+
             </div>
 
-            {/* Login Button */}
-            <button
-              type="submit"
-              className="w-full h-12 rounded-xl bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white font-bold transition shadow-lg shadow-violet-600/20"
-            >
-              Sign In
-            </button>
-          </form>
+          </div>
 
-          {/* Register */}
-          <p className="text-center text-sm text-gray-500 mt-7">
-            Don't have an account?{" "}
-            <Link
-              href="/signup"
-              className="font-bold text-violet-600 hover:text-violet-700"
-            >
-              Create account
-            </Link>
-          </p>
-        </div>
+        </section>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-white/70 mt-6">
-          © {new Date().getFullYear()} DreamSMM. All rights reserved.
-        </p>
-      </section>
-    </main>
+      </main>
+    </>
   );
 }
