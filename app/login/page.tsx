@@ -735,7 +735,7 @@ export default function Home() {
                 <div className="mb-2 flex items-center justify-between">
 
                   <label
-                    htmlFor="password"
+                    htmlFor="login-password"
                     className="text-xs font-bold text-slate-700"
                   >
                     Password
@@ -753,7 +753,7 @@ export default function Home() {
                 <div className="relative">
 
                   <input
-                    id="password"
+                    id="login-password"`n                    name="login-password"
                     type={
                       showPassword
                         ? "text"
@@ -766,7 +766,7 @@ export default function Home() {
                       )
                     }
                     placeholder="Enter your password"
-                    autoComplete="new-password"
+                    autoComplete="off"
                     required
                     disabled={busy}
                     className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
