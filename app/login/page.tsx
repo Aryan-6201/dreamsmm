@@ -752,8 +752,6 @@ export default function Home() {
 
                 <div className="relative">
 
-                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-violet-400">&#8226;</span>
-
                   <input
                     id="password"
                     type={
