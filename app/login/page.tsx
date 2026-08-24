@@ -749,7 +749,7 @@ export default function Home() {
                 <div className="relative">
 
                   <input
-                    id="login-password" name="login-password"
+                    id="login-password" name="dreamsmm_login_secret"
                     type={
                       showPassword
                         ? "text"
@@ -762,7 +762,7 @@ export default function Home() {
                       )
                     }
                     placeholder="Enter your password"
-                    autoComplete="off"
+                    autoComplete="new-password"
                     required
                     disabled={busy}
                     className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
