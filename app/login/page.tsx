@@ -755,7 +755,7 @@ export default function Home() {
                         ? "text"
                         : "password"
                     }
-                    defaultValue=""
+                    value={password}
                     onChange={(e) =>
                       setPassword(
                         e.target.value
