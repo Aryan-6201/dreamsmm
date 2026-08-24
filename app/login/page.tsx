@@ -703,10 +703,6 @@ export default function Home() {
 
                 <div className="relative">
 
-                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-violet-400">
-                    @
-                  </span>
-
                   <input
                     id="email"
                     type="email"
