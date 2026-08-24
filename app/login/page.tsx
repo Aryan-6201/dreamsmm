@@ -507,26 +507,24 @@ export default function Home() {
           </div>
 
           <button
-            type="button"
-            onClick={() =>
-              document
-                .getElementById(
-                  "login-card"
-                )
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                })
-            }
-            className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-500 px-5 py-2.5 text-xs font-black text-white shadow-[0_10px_30px_rgba(124,58,237,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(124,58,237,0.35)] sm:px-6 sm:py-3 sm:text-sm"
-          >
-
-            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-
-            <span className="relative">
-              Sign in →
-            </span>
-
-          </button>
+  type="button"
+  onClick={() =>
+    document
+      .getElementById("login-card")
+      ?.scrollIntoView({
+        behavior: "smooth",
+      })
+  }
+  className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-500 px-6 py-3 text-sm font-black text-white shadow-[0_10px_30px_rgba(124,58,237,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(124,58,237,0.35)]"
+>
+  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+  <span className="relative flex items-center gap-1.5">
+    <span>Sign in</span>
+    <span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+      &#8594;
+    </span>
+  </span>
+</button>
 
         </header>
 
@@ -617,7 +615,6 @@ export default function Home() {
               </h2>
 
               <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-                Sign in to continue to your DreamSMM workspace.
               </p>
 
             </div>
@@ -756,7 +753,8 @@ export default function Home() {
                 <div className="relative">
 
                   <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-violet-400">
-                    â€¢
+                    
+                    <span className="text-sm font-black text-violet-400">&#8226;</span>
                   </span>
 
                   <input
@@ -799,7 +797,6 @@ export default function Home() {
 
               </div>
 
-              {/* SIGN IN */}
 
               <button
                 type="submit"
@@ -810,18 +807,15 @@ export default function Home() {
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
                 <span className="relative flex items-center justify-center gap-2">
-
-                  {loading
-                    ? "Signing in..."
-                    : "Sign in"}
-
-                  {!loading && (
-                    <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
-                      →
-                    </span>
-                  )}
-
-                </span>
+  {loading ? "Signing in..." : (
+    <>
+      <span>Sign in</span>
+      <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
+        &#8594;
+      </span>
+    </>
+  )}
+</span>
 
               </button>
 
@@ -857,9 +851,7 @@ export default function Home() {
 
           <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
 
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">
-              ✓
-            </span>
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">&#10003;</span>
 
             Secure DreamSMM workspace
 
