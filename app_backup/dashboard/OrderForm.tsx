@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -63,7 +63,6 @@ export default function OrderForm({
 
   const [category, setCategory] = useState("");
   const [serviceId, setServiceId] = useState<number | "">("");
-  const [selectedPlatform, setSelectedPlatform] = useState("all");
 
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
@@ -103,47 +102,10 @@ export default function OrderForm({
      This matches the reference UI: the user chooses the
      service category first, then chooses a service.
   ========================================================= */
-const platforms = useMemo(() => {
-  const seen = new Map<string, string>();
-
-  services.forEach((service) => {
-    const value = service.platform?.trim();
-    if (!value) return;
-    const key = value.toLowerCase();
-    if (!seen.has(key)) seen.set(key, value);
-  });
-
-  const preferred = [
-    "instagram", "youtube", "telegram", "facebook",
-    "tiktok", "twitter", "x", "spotify", "reddit",
-  ];
-
-  const sorted = Array.from(seen.entries()).sort((a, b) => {
-    const ai = preferred.findIndex((item) => a[0].includes(item));
-    const bi = preferred.findIndex((item) => b[0].includes(item));
-    if (ai !== -1 && bi === -1) return -1;
-    if (ai === -1 && bi !== -1) return 1;
-    if (ai !== -1 && bi !== -1 && ai !== bi) return ai - bi;
-    return a[1].localeCompare(b[1]);
-  });
-
-  return [
-    { key: "all", label: "All", platform: "all" },
-    ...sorted.map(([key, label]) => ({ key, label, platform: label })),
-  ];
-}, [services]);
-
 const categories = useMemo(() => {
   const serviceCategories = new Map<string, string>();
 
   services.forEach((service) => {
-    if (
-      selectedPlatform !== "all" &&
-      service.platform?.trim().toLowerCase() !== selectedPlatform
-    ) {
-      return;
-    }
-
     const value = service.category?.trim() || "Other";
     const key = value.toLowerCase();
 
@@ -180,18 +142,11 @@ const categories = useMemo(() => {
     ...configured.map((config) => config.name.trim()),
     ...remaining,
   ];
-}, [services, categoryConfigs, selectedPlatform]);
+}, [services, categoryConfigs]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
 
     services.forEach((service) => {
-      if (
-        selectedPlatform !== "all" &&
-        service.platform?.trim().toLowerCase() !== selectedPlatform
-      ) {
-        return;
-      }
-
       const value = service.category?.trim() || "Other";
       const key = value.toLowerCase();
       counts.set(key, (counts.get(key) || 0) + 1);
@@ -310,7 +265,7 @@ useEffect(() => {
         category.toLowerCase()
       );
     });
-  }, [services, category, selectedPlatform]);
+  }, [services, category]);
 
   const filteredServices = useMemo(() => {
     if (!categoryQuery) {
@@ -462,73 +417,6 @@ useEffect(() => {
       className="w-full min-w-0 max-w-full space-y-5 overflow-x-hidden"
     >
       {/* =====================================================
-          PLATFORM QUICK FILTER
-      ===================================================== */}
-
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-black text-slate-700">
-            Platform
-          </label>
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-            {selectedPlatform === "all"
-              ? `${services.length} services`
-              : `${services.filter(
-                  (service) =>
-                    service.platform?.trim().toLowerCase() ===
-                    selectedPlatform
-                ).length} services`}
-          </span>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-          {platforms.map((item) => {
-            const active = selectedPlatform === item.key;
-            const BrandIcon =
-              item.key === "all"
-                ? null
-                : getPlatformIcon(item.platform);
-
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => {
-                  setSelectedPlatform(item.key);
-                  setCategory("");
-                  setServiceId("");
-                  setSearch("");
-                  setError("");
-                  setSuccess("");
-                }}
-                className={`flex h-12 min-w-[58px] shrink-0 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-black transition-all ${
-                  active
-                    ? "border-violet-600 bg-violet-600 text-white shadow-[0_8px_20px_rgba(124,58,237,0.22)]"
-                    : "border-violet-100 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50"
-                }`}
-                aria-pressed={active}
-                title={item.label}
-              >
-                {BrandIcon ? (
-                  <BrandIcon
-                    className="h-4 w-4"
-                    style={{
-                      color: active
-                        ? "#ffffff"
-                        : getPlatformColor(item.platform),
-                    }}
-                  />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* =====================================================
           SEARCH
       ===================================================== */}
 
@@ -537,7 +425,7 @@ useEffect(() => {
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-500"
           aria-hidden="true"
         >
-          ⌕
+          âŒ•
         </span>
 
         <input
@@ -557,7 +445,7 @@ useEffect(() => {
             aria-label="Clear search"
             className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-lg font-bold text-slate-400 hover:bg-white hover:text-slate-700"
           >
-            ×
+            Ã—
           </button>
         )}
       </div>
@@ -661,7 +549,7 @@ useEffect(() => {
                   : ""
               }`}
             >
-              ▼
+              â–¼
             </span>
           </button>
 
@@ -858,7 +746,7 @@ useEffect(() => {
               {selectedService && (
                 <span className="mt-0.5 block truncate text-[9px] font-medium text-slate-400">
                   #{selectedService.id}
-                  {" · "}
+                  {" Â· "}
                   {selectedService.platform}
                 </span>
               )}
@@ -871,7 +759,7 @@ useEffect(() => {
                   : ""
               }`}
             >
-              ▼
+              â–¼
             </span>
           </button>
 
@@ -909,7 +797,7 @@ useEffect(() => {
                               }`}
                             >
                               {active ? (
-                                "✓"
+                                "âœ“"
                               ) : (
                                 (() => {
                                   const BrandIcon =
@@ -1153,7 +1041,7 @@ useEffect(() => {
       {success && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
           <p className="text-xs font-bold text-emerald-700">
-            ✓ {success}
+            âœ“ {success}
           </p>
         </div>
       )}

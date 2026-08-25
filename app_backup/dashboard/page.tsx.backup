@@ -1,4 +1,7 @@
-﻿import { cookies } from "next/headers";
+﻿
+    </div>
+  );
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
@@ -8,6 +11,7 @@ import {
   ClipboardList,
   Headphones,
   Plus,
+  ShoppingBag,
   Sparkles,
   UserRound,
   Wallet,
@@ -81,28 +85,88 @@ export default async function DashboardPage() {
   const balance = user.balance.toString();
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#fbfaff] text-slate-900 selection:bg-violet-200 selection:text-violet-900">
+    <main className="min-h-screen overflow-x-hidden bg-[#f8fcfd] text-slate-900 selection:bg-cyan-200 selection:text-cyan-900">
 
       {/* =========================================================
-          LIGHTWEIGHT PREMIUM BACKGROUND
-          Kept visually similar, but avoids multiple huge blur layers.
+          PREMIUM LIGHT BACKGROUND
       ========================================================= */}
 
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[#fbfaff]" />
 
-        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-violet-200/20 blur-[80px]" />
+        <div className="absolute inset-0 bg-white" />
 
-        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-fuchsia-200/15 blur-[80px]" />
+        <div className="absolute -left-[320px] -top-[300px] h-[780px] w-[780px] rounded-full bg-cyan-400/[.12] blur-[170px]" />
+
+        <div className="absolute -right-[330px] -top-[240px] h-[760px] w-[760px] rounded-full bg-cyan-400/[.10] blur-[180px]" />
+
+        <div className="absolute left-[35%] top-[30%] h-[620px] w-[620px] rounded-full bg-sky-300/[.08] blur-[190px]" />
+
+        <div className="absolute -bottom-[390px] left-[18%] h-[780px] w-[780px] rounded-full bg-sky-400/[.08] blur-[190px]" />
+
+        {/* Soft reflection */}
+
+        <div className="absolute -left-[20%] top-0 h-full w-[30%] rotate-[18deg] bg-white/30 blur-[90px]" />
+
+        {/* Fine grid */}
 
         <div
-          className="absolute inset-0 opacity-[.08]"
+          className="absolute inset-0 opacity-[.17]"
           style={{
-            backgroundImage:
-              "linear-gradient(rgba(91,33,182,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(91,33,182,.05) 1px, transparent 1px)",
+            backgroundImage: `
+              linear-gradient(rgba(91,33,182,.045) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(91,33,182,.045) 1px, transparent 1px)
+            `,
             backgroundSize: "70px 70px",
+            maskImage:
+              "linear-gradient(to bottom,black,transparent 92%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom,black,transparent 92%)",
           }}
         />
+
+        {/* Micro dots */}
+
+        <div
+          className="absolute inset-0 opacity-[.16]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle,rgba(124,58,237,.3) .65px,transparent .65px)",
+            backgroundSize: "25px 25px",
+            maskImage:
+              "radial-gradient(ellipse at center top,black,transparent 75%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at center top,black,transparent 75%)",
+          }}
+        />
+
+        {/* Decorative rings */}
+
+        <div className="absolute -left-[290px] top-[15%] h-[600px] w-[600px] rounded-full border border-cyan-300/[.10]" />
+
+        <div className="absolute -left-[370px] top-[8%] h-[760px] w-[760px] rounded-full border border-cyan-300/[.055]" />
+
+        <div className="absolute -right-[290px] bottom-[10%] h-[600px] w-[600px] rounded-full border border-cyan-300/[.10]" />
+
+        <div className="absolute -right-[370px] bottom-[3%] h-[760px] w-[760px] rounded-full border border-cyan-300/[.055]" />
+
+        {/* Floating glass spheres */}
+
+        <div className="absolute left-[4%] top-[38%] h-20 w-20 rounded-full border border-white bg-white/30 shadow-[0_0_80px_rgba(124,58,237,.14)] backdrop-blur-xl" />
+
+        <div className="absolute right-[4%] top-[24%] h-24 w-24 rounded-full border border-white bg-white/30 shadow-[0_0_90px_rgba(217,70,239,.13)] backdrop-blur-xl" />
+
+        <div className="absolute bottom-[14%] left-[9%] h-14 w-14 rounded-full border border-white bg-white/30 shadow-[0_0_70px_rgba(99,102,241,.13)] backdrop-blur-xl" />
+
+        {/* Light particles */}
+
+        <span className="absolute left-[13%] top-[20%] h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_18px_rgba(139,92,246,.8)]" />
+
+        <span className="absolute left-[27%] top-[34%] h-1 w-1 rounded-full bg-sky-400 shadow-[0_0_15px_rgba(99,102,241,.8)]" />
+
+        <span className="absolute right-[16%] top-[33%] h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_18px_rgba(217,70,239,.8)]" />
+
+        <span className="absolute right-[25%] bottom-[22%] h-1 w-1 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(139,92,246,.8)]" />
+
       </div>
 
       {/* =========================================================
@@ -119,7 +183,7 @@ export default async function DashboardPage() {
 
         {/* Luxury beam */}
 
-        <div className="relative h-[3px] overflow-hidden bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500">
+        <div className="relative h-[3px] overflow-hidden bg-gradient-to-r from-cyan-600 via-sky-500 to-cyan-500">
 
           <div className="absolute inset-y-0 left-0 w-1/3 bg-white/70 blur-sm" />
 
@@ -131,11 +195,11 @@ export default async function DashboardPage() {
               PREMIUM HEADER
           ===================================================== */}
 
-          <header className="group relative overflow-hidden rounded-[30px] border border-white bg-white/[.72] px-4 py-3.5 shadow-[0_16px_55px_rgba(76,29,149,.06)] backdrop-blur-lg sm:px-5">
+          <header className="group relative overflow-hidden rounded-[30px] border border-white bg-white/[.72] px-4 py-3.5 shadow-xl backdrop-blur-3xl sm:px-5">
 
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
 
-            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-violet-200/30 blur-[70px]" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-cyan-200/30 blur-[70px]" />
 
             <div className="relative flex items-center justify-between gap-4">
 
@@ -143,7 +207,7 @@ export default async function DashboardPage() {
 
                 {/* Brand mark */}
 
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_9px_28px_rgba(124,58,237,.22)]">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-cyan-600 via-sky-600 to-cyan-500 text-sm font-black text-white shadow-[0_9px_28px_rgba(124,58,237,.22)]">
 
                   <span className="relative z-10">
                     D
@@ -157,7 +221,7 @@ export default async function DashboardPage() {
 
                   <div className="flex items-center gap-2">
 
-                    <span className="text-[8px] font-black uppercase tracking-[.25em] text-violet-600">
+                    <span className="text-[8px] font-black uppercase tracking-[.25em] text-cyan-600">
                       DreamSMM
                     </span>
 
@@ -183,10 +247,10 @@ export default async function DashboardPage() {
 
                 <a
                   href="/funds"
-                  className="group/balance inline-flex h-10 items-center gap-2 rounded-xl border border-violet-100 bg-white px-3 text-sm font-black text-violet-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_30px_rgba(76,29,149,.10)] sm:px-3.5"
+                  className="group/balance inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-100 bg-white px-3 text-sm font-black text-cyan-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_12px_30px_rgba(76,29,149,.10)] sm:px-3.5"
                 >
 
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600 transition duration-300 group-hover/balance:bg-violet-100">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600 transition duration-300 group-hover:bg-cyan-100">
 
                     <Wallet className="h-4 w-4" />
 
@@ -200,10 +264,10 @@ export default async function DashboardPage() {
 
                 <a
                   href="/funds"
-                  className="group/funds relative hidden h-10 items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 px-4 text-xs font-black text-white shadow-[0_11px_30px_rgba(124,58,237,.22)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_17px_42px_rgba(124,58,237,.30)] sm:inline-flex"
+                  className="group/funds relative hidden h-10 items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-cyan-600 via-sky-600 to-cyan-500 px-4 text-xs font-black text-white shadow-[0_11px_30px_rgba(124,58,237,.22)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_17px_42px_rgba(124,58,237,.30)] sm:inline-flex"
                 >
 
-                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/funds:translate-x-full" />
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
                   <Plus className="relative h-4 w-4" />
 
@@ -217,10 +281,10 @@ export default async function DashboardPage() {
 
                 <a
                   href="/account"
-                  className="hidden h-10 items-center gap-2 rounded-xl border border-violet-100 bg-white px-2.5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 sm:flex"
+                  className="hidden h-10 items-center gap-2 rounded-xl border border-cyan-100 bg-white px-2.5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200 sm:flex"
                 >
 
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500 text-[8px] font-black text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-600 to-cyan-500 text-[8px] font-black text-white">
                     {initials}
                   </div>
 
@@ -245,64 +309,30 @@ export default async function DashboardPage() {
           </header>
 
           {/* =====================================================
-              STATUS BAR
-          ===================================================== */}
-
-          <div className="mt-3 flex items-center justify-between px-1">
-
-            <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[.20em] text-slate-400">
-
-              <span className="relative flex h-1.5 w-1.5">
-
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
-
-                <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
-
-              </span>
-
-              All systems operational
-
-            </div>
-
-            <div className="hidden items-center gap-2 sm:flex">
-
-              <span className="rounded-full border border-white bg-white/60 px-3 py-1.5 text-[8px] font-bold text-slate-400 shadow-sm backdrop-blur-lg">
-                {services.length} active services
-              </span>
-
-              <span className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[8px] font-black text-violet-600">
-                Premium
-              </span>
-
-            </div>
-
-          </div>
-
-          {/* =====================================================
               STATS
           ===================================================== */}
 
           <section className="mt-4 grid gap-4 sm:grid-cols-3">
 
             <PremiumStat
-              icon={<UserRound className="h-4 w-4" />}
+              icon={<UserRound className="h-6 w-6" />}
               value={user.name || "User"}
               label="Account"
-              tone="violet"
+              tone="cyan"
             />
 
             <PremiumStat
-              icon={<BarChart3 className="h-4 w-4" />}
+              icon={<BarChart3 className="h-6 w-6" />}
               value={orderCount.toLocaleString()}
               label="Total orders"
-              tone="indigo"
+              tone="sky"
             />
 
             <PremiumStat
-              icon={<Wallet className="h-4 w-4" />}
+              icon={<Wallet className="h-6 w-6" />}
               value={`₹${balance}`}
               label="Available balance"
-              tone="fuchsia"
+              tone="cyan"
             />
 
           </section>
@@ -320,17 +350,73 @@ export default async function DashboardPage() {
                 ORDER COMMAND CENTER
             =================================================== */}
 
-            <section className="relative overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(76,29,149,.07)] backdrop-blur-lg">
+            <section className="relative overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-2xl backdrop-blur-3xl">
 
-              <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-violet-200/35 via-transparent to-fuchsia-200/30" />
+              <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-cyan-200/35 via-transparent to-cyan-200/30" />
 
               {/* Top reflection */}
 
-              <div className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
+
+              <div className="relative z-10 overflow-hidden rounded-t-[34px] border-b border-cyan-100/80 bg-white/[.60] px-5 py-5 sm:px-6">
+
+                <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-cyan-200/20 blur-3xl" />
+
+                <div className="relative flex items-center justify-between gap-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-100 via-white to-cyan-100 text-cyan-600 shadow-[0_9px_30px_rgba(124,58,237,.10)] ring-1 ring-cyan-100">
+
+                      <ShoppingBag className="h-5 w-5" />
+
+                      <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,.75)]" />
+
+                      <span className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent" />
+
+                    </div>
+
+                    <div>
+
+                      <div className="flex items-center gap-2">
+
+                        <h2 className="text-base font-black tracking-[-.025em] text-slate-950 sm:text-lg">
+                          Create New Order
+                        </h2>
+
+                        <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-1 text-[7px] font-black uppercase tracking-[.16em] text-emerald-700">
+                          Live
+                        </span>
+
+                      </div>
+
+                      <p className="mt-1 text-[10px] font-medium text-slate-400 sm:text-[11px]">
+                        Search, select and configure your service.
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <div className="hidden text-right sm:block">
+
+                    <p className="text-[7px] font-black uppercase tracking-[.22em] text-slate-400">
+                      Service catalog
+                    </p>
+
+                    <p className="mt-1 text-sm font-black text-slate-700">
+                      {services.length}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
 
               <div className="relative z-10 p-4 sm:p-6 lg:p-7">
 
-                <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-2/3 -translate-x-1/2 rounded-full bg-violet-400/[.08] blur-[70px]" />
+                <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-2/3 -translate-x-1/2 rounded-full bg-cyan-400/[.08] blur-[70px]" />
 
                 <OrderForm services={formattedServices} />
 
@@ -348,13 +434,13 @@ export default async function DashboardPage() {
                   WALLET
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[31px] bg-gradient-to-br from-violet-700 via-indigo-600 to-fuchsia-500 p-5 text-white shadow-[0_20px_60px_rgba(109,40,217,.18)]">
+              <div className="group relative overflow-hidden rounded-[31px] bg-gradient-to-br from-cyan-700 via-sky-600 to-cyan-500 p-5 text-white shadow-[0_30px_90px_rgba(109,40,217,.25)]">
 
                 {/* Glow */}
 
                 <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-white/20 blur-[70px]" />
 
-                <div className="pointer-events-none absolute -bottom-24 left-[-30px] h-48 w-48 rounded-full bg-indigo-300/20 blur-[70px]" />
+                <div className="pointer-events-none absolute -bottom-24 left-[-30px] h-48 w-48 rounded-full bg-sky-300/20 blur-[70px]" />
 
                 {/* Rings */}
 
@@ -370,7 +456,7 @@ export default async function DashboardPage() {
 
                   <div className="flex items-center justify-between">
 
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-[.20em] text-white/80 backdrop-blur-lg">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-[.20em] text-white/80 backdrop-blur-xl">
 
                       <span className="h-1 w-1 rounded-full bg-white shadow-[0_0_8px_white]" />
 
@@ -402,14 +488,14 @@ export default async function DashboardPage() {
 
                   <a
                     href="/funds"
-                    className="group/wallet mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-xs font-black text-violet-700 shadow-[0_10px_30px_rgba(255,255,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-violet-50"
+                    className="group/wallet mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-xs font-black text-cyan-700 shadow-[0_10px_30px_rgba(255,255,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-cyan-50"
                   >
 
-                    <Plus className="h-4 w-4 transition duration-300 group-hover/wallet:rotate-90" />
+                    <Plus className="h-4 w-4 transition duration-300 group-hover:rotate-90" />
 
                     Add Funds
 
-                    <ArrowRight className="h-3.5 w-3.5 transition duration-300 group-hover/wallet:translate-x-1" />
+                    <ArrowRight className="h-3.5 w-3.5 transition duration-300 group-hover:translate-x-1" />
 
                   </a>
 
@@ -421,13 +507,13 @@ export default async function DashboardPage() {
                   QUICK ACTIONS
               ================================================= */}
 
-              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-[0_16px_48px_rgba(76,29,149,.06)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(76,29,149,.12)]">
+              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-xl backdrop-blur-3xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(76,29,149,.12)]">
 
                 <div className="flex items-center justify-between">
 
                   <div>
 
-                    <p className="text-[7px] font-black uppercase tracking-[.22em] text-violet-500">
+                    <p className="text-[7px] font-black uppercase tracking-[.22em] text-cyan-500">
                       Control center
                     </p>
 
@@ -437,7 +523,7 @@ export default async function DashboardPage() {
 
                   </div>
 
-                  <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-600 ring-1 ring-violet-100">
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-100 to-cyan-100 text-cyan-600 ring-1 ring-cyan-100">
 
                     <Sparkles className="h-4 w-4" />
 
@@ -476,15 +562,15 @@ export default async function DashboardPage() {
                   SUPPORT
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-[0_22px_70px_rgba(76,29,149,.065)] backdrop-blur-lg">
+              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-xl backdrop-blur-3xl">
 
-                <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-violet-300/20 blur-[55px]" />
+                <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-cyan-300/20 blur-[55px]" />
 
                 <div className="relative">
 
                   <div className="flex items-center justify-between">
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-600 ring-1 ring-violet-100">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-100 to-cyan-100 text-cyan-600 ring-1 ring-cyan-100">
 
                       <Headphones className="h-4 w-4" />
 
@@ -506,12 +592,12 @@ export default async function DashboardPage() {
 
                   <a
                     href="/tickets"
-                    className="group/support mt-4 flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                    className="group/support mt-4 flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700"
                   >
 
                     Create Ticket
 
-                    <ArrowUpRight className="h-3.5 w-3.5 transition group-hover/support:-translate-y-0.5 group-hover/support:translate-x-0.5" />
+                    <ArrowUpRight className="h-3.5 w-3.5 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 
                   </a>
 
@@ -555,15 +641,15 @@ export default async function DashboardPage() {
 
           <div className="mt-7 flex items-center justify-center gap-3 text-[8px] font-black uppercase tracking-[.25em] text-slate-300">
 
-            <span className="h-px w-14 bg-gradient-to-r from-transparent to-violet-200" />
+            <span className="h-px w-14 bg-gradient-to-r from-transparent to-cyan-200" />
 
             DreamSMM
 
-            <span className="h-px w-14 bg-gradient-to-l from-transparent to-fuchsia-200" />
+            <span className="h-px w-14 bg-gradient-to-l from-transparent to-cyan-200" />
 
           </div>
 
-          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-lg sm:flex-row">
+          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-xl sm:flex-row">
 
             <p>
               © {new Date().getFullYear()} DreamSMM
@@ -573,21 +659,21 @@ export default async function DashboardPage() {
 
               <a
                 href="/services"
-                className="transition hover:text-violet-600"
+                className="transition hover:text-cyan-600"
               >
                 Services
               </a>
 
               <a
                 href="/orders"
-                className="transition hover:text-violet-600"
+                className="transition hover:text-cyan-600"
               >
                 Orders
               </a>
 
               <a
                 href="/tickets"
-                className="transition hover:text-violet-600"
+                className="transition hover:text-cyan-600"
               >
                 Support
               </a>
@@ -625,28 +711,28 @@ function PremiumStat({
   icon: React.ReactNode;
   value: string;
   label: string;
-  tone: "violet" | "indigo" | "fuchsia";
+  tone: "cyan" | "sky";
 }) {
   const toneClass =
-    tone === "violet"
-      ? "from-violet-100 to-purple-50 text-violet-700 ring-violet-100"
-      : tone === "indigo"
-        ? "from-indigo-100 to-blue-50 text-indigo-700 ring-indigo-100"
-        : "from-fuchsia-100 to-violet-50 text-fuchsia-700 ring-fuchsia-100";
+    tone === "cyan"
+      ? "from-cyan-100 to-sky-50 text-cyan-700 ring-cyan-100"
+      : tone === "sky"
+        ? "from-sky-100 to-blue-50 text-cyan-700 ring-sky-100"
+        : "from-cyan-100 to-cyan-50 text-cyan-700 ring-cyan-100";
 
   return (
-    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-[0_18px_60px_rgba(76,29,149,.075)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
+    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-xl backdrop-blur-3xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
 
-      <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/80 to-transparent" />
+      <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent" />
 
-      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-violet-300/15 blur-3xl transition duration-500 group-hover:bg-fuchsia-300/20" />
+      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-cyan-300/15 blur-3xl transition duration-500 group-hover:bg-cyan-300/20" />
 
       <div className="relative flex h-full items-center gap-4">
 
         <div
           className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${toneClass} ring-1 shadow-sm transition duration-300 group-hover:scale-105 sm:h-16 sm:w-16`}
         >
-          <span className="[&>svg]:h-6 [&>svg]:w-6 sm:[&>svg]:h-7 sm:[&>svg]:w-7">
+          <span className="flex h-8 w-8 items-center justify-center sm:h-9 sm:w-9">
             {icon}
           </span>
         </div>
@@ -687,10 +773,10 @@ function QuickLink({
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-2xl border border-slate-100/90 bg-white/[.60] p-3.5 shadow-[0_7px_22px_rgba(76,29,149,.035)] transition duration-300 hover:-translate-y-0.5 hover:border-violet-100 hover:bg-violet-50/80 hover:shadow-[0_14px_35px_rgba(76,29,149,.09)]"
+      className="group flex items-center gap-3 rounded-2xl border border-slate-100/90 bg-white/[.60] p-3.5 shadow-[0_7px_22px_rgba(76,29,149,.035)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-100 hover:bg-cyan-50/80 hover:shadow-[0_14px_35px_rgba(76,29,149,.09)]"
     >
 
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-50 to-fuchsia-50 text-violet-600 shadow-sm ring-1 ring-violet-100 transition duration-300 group-hover:scale-105">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-50 to-cyan-50 text-cyan-600 shadow-sm ring-1 ring-cyan-100 transition duration-300 group-hover:scale-105">
         {icon}
       </div>
 
@@ -706,7 +792,7 @@ function QuickLink({
 
       </div>
 
-      <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-violet-600" />
+      <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cyan-600" />
 
     </a>
   );
@@ -726,11 +812,11 @@ function TrustItem({
   text: string;
 }) {
   return (
-    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-lg transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
+    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200 to-transparent opacity-0 transition group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200 to-transparent opacity-0 transition group-hover:opacity-100" />
 
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100 transition duration-300 group-hover:scale-105">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600 ring-1 ring-cyan-100 transition duration-300 group-hover:scale-105">
         {icon}
       </div>
 
@@ -748,4 +834,3 @@ function TrustItem({
 
     </div>
   );
-}

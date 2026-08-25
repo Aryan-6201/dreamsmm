@@ -306,7 +306,7 @@ useEffect(() => {
       }
 
       setMessage(
-        `Service #${data.service.id} imported successfully at ₹${data.service.rate}/1k.`
+        `Service #${data.service.id} imported successfully at ├â┬ó├óΓé¼┼í├é┬╣${data.service.rate}/1k.`
       );
       setProviderServiceId("");
       setProviderMarkup("");
@@ -651,7 +651,7 @@ useEffect(() => {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-400 hover:text-white"
             >
-              ×
+              ├â╞Æ├åΓÇÖ├â┬ó├óΓÇÜ┬¼├óΓé¼┬¥
             </button>
           </div>
         )}
@@ -715,7 +715,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{importedService.service}
                     {importedService.category
-                      ? ` · ${importedService.category}`
+                      ? ` ├âΓÇÜ├é┬╖ ${importedService.category}`
                       : ""}
                   </p>
                 </div>
@@ -734,7 +734,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Provider Rate</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{importedService.rate}/1k
+                    ├â┬ó├óΓé¼┼í├é┬╣{importedService.rate}/1k
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -746,7 +746,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Selling Rate</p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    ├â┬ó├óΓé¼┼í├é┬╣{(
                       Number(importedService.rate) *
                       (1 + (Number(providerMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -762,7 +762,7 @@ useEffect(() => {
               <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Limits</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {importedService.min.toLocaleString()}–
+                    {importedService.min.toLocaleString()}├â┬ó├óΓÇÜ┬¼├óΓé¼┼ô
                     {importedService.max.toLocaleString()}
                   </p>
                 </div>
@@ -835,7 +835,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{vipsmmService.service}
                     {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
+                      ? ` ├é┬╖ ${vipsmmService.category}`
                       : ""}
                   </p>
                 </div>
@@ -856,7 +856,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{vipsmmService.rate}/1k
+                    ├óΓÇÜ┬╣{vipsmmService.rate}/1k
                   </p>
                 </div>
 
@@ -874,7 +874,7 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    ├óΓÇÜ┬╣{(
                       Number(vipsmmService.rate) *
                       (1 + (Number(vipsmmMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -903,152 +903,7 @@ useEffect(() => {
                     Limits
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {Number(vipsmmService.min).toLocaleString()}–
-                    {Number(vipsmmService.max).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {vipsmmResult && (
-            <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
-              {vipsmmResult}
-            </div>
-          )}
-        </section>
-<section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">
-              Import from VIPSMM
-            </h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Enter only the VIPSMM service ID. Details are fetched automatically.
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
-            <input
-              type="number"
-              min="0"
-              value={vipsmmServiceId}
-              onChange={(e) => setVipsmmServiceId(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") fetchVipsmmService();
-              }}
-              className={inputClass}
-              placeholder="VIPSMM Service ID e.g. 12345"
-              inputMode="numeric"
-            />
-
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={vipsmmMarkup}
-              onChange={(e) => setVipsmmMarkup(e.target.value)}
-              className={inputClass}
-              placeholder="Markup %"
-            />
-
-            <button
-              type="button"
-              onClick={fetchVipsmmService}
-              disabled={vipsmmImporting}
-              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
-            >
-              {vipsmmImporting ? "Fetching..." : "Fetch Service"}
-            </button>
-          </div>
-
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
-            <input
-              type="checkbox"
-              checked={vipsmmAutoSync}
-              onChange={(e) => setVipsmmAutoSync(e.target.checked)}
-            />
-            Automatically update my selling price when provider rate changes
-          </label>
-
-          {vipsmmService && (
-            <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-semibold text-white">
-                    {vipsmmService.name}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Provider ID #{vipsmmService.service}
-                    {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
-                      : ""}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={importVipsmmService}
-                  disabled={vipsmmImporting}
-                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
-                >
-                  {vipsmmImporting ? "Importing..." : "Add Service"}
-                </button>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Provider Rate
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{vipsmmService.rate}/1k
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Your Markup
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-violet-300">
-                    {vipsmmMarkup || "0"}%
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Selling Rate
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
-                      Number(vipsmmService.rate) *
-                      (1 + (Number(vipsmmMarkup) || 0) / 100)
-                    ).toFixed(4)}
-                    /1k
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Average Time
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-blue-300">
-                    {vipsmmService.averageTime || "N/A"}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Average Time
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-blue-300">
-                    {vipsmmService.averageTime || "N/A"}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">
-                    Limits
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {Number(vipsmmService.min).toLocaleString()}–
+                    {Number(vipsmmService.min).toLocaleString()}├óΓé¼ΓÇ£
                     {Number(vipsmmService.max).toLocaleString()}
                   </p>
                 </div>
@@ -1386,17 +1241,17 @@ useEffect(() => {
                         <p className="mt-1 text-xs text-gray-500">
                           {service.platform}
                           {service.category
-                            ? ` · ${service.category}`
+                            ? ` ├â╞Æ├óΓé¼┼í├âΓÇÜ├é┬╖ ${service.category}`
                             : ""}
                         </p>
 
                         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate ₹{service.rate}/1k
+                            Rate ├â╞Æ├é┬ó├â┬ó├óΓÇÜ┬¼├à┬í├âΓÇÜ├é┬╣{service.rate}/1k
                           </span>
 
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            {service.min.toLocaleString()}–
+                            {service.min.toLocaleString()}├â╞Æ├é┬ó├â┬ó├óΓé¼┼í├é┬¼├â┬ó├óΓÇÜ┬¼├àΓÇ£
                             {service.max.toLocaleString()}
                           </span>
 
@@ -1405,7 +1260,7 @@ useEffect(() => {
                               "No provider"}
 
                             {service.providerId
-                              ? ` · ID ${service.providerId}`
+                              ? ` ├â╞Æ├óΓé¼┼í├âΓÇÜ├é┬╖ ID ${service.providerId}`
                               : ""}
                           </span>
                         </div>
@@ -1452,10 +1307,6 @@ useEffect(() => {
     </main>
   );
 }
-
-
-
-
 
 
 

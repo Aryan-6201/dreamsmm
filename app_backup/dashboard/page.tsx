@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Headphones,
   Plus,
+  ShoppingBag,
   Sparkles,
   UserRound,
   Wallet,
@@ -84,25 +85,85 @@ export default async function DashboardPage() {
     <main className="min-h-screen overflow-x-hidden bg-[#fbfaff] text-slate-900 selection:bg-violet-200 selection:text-violet-900">
 
       {/* =========================================================
-          LIGHTWEIGHT PREMIUM BACKGROUND
-          Kept visually similar, but avoids multiple huge blur layers.
+          PREMIUM LIGHT BACKGROUND
       ========================================================= */}
 
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[#fbfaff]" />
 
-        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-violet-200/20 blur-[80px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_2%,rgba(124,58,237,.15),transparent_28%),radial-gradient(circle_at_92%_5%,rgba(217,70,239,.12),transparent_27%),radial-gradient(circle_at_52%_42%,rgba(99,102,241,.075),transparent_36%),linear-gradient(135deg,#ffffff_0%,#f8f6ff_48%,#fcfaff_100%)]" />
 
-        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-fuchsia-200/15 blur-[80px]" />
+        <div className="absolute -left-[320px] -top-[300px] h-[780px] w-[780px] rounded-full bg-violet-400/[.12] blur-[170px]" />
+
+        <div className="absolute -right-[330px] -top-[240px] h-[760px] w-[760px] rounded-full bg-fuchsia-400/[.10] blur-[180px]" />
+
+        <div className="absolute left-[35%] top-[30%] h-[620px] w-[620px] rounded-full bg-indigo-300/[.08] blur-[190px]" />
+
+        <div className="absolute -bottom-[390px] left-[18%] h-[780px] w-[780px] rounded-full bg-purple-400/[.08] blur-[190px]" />
+
+        {/* Soft reflection */}
+
+        <div className="absolute -left-[20%] top-0 h-full w-[30%] rotate-[18deg] bg-white/30 blur-[90px]" />
+
+        {/* Fine grid */}
 
         <div
-          className="absolute inset-0 opacity-[.08]"
+          className="absolute inset-0 opacity-[.17]"
           style={{
-            backgroundImage:
-              "linear-gradient(rgba(91,33,182,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(91,33,182,.05) 1px, transparent 1px)",
+            backgroundImage: `
+              linear-gradient(rgba(91,33,182,.045) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(91,33,182,.045) 1px, transparent 1px)
+            `,
             backgroundSize: "70px 70px",
+            maskImage:
+              "linear-gradient(to bottom,black,transparent 92%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom,black,transparent 92%)",
           }}
         />
+
+        {/* Micro dots */}
+
+        <div
+          className="absolute inset-0 opacity-[.16]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle,rgba(124,58,237,.3) .65px,transparent .65px)",
+            backgroundSize: "25px 25px",
+            maskImage:
+              "radial-gradient(ellipse at center top,black,transparent 75%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at center top,black,transparent 75%)",
+          }}
+        />
+
+        {/* Decorative rings */}
+
+        <div className="absolute -left-[290px] top-[15%] h-[600px] w-[600px] rounded-full border border-violet-300/[.10]" />
+
+        <div className="absolute -left-[370px] top-[8%] h-[760px] w-[760px] rounded-full border border-violet-300/[.055]" />
+
+        <div className="absolute -right-[290px] bottom-[10%] h-[600px] w-[600px] rounded-full border border-fuchsia-300/[.10]" />
+
+        <div className="absolute -right-[370px] bottom-[3%] h-[760px] w-[760px] rounded-full border border-fuchsia-300/[.055]" />
+
+        {/* Floating glass spheres */}
+
+        <div className="absolute left-[4%] top-[38%] h-20 w-20 rounded-full border border-white bg-white/30 shadow-[0_0_80px_rgba(124,58,237,.14)] backdrop-blur-xl" />
+
+        <div className="absolute right-[4%] top-[24%] h-24 w-24 rounded-full border border-white bg-white/30 shadow-[0_0_90px_rgba(217,70,239,.13)] backdrop-blur-xl" />
+
+        <div className="absolute bottom-[14%] left-[9%] h-14 w-14 rounded-full border border-white bg-white/30 shadow-[0_0_70px_rgba(99,102,241,.13)] backdrop-blur-xl" />
+
+        {/* Light particles */}
+
+        <span className="absolute left-[13%] top-[20%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_18px_rgba(139,92,246,.8)]" />
+
+        <span className="absolute left-[27%] top-[34%] h-1 w-1 rounded-full bg-indigo-400 shadow-[0_0_15px_rgba(99,102,241,.8)]" />
+
+        <span className="absolute right-[16%] top-[33%] h-1.5 w-1.5 rounded-full bg-fuchsia-400 shadow-[0_0_18px_rgba(217,70,239,.8)]" />
+
+        <span className="absolute right-[25%] bottom-[22%] h-1 w-1 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,.8)]" />
+
       </div>
 
       {/* =========================================================
@@ -131,7 +192,7 @@ export default async function DashboardPage() {
               PREMIUM HEADER
           ===================================================== */}
 
-          <header className="group relative overflow-hidden rounded-[30px] border border-white bg-white/[.72] px-4 py-3.5 shadow-[0_16px_55px_rgba(76,29,149,.06)] backdrop-blur-lg sm:px-5">
+          <header className="group relative overflow-hidden rounded-[30px] border border-white bg-white/[.72] px-4 py-3.5 shadow-[0_22px_80px_rgba(76,29,149,.075)] backdrop-blur-3xl sm:px-5">
 
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
 
@@ -266,7 +327,7 @@ export default async function DashboardPage() {
 
             <div className="hidden items-center gap-2 sm:flex">
 
-              <span className="rounded-full border border-white bg-white/60 px-3 py-1.5 text-[8px] font-bold text-slate-400 shadow-sm backdrop-blur-lg">
+              <span className="rounded-full border border-white bg-white/60 px-3 py-1.5 text-[8px] font-bold text-slate-400 shadow-sm backdrop-blur-xl">
                 {services.length} active services
               </span>
 
@@ -320,13 +381,69 @@ export default async function DashboardPage() {
                 ORDER COMMAND CENTER
             =================================================== */}
 
-            <section className="relative overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(76,29,149,.07)] backdrop-blur-lg">
+            <section className="relative overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_30px_110px_rgba(76,29,149,.105)] backdrop-blur-3xl">
 
               <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-violet-200/35 via-transparent to-fuchsia-200/30" />
 
               {/* Top reflection */}
 
               <div className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
+
+              <div className="relative z-10 overflow-hidden rounded-t-[34px] border-b border-violet-100/80 bg-white/[.60] px-5 py-5 sm:px-6">
+
+                <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-200/20 blur-3xl" />
+
+                <div className="relative flex items-center justify-between gap-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-violet-100 via-white to-fuchsia-100 text-violet-600 shadow-[0_9px_30px_rgba(124,58,237,.10)] ring-1 ring-violet-100">
+
+                      <ShoppingBag className="h-5 w-5" />
+
+                      <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,.75)]" />
+
+                      <span className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-transparent" />
+
+                    </div>
+
+                    <div>
+
+                      <div className="flex items-center gap-2">
+
+                        <h2 className="text-base font-black tracking-[-.025em] text-slate-950 sm:text-lg">
+                          Create New Order
+                        </h2>
+
+                        <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-1 text-[7px] font-black uppercase tracking-[.16em] text-emerald-700">
+                          Live
+                        </span>
+
+                      </div>
+
+                      <p className="mt-1 text-[10px] font-medium text-slate-400 sm:text-[11px]">
+                        Search, select and configure your service.
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <div className="hidden text-right sm:block">
+
+                    <p className="text-[7px] font-black uppercase tracking-[.22em] text-slate-400">
+                      Service catalog
+                    </p>
+
+                    <p className="mt-1 text-sm font-black text-slate-700">
+                      {services.length}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
 
               <div className="relative z-10 p-4 sm:p-6 lg:p-7">
 
@@ -348,7 +465,7 @@ export default async function DashboardPage() {
                   WALLET
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[31px] bg-gradient-to-br from-violet-700 via-indigo-600 to-fuchsia-500 p-5 text-white shadow-[0_20px_60px_rgba(109,40,217,.18)]">
+              <div className="group relative overflow-hidden rounded-[31px] bg-gradient-to-br from-violet-700 via-indigo-600 to-fuchsia-500 p-5 text-white shadow-[0_30px_90px_rgba(109,40,217,.25)]">
 
                 {/* Glow */}
 
@@ -370,7 +487,7 @@ export default async function DashboardPage() {
 
                   <div className="flex items-center justify-between">
 
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-[.20em] text-white/80 backdrop-blur-lg">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-[.20em] text-white/80 backdrop-blur-xl">
 
                       <span className="h-1 w-1 rounded-full bg-white shadow-[0_0_8px_white]" />
 
@@ -421,7 +538,7 @@ export default async function DashboardPage() {
                   QUICK ACTIONS
               ================================================= */}
 
-              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-[0_16px_48px_rgba(76,29,149,.06)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(76,29,149,.12)]">
+              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-[0_24px_75px_rgba(76,29,149,.075)] backdrop-blur-3xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(76,29,149,.12)]">
 
                 <div className="flex items-center justify-between">
 
@@ -476,7 +593,7 @@ export default async function DashboardPage() {
                   SUPPORT
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-[0_22px_70px_rgba(76,29,149,.065)] backdrop-blur-lg">
+              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-[0_22px_70px_rgba(76,29,149,.065)] backdrop-blur-3xl">
 
                 <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-violet-300/20 blur-[55px]" />
 
@@ -563,7 +680,7 @@ export default async function DashboardPage() {
 
           </div>
 
-          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-lg sm:flex-row">
+          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-xl sm:flex-row">
 
             <p>
               © {new Date().getFullYear()} DreamSMM
@@ -635,7 +752,7 @@ function PremiumStat({
         : "from-fuchsia-100 to-violet-50 text-fuchsia-700 ring-fuchsia-100";
 
   return (
-    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-[0_18px_60px_rgba(76,29,149,.075)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
+    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-[0_18px_60px_rgba(76,29,149,.075)] backdrop-blur-3xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
 
       <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/80 to-transparent" />
 
@@ -726,7 +843,7 @@ function TrustItem({
   text: string;
 }) {
   return (
-    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-lg transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
+    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200 to-transparent opacity-0 transition group-hover:opacity-100" />
 
