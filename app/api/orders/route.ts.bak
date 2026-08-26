@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
@@ -285,20 +285,17 @@ export async function POST(request: Request) {
       },
     });
 
-    const discountPercent = userForDiscount?.discountPercent ?? 0;
-
-    const discountPercentValue = Number(discountPercent);
+    const discountPercent = userForDiscount?.discountPercent ?? service.rate.mul(0);
 
     if (
-      !Number.isFinite(discountPercentValue) ||
-      discountPercentValue < 0 ||
-      discountPercentValue > 100
+      discountPercent.lt(0) ||
+      discountPercent.gt(100)
     ) {
       throw new Error("INVALID_USER_DISCOUNT");
     }
 
     const discountAmount = baseCharge
-      .mul(discountPercentValue)
+      .mul(discountPercent)
       .div(100);
 
     const charge = baseCharge.sub(discountAmount);
@@ -541,6 +538,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-
-
