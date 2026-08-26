@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,6 +9,84 @@ type Stats = {
   admins: number;
   pendingDeposits: number;
 };
+
+function StatCard({
+  title,
+  value,
+  description,
+  icon,
+}: {
+  title: string;
+  value: string | number;
+  description: string;
+  icon: string;
+}) {
+  return (
+    <div className="group rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(91,33,182,0.06)] transition-all hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_14px_35px_rgba(91,33,182,0.10)]">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+            {title}
+          </p>
+          <p className="mt-3 text-3xl font-black tracking-tight text-slate-900">
+            {value}
+          </p>
+          <p className="mt-1 text-xs font-medium text-slate-400">
+            {description}
+          </p>
+        </div>
+
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-xl ring-1 ring-violet-100">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminLink({
+  href,
+  icon,
+  title,
+  description,
+  badge,
+}: {
+  href: string;
+  icon: string;
+  title: string;
+  description: string;
+  badge?: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group relative flex min-h-[130px] flex-col justify-between overflow-hidden rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(91,33,182,0.05)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_40px_rgba(91,33,182,0.11)]"
+    >
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-violet-100/50 blur-2xl transition-all group-hover:bg-violet-200/60" />
+
+      <div className="relative flex items-start justify-between">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-xl text-white shadow-lg shadow-violet-200">
+          {icon}
+        </div>
+
+        {badge !== undefined && (
+          <span className="rounded-full bg-red-50 px-2.5 py-1 text-[10px] font-black text-red-600 ring-1 ring-red-100">
+            {badge} pending
+          </span>
+        )}
+      </div>
+
+      <div className="relative mt-5">
+        <h3 className="text-sm font-black text-slate-800 group-hover:text-violet-700">
+          {title}
+        </h3>
+        <p className="mt-1 text-xs font-medium leading-5 text-slate-400">
+          {description}
+        </p>
+      </div>
+    </Link>
+  );
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
@@ -69,106 +147,116 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#070a11] text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#090c14]/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">
-              Dream<span className="text-blue-500">SMM</span>
-            </h1>
+    <main className="min-h-screen bg-[#faf9ff] text-slate-900">
+      <header className="sticky top-0 z-30 border-b border-violet-100 bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 font-black text-white shadow-lg shadow-violet-200">
+              D
+            </div>
 
-            <p className="text-[10px] text-gray-500">
-              Administration Panel
-            </p>
+            <div>
+              <h1 className="text-lg font-black tracking-tight text-slate-900">
+                Dream<span className="text-violet-600">SMM</span>
+              </h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                Administration Panel
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium">Administrator</p>
-              <p className="text-xs text-gray-500">Control Center</p>
+              <p className="text-sm font-black text-slate-800">
+                Administrator
+              </p>
+              <p className="text-[11px] font-medium text-slate-400">
+                Control Center
+              </p>
             </div>
 
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/10 font-bold text-blue-400 ring-1 ring-blue-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 font-black text-violet-700 ring-4 ring-violet-50">
               A
             </div>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        {/* Heading */}
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <div className="mb-3 inline-flex rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-              Control Center
+      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
+        <div className="rounded-3xl bg-gradient-to-br from-violet-700 via-violet-600 to-purple-600 p-6 text-white shadow-[0_20px_50px_rgba(109,40,217,0.20)] sm:p-8">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+            <div>
+              <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-violet-100">
+                Control Center
+              </span>
+
+              <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+                Dashboard
+              </h2>
+
+              <p className="mt-2 max-w-xl text-sm font-medium text-violet-100">
+                Manage your DreamSMM panel, users, deposits and services from
+                one place.
+              </p>
             </div>
 
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Dashboard
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Manage your DreamSMM panel from one place.
-            </p>
+            <button
+              onClick={loadDashboard}
+              disabled={loading}
+              className="rounded-xl bg-white px-5 py-3 text-sm font-black text-violet-700 shadow-lg transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Loading..." : "↻ Refresh"}
+            </button>
           </div>
-
-          <button
-            onClick={loadDashboard}
-            disabled={loading}
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/[0.08] disabled:opacity-50 sm:w-auto"
-          >
-            {loading ? "Loading..." : "↻ Refresh"}
-          </button>
         </div>
 
-        {/* Error */}
         {error && (
-          <div className="mt-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mt-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
             {error}
           </div>
         )}
 
-        {/* Stats */}
-        <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        <section className="mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           <StatCard
             title="Total Users"
             value={loading ? "—" : stats.users}
             description="Registered accounts"
+            icon="👥"
           />
 
           <StatCard
             title="Active Users"
             value={loading ? "—" : stats.activeUsers}
             description="Currently active"
-            valueClass="text-green-400"
+            icon="✓"
           />
 
           <StatCard
             title="Administrators"
             value={loading ? "—" : stats.admins}
             description="Admin accounts"
-            valueClass="text-blue-400"
+            icon="🛡"
           />
 
           <StatCard
             title="Pending Deposits"
             value={loading ? "—" : stats.pendingDeposits}
             description="Need verification"
-            valueClass="text-yellow-400"
+            icon="₹"
           />
-        </div>
+        </section>
 
-        {/* Quick Actions */}
-        <section className="mt-8">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Quick Actions</h3>
-            <p className="mt-1 text-xs text-gray-600">
+        <section className="mt-9">
+          <div className="mb-5">
+            <h3 className="text-xl font-black tracking-tight text-slate-900">
+              Quick Actions
+            </h3>
+            <p className="mt-1 text-xs font-medium text-slate-400">
               Jump directly to the areas you manage most.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AdminLink
               href="/admin/users"
               icon="👥"
@@ -178,178 +266,99 @@ export default function AdminDashboard() {
 
             <AdminLink
               href="/admin/deposits"
-              icon="💰"
+              icon="₹"
               title="Manage Deposits"
               description="Review and approve pending deposits."
-              badge={stats.pendingDeposits > 0 ? stats.pendingDeposits : undefined}
+              badge={
+                stats.pendingDeposits > 0
+                  ? stats.pendingDeposits
+                  : undefined
+              }
             />
 
             <AdminLink
               href="/admin/services"
-              icon="🛠"
+              icon="⚙"
               title="Manage Services"
               description="Control services, rates and availability."
             />
 
             <AdminLink
-  href="/admin/categories"
-  icon="✨"
-  title="Manage Categories"
-  description="Create categories, change icons, glow and display order."
-/>
-
-            <AdminLink
-              href="/admin/users"
-              icon="🔐"
-              title="User Accounts"
-              description="Open individual user management."
+              href="/admin/categories"
+              icon="✦"
+              title="Manage Categories"
+              description="Create categories and manage their display order."
             />
 
             <AdminLink
-              href="/admin/services"
-              icon="📦"
-              title="Service Catalog"
-              description="Manage the services available to customers."
+              href="/admin/users"
+              icon="◉"
+              title="User Accounts"
+              description="Inspect individual user accounts and activity."
             />
 
             <AdminLink
               href="/admin/deposits"
-              icon="🧾"
-              title="Payment Requests"
-              description="Check UTRs and payment requests."
+              icon="✓"
+              title="Deposit Review"
+              description="Handle pending payment verification requests."
             />
           </div>
         </section>
 
-        {/* System Status */}
-        <section className="mt-8">
-          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h3 className="font-semibold">System Status</h3>
-                <p className="mt-1 text-xs text-gray-600">
-                  Current DreamSMM administration environment.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-green-400">
-                <span className="h-2 w-2 rounded-full bg-green-400" />
-                Admin APIs Online
-              </div>
+        <section className="mt-9 rounded-2xl border border-violet-100 bg-white p-5 shadow-[0_8px_30px_rgba(91,33,182,0.05)]">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-black text-slate-800">
+                System Overview
+              </h3>
+              <p className="mt-1 text-xs font-medium text-slate-400">
+                Current administration statistics
+              </p>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <StatusItem
-                title="Users API"
-                status="Connected"
-              />
+            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_5px_rgba(16,185,129,0.10)]" />
+          </div>
 
-              <StatusItem
-                title="Deposits API"
-                status="Connected"
-              />
+          <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Users
+              </p>
+              <p className="mt-1 text-lg font-black text-slate-800">
+                {loading ? "—" : stats.users}
+              </p>
+            </div>
 
-              <StatusItem
-                title="Services API"
-                status="Available"
-              />
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Active
+              </p>
+              <p className="mt-1 text-lg font-black text-emerald-600">
+                {loading ? "—" : stats.activeUsers}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Admins
+              </p>
+              <p className="mt-1 text-lg font-black text-violet-600">
+                {loading ? "—" : stats.admins}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Pending
+              </p>
+              <p className="mt-1 text-lg font-black text-amber-600">
+                {loading ? "—" : stats.pendingDeposits}
+              </p>
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <p className="mt-8 text-center text-[10px] text-gray-700">
-          DreamSMM Administration · Secure admin access required
-        </p>
       </div>
     </main>
-  );
-}
-
-function StatCard({
-  title,
-  value,
-  description,
-  valueClass = "text-white",
-}: {
-  title: string;
-  value: string | number;
-  description: string;
-  valueClass?: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-4 sm:p-5">
-      <p className="text-xs text-gray-500 sm:text-sm">{title}</p>
-
-      <p className={`mt-2 text-2xl font-bold sm:mt-3 sm:text-3xl ${valueClass}`}>
-        {value}
-      </p>
-
-      <p className="mt-1 text-[10px] text-gray-600 sm:text-xs">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function AdminLink({
-  href,
-  icon,
-  title,
-  description,
-  badge,
-}: {
-  href: string;
-  icon: string;
-  title: string;
-  description: string;
-  badge?: number;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group relative rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 transition hover:-translate-y-0.5 hover:border-blue-500/30 hover:bg-[#0e121c]"
-    >
-      {badge !== undefined && (
-        <span className="absolute right-4 top-4 rounded-full bg-yellow-500/10 px-2 py-1 text-[10px] font-bold text-yellow-400">
-          {badge}
-        </span>
-      )}
-
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-lg">
-        {icon}
-      </div>
-
-      <h4 className="mt-4 font-semibold group-hover:text-blue-400">
-        {title}
-      </h4>
-
-      <p className="mt-1 text-xs leading-5 text-gray-600">
-        {description}
-      </p>
-
-      <div className="mt-4 text-xs font-medium text-gray-500 group-hover:text-blue-400">
-        Open →
-      </div>
-    </Link>
-  );
-}
-
-function StatusItem({
-  title,
-  status,
-}: {
-  title: string;
-  status: string;
-}) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-black/20 px-4 py-3">
-      <span className="text-xs text-gray-400">{title}</span>
-
-      <span className="flex items-center gap-1.5 text-[10px] font-medium text-green-400">
-        <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
-        {status}
-      </span>
-    </div>
   );
 }
