@@ -238,6 +238,7 @@ export async function POST(request: Request) {
     const service = await prisma.service.findFirst({
       where: {
         id: serviceId,
+        enabled: true,
       },
       select: {
         id: true,
@@ -540,6 +541,8 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
 
 
 
