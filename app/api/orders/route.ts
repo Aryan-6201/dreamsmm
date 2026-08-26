@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
 import { addMkapiOrder } from "@/lib/providers/mkapi";
+import { addVipSmmOrder } from "@/lib/providers/vipsmm";
 
 /**
  * GET /api/orders
@@ -404,15 +405,21 @@ export async function POST(request: Request) {
     try {
       let providerResult;
 
-      if (service.providerName === "MKAPI") {
+      if (service.providerName?.toUpperCase() === "MKAPI") {
         providerResult = await addMkapiOrder({
-          serviceId: service.providerId,
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else if (service.providerName?.toUpperCase().startsWith("VIPSMM")) {
+        providerResult = await addVipSmmOrder({
+          serviceId: service.providerId!,
           link,
           quantity,
         });
       } else {
         providerResult = await addMicoSmmOrder({
-          serviceId: service.providerId,
+          serviceId: service.providerId!,
           link,
           quantity,
         });
@@ -420,7 +427,7 @@ export async function POST(request: Request) {
 
       providerOrderId = providerResult.providerOrderId;
     } catch (providerError) {
-      console.error("MicoSMM order error:", providerError);
+      console.error("Provider order error:", providerError);
 
       await prisma.$transaction(async (tx) => {
         await tx.user.update({
@@ -541,6 +548,10 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+
+
 
 
 
