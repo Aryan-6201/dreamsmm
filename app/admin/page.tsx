@@ -289,6 +289,13 @@ export default function AdminDashboard() {
               title="Manage Categories"
               description="Create categories and manage their display order."
             />
+            <AdminLink
+              href="/admin/blog"
+              icon="📝"
+              title="Manage Blog"
+              description="Create, edit and publish blog posts."
+            />
+
 
             <AdminLink
               href="/admin/users"
@@ -362,3 +369,4 @@ export default function AdminDashboard() {
     </main>
   );
 }
+
