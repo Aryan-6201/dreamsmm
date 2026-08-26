@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #06040b;
@@ -12,15 +12,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Base */
 html {
   background: #06040b;
   color-scheme: dark;
+  scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 
   background:
     radial-gradient(
@@ -39,18 +45,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Premium dark-violet selection */
 ::selection {
   background: rgba(124, 58, 237, 0.45);
   color: #ffffff;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Better scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;

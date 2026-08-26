@@ -20,6 +20,7 @@ model User {
   lastSeenAt      DateTime?
   status          UserStatus       @default(ACTIVE)
   totalSpent      Decimal          @default(0) @db.Decimal(12, 2)
+  discountPercent Decimal          @default(0) @db.Decimal(5, 2)
   bonuses         Bonus[]
   couponUses      CouponUse[]
   depositRequests DepositRequest[]

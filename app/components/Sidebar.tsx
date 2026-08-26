@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -234,7 +234,7 @@ export default function Sidebar() {
       <aside
         className={`
           fixed inset-y-0 left-0 z-[110]
-          flex h-screen w-full flex-col
+          flex h-screen w-[min(400px,100vw)] max-w-[100vw] flex-col
           overflow-hidden
           border-r border-violet-100
           bg-[#faf9ff]
@@ -613,4 +613,5 @@ function Brand() {
     </div>
   );
 }
+
 

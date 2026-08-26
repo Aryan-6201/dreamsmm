@@ -1,8 +1,11 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 
 import {
+  ChevronDown,
+  Search,
+  X,
   Eye,
   Heart,
   MessageCircle,
@@ -302,6 +305,12 @@ useEffect(() => {
     }
 
     return services.filter((service) => {
+      if (
+        selectedPlatform !== "all" &&
+        service.platform?.trim().toLowerCase() !== selectedPlatform
+      ) {
+        return false;
+      }
       const value =
         service.category?.trim() || "Other";
 
@@ -459,10 +468,11 @@ useEffect(() => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full min-w-0 max-w-full space-y-5 overflow-x-hidden"
+      className="block w-full min-w-0 max-w-full space-y-5 overflow-x-hidden box-border"
     >
       {/* =====================================================
           PLATFORM QUICK FILTER
+          Click a platform icon to see only its services
       ===================================================== */}
 
       <section>
@@ -481,7 +491,7 @@ useEffect(() => {
           </span>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+        <div className="grid grid-cols-5 gap-2 sm:grid-cols-6 lg:grid-cols-8">
           {platforms.map((item) => {
             const active = selectedPlatform === item.key;
             const BrandIcon =
@@ -501,9 +511,9 @@ useEffect(() => {
                   setError("");
                   setSuccess("");
                 }}
-                className={`flex h-12 min-w-[58px] shrink-0 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-black transition-all ${
+                className={`flex h-11 min-w-0 w-full items-center justify-center gap-1.5 rounded-xl border px-2 text-xs font-black transition-colors ${
                   active
-                    ? "border-violet-600 bg-violet-600 text-white shadow-[0_8px_20px_rgba(124,58,237,0.22)]"
+                    ? "border-violet-600 bg-violet-600 text-white"
                     : "border-violet-100 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50"
                 }`}
                 aria-pressed={active}
@@ -511,7 +521,7 @@ useEffect(() => {
               >
                 {BrandIcon ? (
                   <BrandIcon
-                    className="h-4 w-4"
+                    className="h-4 w-4 shrink-0"
                     style={{
                       color: active
                         ? "#ffffff"
@@ -519,9 +529,12 @@ useEffect(() => {
                     }}
                   />
                 ) : (
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4 shrink-0" />
                 )}
-                <span className="hidden sm:inline">{item.label}</span>
+
+                <span className="hidden sm:inline truncate">
+                  {item.label}
+                </span>
               </button>
             );
           })}
@@ -537,7 +550,7 @@ useEffect(() => {
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-slate-500"
           aria-hidden="true"
         >
-          ⌕
+          <Search className="h-5 w-5" />
         </span>
 
         <input
@@ -557,7 +570,8 @@ useEffect(() => {
             aria-label="Clear search"
             className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-lg font-bold text-slate-400 hover:bg-white hover:text-slate-700"
           >
-            ×
+            
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -579,35 +593,9 @@ useEffect(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className="flex min-h-[70px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border-2 border-violet-100 bg-violet-50 px-4 text-left shadow-sm transition hover:border-violet-300 hover:bg-violet-100 hover:shadow-md"
+            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(76,29,149,.045)] transition-all duration-200 "border-violet-100 hover:border-violet-200 hover:shadow-[0_10px_28px_rgba(76,29,149,.07)]"`}
           >
-            <span
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-700 shadow-sm transition-all"
-              style={(() => {
-                const config = categoryConfigs.find(
-                  (item) =>
-                    item.name.toLowerCase() ===
-                    category.toLowerCase()
-                );
-
-                if (!config?.glowEnabled) {
-                  return undefined;
-                }
-
-                const intensity = Math.max(
-                  0,
-                  Math.min(100, config.glowIntensity)
-                );
-
-                return {
-                  boxShadow: `0 0 ${
-                    8 + intensity * 0.16
-                  }px rgba(34, 211, 238, ${
-                    0.12 + intensity * 0.004
-                  })`,
-                };
-              })()}
-            >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-black shadow-sm ring-1 ring-slate-100">
               {(() => {
                 const platform = getCategoryPlatform(
                   category,
@@ -617,32 +605,10 @@ useEffect(() => {
 
                 const BrandIcon =
                   getPlatformIcon(platform);
-
-                const config = categoryConfigs.find(
-                  (item) =>
-                    item.name.toLowerCase() ===
-                    category.toLowerCase()
-                );
-
-                const intensity = Math.max(
-                  0,
-                  Math.min(
-                    100,
-                    config?.glowIntensity ?? 50
-                  )
-                );
-
-                return BrandIcon ? (
+return BrandIcon ? (
                   <BrandIcon
                     className="h-4 w-4"
-                    style={{
-                      color: getPlatformColor(platform),
-                      filter: config?.glowEnabled
-                        ? `drop-shadow(0 0 ${
-                            3 + intensity * 0.08
-                          }px ${getPlatformColor(platform)})`
-                        : undefined,
-                    }}
+                    style={{ color: getPlatformColor(platform) }}
                   />
                 ) : (
                   <Sparkles className="h-4 w-4" />
@@ -650,18 +616,23 @@ useEffect(() => {
               })()}
             </span>
 
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700">
-              {category || "Select category"}
+            <span className="min-w-0 flex-1">
+              <span className="block min-w-0 max-w-full truncate text-[13px] font-bold leading-5 text-slate-700">
+                {category || "Select category"}
+              </span>
+              {category && (
+                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                  {categoryServices.length} services available
+                </span>
+              )}
             </span>
 
-            <span
-              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
-                categoryOpen
-                  ? "rotate-180"
-                  : ""
-              }`}
-            >
-              ▼
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-violet-50">
+              <ChevronDown
+                className={`h-4 w-4 text-slate-400 transition-transform ${
+                  categoryOpen ? "rotate-180 text-violet-500" : ""
+                }`}
+              />
             </span>
           </button>
 
@@ -690,11 +661,7 @@ useEffect(() => {
                         }`}
                       >
                         <span
-  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-black ${
-    active
-      ? "bg-white/20 text-white"
-      : "bg-violet-50 text-violet-700"
-  }`}
+  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white shadow-sm ring-1 ring-slate-100"
 >
   {(() => {
     const platform = getCategoryPlatform(
@@ -705,35 +672,22 @@ useEffect(() => {
 
     const BrandIcon = getPlatformIcon(platform);
 
-    const config = categoryConfigs.find(
-      (itemConfig) =>
-        itemConfig.name.toLowerCase() ===
-        item.toLowerCase()
-    );
-
-    const intensity = Math.max(
-      0,
-      Math.min(100, config?.glowIntensity ?? 50)
-    );
-
     return BrandIcon ? (
-      <BrandIcon
-        className="h-4 w-4"
-        style={
-          config?.glowEnabled
-            ? {
-                filter: `drop-shadow(0 0 ${
-                  3 + intensity * 0.08
-                }px rgba(34,211,238,${
-                  0.25 + intensity * 0.006
-                }))`,
-              }
-            : undefined
-        }
-      />
-    ) : (
-      <Sparkles className="h-4 w-4" />
-    );
+                          <BrandIcon
+                            className="h-4 w-4"
+                            style={{
+                              color: getPlatformColor(
+                                getCategoryPlatform(
+                                  item,
+                                  categoryConfigs,
+                                  services
+                                )
+                              ),
+                            }}
+                          />
+                        ) : (
+                          <Sparkles className="h-4 w-4 text-slate-400" />
+                        );
   })()}
 </span>
                       
@@ -811,19 +765,17 @@ useEffect(() => {
             onClick={() => {
               if (!category) return;
 
-              setServiceOpen(
-                (open) => !open
-              );
+              setServiceOpen((open) => !open);
               setCategoryOpen(false);
             }}
             aria-expanded={serviceOpen}
-            className={`flex min-h-[70px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border-2 px-4 text-left shadow-sm transition ${
-              category
-                ? "border-violet-100 bg-violet-50 hover:border-violet-300 hover:bg-violet-100"
-                : "cursor-not-allowed border-slate-200 bg-slate-100"
+            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(76,29,149,.045)] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
+              serviceOpen
+                ? "border-violet-300 ring-2 ring-violet-100"
+                : "border-violet-100 hover:border-violet-200 hover:shadow-[0_10px_28px_rgba(76,29,149,.07)]"
             }`}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-violet-700 shadow-sm">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-700">
               {selectedService
                 ? (() => {
                     const BrandIcon = getPlatformIcon(
@@ -832,13 +784,13 @@ useEffect(() => {
 
                     return BrandIcon ? (
                       <BrandIcon
-                                      className="h-4 w-4"
-                                      style={{
-                                        color: getPlatformColor(
-                                          selectedService.platform
-                                        ),
-                                      }}
-                                    />
+                        className="h-[18px] w-[18px]"
+                        style={{
+                          color: getPlatformColor(
+                            selectedService.platform
+                          ),
+                        }}
+                      />
                     ) : (
                       "+"
                     );
@@ -847,37 +799,36 @@ useEffect(() => {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block min-w-0 max-w-full break-words whitespace-normal text-sm font-medium text-slate-700">
-                {selectedService
-                  ? selectedService.name
-                  : category
-                    ? "Select service"
-                    : "Select category first"}
+              <span className="block min-w-0 max-w-full truncate text-[13px] font-bold leading-5 text-slate-700">
+                {selectedService?.name ||
+                  (category ? "Select service" : "Select category first")}
               </span>
 
-              {selectedService && (
-                <span className="mt-0.5 block truncate text-[9px] font-medium text-slate-400">
-                  #{selectedService.id}
-                  {" · "}
-                  {selectedService.platform}
+              {selectedService ? (
+                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                  #{selectedService.id} Â· Min {selectedService.min.toLocaleString()} Â· Max {selectedService.max.toLocaleString()}
+                </span>
+              ) : (
+                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                  {category
+                    ? `${filteredServices.length} services available`
+                    : "Choose a category first"}
                 </span>
               )}
             </span>
 
-            <span
-              className={`shrink-0 text-sm font-black text-slate-400 transition-transform ${
-                serviceOpen
-                  ? "rotate-180"
-                  : ""
-              }`}
-            >
-              ▼
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-violet-50">
+              <ChevronDown
+                className={`h-4 w-4 text-slate-400 transition-transform ${
+                  serviceOpen ? "rotate-180 text-violet-500" : ""
+                }`}
+              />
             </span>
           </button>
 
           {serviceOpen &&
             category && (
-              <div className="absolute left-0 right-0 z-[60] mt-1 overflow-hidden rounded-2xl border border-violet-200 bg-white shadow-[0_20px_50px_rgba(91,33,182,0.18)]">
+              <div className="absolute left-0 right-0 z-[60] mt-2 overflow-hidden rounded-2xl border border-violet-100 bg-white p-1.5 shadow-[0_20px_50px_rgba(91,33,182,0.14)]">
                 <div className="max-h-[440px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                   {filteredServices.map(
                     (service) => {
@@ -900,94 +851,66 @@ useEffect(() => {
                               : "text-slate-700 hover:bg-violet-50"
                           }`}
                         >
-                          <div className="flex items-start gap-2.5">
+                          <div className="flex min-w-0 w-full items-center gap-3">
                             <span
-                              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
+                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-black ${
                                 active
-                                  ? "bg-white/20 text-white"
-                                  : "bg-violet-50 text-violet-700"
+                                  ? "bg-white/20"
+                                  : "bg-violet-50"
                               }`}
                             >
-                              {active ? (
-                                "✓"
-                              ) : (
-                                (() => {
-                                  const BrandIcon =
-                                    getPlatformIcon(
-                                      service.platform
-                                    );
+                              {(() => {
+                                const BrandIcon =
+                                  getPlatformIcon(service.platform);
 
-                                  return BrandIcon ? (
-                                    <BrandIcon
-                        className="h-4 w-4"
-                        style={{
-                          color: getPlatformColor(
-                            service.platform
-                          ),
-                        }}
-                      />
-                                  ) : (
-                                    "+"
-                                  );
-                                })()
-                              )}
+                                return BrandIcon ? (
+                                  <BrandIcon
+                                    className="h-4 w-4"
+                                    style={{
+                                      color: getPlatformColor(
+                                        service.platform
+                                      ),
+                                    }}
+                                  />
+                                ) : (
+                                  "+"
+                                );
+                              })()}
                             </span>
 
                             <span className="min-w-0 flex-1">
-                              <span className="flex items-start gap-2">
-                                <span
-                                  className={`min-w-0 max-w-full flex-1 break-words whitespace-normal text-[12px] font-medium leading-5 ${
-                                    active
-                                      ? "text-white"
-                                      : "text-slate-700"
-                                  }`}
-                                >
-                                  {service.name}
-                                </span>
-
-                                <span
-                                  className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
-                                    active
-                                      ? "bg-white/15 text-white"
-                                      : "bg-slate-100 text-slate-500"
-                                  }`}
-                                >
-                                  #{service.id}
-                                </span>
+                              <span
+                                className={`block break-words text-[12px] font-semibold leading-5 ${
+                                  active ? "text-white" : "text-slate-700"
+                                }`}
+                              >
+                                {service.name}
                               </span>
 
-                              <span className="mt-1.5 flex flex-wrap gap-1.5">
-                                <span
-                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
-                                    active
-                                      ? "bg-white/15 text-white/80"
-                                      : "bg-slate-50 text-slate-400"
-                                  }`}
-                                >
-                                  Min{" "}
-                                  {service.min.toLocaleString()}
-                                </span>
+                              <span
+                                className={`mt-1 block text-[9px] font-medium ${
+                                  active ? "text-white/65" : "text-slate-400"
+                                }`}
+                              >
+                                #{service.id} Â· Min {service.min.toLocaleString()} Â· Max {service.max.toLocaleString()}
+                              </span>
+                            </span>
 
-                                <span
-                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-semibold ${
-                                    active
-                                      ? "bg-white/15 text-white/80"
-                                      : "bg-slate-50 text-slate-400"
-                                  }`}
-                                >
-                                  Max{" "}
-                                  {service.max.toLocaleString()}
-                                </span>
-
-                                <span
-                                  className={`rounded-md px-1.5 py-0.5 text-[8px] font-bold ${
-                                    active
-                                      ? "bg-white/15 text-white"
-                                      : "bg-emerald-50 text-emerald-600"
-                                  }`}
-                                >
-                                  &#8377;{service.rate}/1K
-                                </span>
+                            <span
+                              className={`w-[68px] max-w-[68px] shrink-0 overflow-hidden rounded-xl px-2.5 py-2 text-right ${
+                                active
+                                  ? "bg-white/15 text-white"
+                                  : "bg-violet-50 text-violet-700"
+                              }`}
+                            >
+                              <span className="block text-[8px] font-bold uppercase tracking-wider opacity-60">
+                                Rate
+                              </span>
+                              <span className="block text-[12px] font-black">
+                                &#8377;{service.rate}
+                              </span>
+                              <span className="block text-[7px] font-bold opacity-60">
+                                / 1K
                               </span>
                             </span>
                           </div>
@@ -1019,14 +942,21 @@ useEffect(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-slate-700">
-            Description
-          </label>
+          <div className="overflow-hidden rounded-2xl border border-violet-100 bg-white">
+            <div className="flex items-center justify-between border-b border-violet-100/80 px-4 py-3">
+              <span className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-600">
+                Service information
+              </span>
+              <span className="rounded-md bg-white px-2 py-1 text-[8px] font-bold text-slate-400 shadow-sm">
+                #{selectedService.id}
+              </span>
+            </div>
 
-          <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-4">
-            <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-5 text-slate-600">
-              {selectedService.description ||
-                "No description available."}
+            <div className="px-4 py-4">
+              <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-[1.75] text-slate-600">
+                {selectedService.description?.trim() ||
+                  "No additional service information available."}
+              </div>
             </div>
           </div>
         </section>
@@ -1049,7 +979,7 @@ useEffect(() => {
               setLink(event.target.value)
             }
             placeholder="https://instagram.com/username"
-            className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
+            className="h-12 w-full rounded-xl border border-violet-100 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
           />
         </section>
       )}
@@ -1075,7 +1005,7 @@ useEffect(() => {
               )
             }
             placeholder="Enter quantity"
-            className={`h-12 w-full rounded-xl border bg-[#eaf6f6] px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+            className={`h-12 w-full rounded-xl border bg-white px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
               quantity &&
               !validQuantity
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
@@ -1083,12 +1013,8 @@ useEffect(() => {
             }`}
           />
 
-          <p className="mt-2 text-xs font-medium text-slate-500">
-            Min:{" "}
-            {selectedService.min.toLocaleString()}
-            {" - "}
-            Max:{" "}
-            {selectedService.max.toLocaleString()}
+          <p className="mt-2 text-[10px] font-medium text-slate-400">
+            Allowed: {selectedService.min.toLocaleString()} â€“ {selectedService.max.toLocaleString()}
           </p>
 
           {quantity &&
@@ -1109,31 +1035,13 @@ useEffect(() => {
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-slate-700">
-            Charge
-          </label>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                Rate
-              </p>
-              <p className="mt-1 text-sm font-black text-slate-700">
-                &#8377;{selectedService.rate}
-                <span className="ml-1 text-[9px] font-semibold text-slate-400">
-                  / 1K
-                </span>
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                Total
-              </p>
-              <p className="mt-1 text-sm font-black text-slate-700">
-                &#8377;{total.toFixed(2)}
-              </p>
-            </div>
+          <div className="flex min-h-[56px] items-center justify-between gap-4 rounded-xl border border-violet-100 bg-white px-4 py-2.5 shadow-[0_8px_24px_rgba(76,29,149,.04)]">
+            <span className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">
+              Total charge
+            </span>
+            <span className="text-xl font-black tracking-tight text-slate-900">
+              &#8377;{total.toFixed(2)}
+            </span>
           </div>
         </section>
       )}
@@ -1153,7 +1061,7 @@ useEffect(() => {
       {success && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
           <p className="text-xs font-bold text-emerald-700">
-            ✓ {success}
+            ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ {success}
           </p>
         </div>
       )}
@@ -1187,16 +1095,22 @@ useEffect(() => {
 function getPlatformColor(platform: string): string {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "#E4405F";
+  if (value.includes("instagram")) return "#E1306C";
   if (value.includes("youtube")) return "#FF0000";
   if (value.includes("facebook")) return "#1877F2";
-  if (value.includes("tiktok")) return "#25F4EE";
+  if (value.includes("tiktok")) return "#111111";
   if (value.includes("telegram")) return "#229ED9";
-  if (value.includes("twitter") || value === "x") return "#111111";
+  if (value.includes("twitter") || value === "x") return "#000000";
   if (value.includes("spotify")) return "#1DB954";
   if (value.includes("reddit")) return "#FF4500";
+  if (value.includes("linkedin")) return "#0A66C2";
+  if (value.includes("discord")) return "#5865F2";
+  if (value.includes("twitch")) return "#9146FF";
+  if (value.includes("pinterest")) return "#E60023";
+  if (value.includes("snapchat")) return "#FFFC00";
+  if (value.includes("whatsapp")) return "#25D366";
 
-  return "#06B6D4";
+  return "#64748B";
 }
 
 function getPlatformIcon(platform: string): IconType | null {
@@ -1282,3 +1196,11 @@ function getCategoryLucideIcon(icon: string): LucideIcon {
       return Sparkles;
   }
 }
+
+
+
+
+
+
+
+

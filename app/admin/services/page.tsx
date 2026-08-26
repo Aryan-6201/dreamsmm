@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -306,7 +306,7 @@ useEffect(() => {
       }
 
       setMessage(
-        `Service #${data.service.id} imported successfully at ₹${data.service.rate}/1k.`
+        `Service #${data.service.id} imported successfully at Ã¢â€šÂ¹${data.service.rate}/1k.`
       );
       setProviderServiceId("");
       setProviderMarkup("");
@@ -322,6 +322,14 @@ useEffect(() => {
       setImporting(false);
     }
   }
+  const [mkapiService, setMkapiService] =
+    useState<ImportedProviderService | null>(null);
+  const [mkapiServiceId, setMkapiServiceId] = useState("");
+  const [mkapiMarkup, setMkapiMarkup] = useState("25");
+  const [mkapiAutoSync, setMkapiAutoSync] = useState(true);
+  const [mkapiImporting, setMkapiImporting] = useState(false);
+  const [mkapiResult, setMkapiResult] = useState("");
+
   const [vipsmmService, setVipsmmService] =
     useState<ImportedProviderService | null>(null);
   const [vipsmmServiceId, setVipsmmServiceId] = useState("");
@@ -330,6 +338,102 @@ useEffect(() => {
   const [vipsmmImporting, setVipsmmImporting] = useState(false);
   const [vipsmmResult, setVipsmmResult] = useState("");
 
+  async function fetchMkapiService() {
+    const serviceId = mkapiServiceId.trim();
+
+    if (!serviceId) {
+      setMessage("Enter a MKAPI service ID first.");
+      return;
+    }
+
+    setMkapiImporting(true);
+    setMessage("");
+    setMkapiService(null);
+
+    try {
+      const response = await fetch("/api/admin/mkapi-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "fetch",
+          serviceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to fetch MKAPI service."
+        );
+      }
+
+      setMkapiService({ ...data.service, averageTime: data.service.average_time ?? null });
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch MKAPI service."
+      );
+    } finally {
+      setMkapiImporting(false);
+    }
+  }
+
+  async function importMkapiService() {
+    if (!mkapiService) return;
+
+    const markup = Number(mkapiMarkup);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
+      setMessage("Enter a valid markup percentage.");
+      return;
+    }
+
+    setMkapiImporting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/mkapi-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "import",
+          serviceId: mkapiService.service,
+          markupPercent: markup,
+          autoSync: mkapiAutoSync,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to import MKAPI service."
+        );
+      }
+
+      setMessage("MKAPI service imported successfully.");
+      setMkapiServiceId("");
+      setMkapiMarkup("");
+      setMkapiService(null);
+
+      await loadServices();
+      await loadCategories();
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to import MKAPI service."
+      );
+    } finally {
+      setMkapiImporting(false);
+    }
+  }
   async function fetchVipsmmService() {
     const serviceId = vipsmmServiceId.trim();
 
@@ -651,7 +755,7 @@ useEffect(() => {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-400 hover:text-white"
             >
-              ×
+              Ãƒâ€”
             </button>
           </div>
         )}
@@ -715,7 +819,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{importedService.service}
                     {importedService.category
-                      ? ` · ${importedService.category}`
+                      ? ` Â· ${importedService.category}`
                       : ""}
                   </p>
                 </div>
@@ -734,7 +838,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Provider Rate</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{importedService.rate}/1k
+                    â‚¹{importedService.rate}/1k
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -746,7 +850,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Selling Rate</p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    â‚¹{(
                       Number(importedService.rate) *
                       (1 + (Number(providerMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -762,7 +866,7 @@ useEffect(() => {
               <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Limits</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {importedService.min.toLocaleString()}–
+                    {importedService.min.toLocaleString()}â€“{importedService.max.toLocaleString()}
                     {importedService.max.toLocaleString()}
                   </p>
                 </div>
@@ -786,10 +890,10 @@ useEffect(() => {
             <input
               type="number"
               min="0"
-              value={vipsmmServiceId}
-              onChange={(e) => setVipsmmServiceId(e.target.value)}
+              value={mkapiServiceId}
+              onChange={(e) => setMkapiServiceId(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") fetchVipsmmService();
+                if (e.key === "Enter") fetchMkapiService();
               }}
               className={inputClass}
               placeholder="MKAPI Service ID e.g. 12345"
@@ -800,53 +904,53 @@ useEffect(() => {
               type="number"
               min="0"
               step="0.01"
-              value={vipsmmMarkup}
-              onChange={(e) => setVipsmmMarkup(e.target.value)}
+              value={mkapiMarkup}
+              onChange={(e) => setMkapiMarkup(e.target.value)}
               className={inputClass}
               placeholder="Markup %"
             />
 
             <button
               type="button"
-              onClick={fetchVipsmmService}
-              disabled={vipsmmImporting}
+              onClick={fetchMkapiService}
+              disabled={mkapiImporting}
               className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
             >
-              {vipsmmImporting ? "Fetching..." : "Fetch Service"}
+              {mkapiImporting ? "Fetching..." : "Fetch Service"}
             </button>
           </div>
 
           <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
             <input
               type="checkbox"
-              checked={vipsmmAutoSync}
-              onChange={(e) => setVipsmmAutoSync(e.target.checked)}
+              checked={mkapiAutoSync}
+              onChange={(e) => setMkapiAutoSync(e.target.checked)}
             />
             Automatically update my selling price when provider rate changes
           </label>
 
-          {vipsmmService && (
+          {mkapiService && (
             <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold text-white">
-                    {vipsmmService.name}
+                    {mkapiService.name}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
-                    Provider ID #{vipsmmService.service}
-                    {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
+                    Provider ID #{mkapiService.service}
+                    {mkapiService.category
+                      ? ` Â· ${mkapiService.category}`
                       : ""}
                   </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={importVipsmmService}
-                  disabled={vipsmmImporting}
+                  onClick={importMkapiService}
+                  disabled={mkapiImporting}
                   className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
                 >
-                  {vipsmmImporting ? "Importing..." : "Add Service"}
+                  {mkapiImporting ? "Importing..." : "Add Service"}
                 </button>
               </div>
 
@@ -856,7 +960,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{vipsmmService.rate}/1k
+                    â‚¹{mkapiService.rate}/1k
                   </p>
                 </div>
 
@@ -865,7 +969,7 @@ useEffect(() => {
                     Your Markup
                   </p>
                   <p className="mt-1 text-sm font-semibold text-violet-300">
-                    {vipsmmMarkup || "0"}%
+                    {mkapiMarkup || "0"}%
                   </p>
                 </div>
 
@@ -874,9 +978,9 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
-                      Number(vipsmmService.rate) *
-                      (1 + (Number(vipsmmMarkup) || 0) / 100)
+                    â‚¹{(
+                      Number(mkapiService.rate) *
+                      (1 + (Number(mkapiMarkup) || 0) / 100)
                     ).toFixed(4)}
                     /1k
                   </p>
@@ -887,7 +991,7 @@ useEffect(() => {
                     Average Time
                   </p>
                   <p className="mt-1 text-sm font-semibold text-blue-300">
-                    {vipsmmService.averageTime || "N/A"}
+                    {mkapiService.averageTime || "N/A"}
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -895,7 +999,7 @@ useEffect(() => {
                     Average Time
                   </p>
                   <p className="mt-1 text-sm font-semibold text-blue-300">
-                    {vipsmmService.averageTime || "N/A"}
+                    {mkapiService.averageTime || "N/A"}
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -903,17 +1007,17 @@ useEffect(() => {
                     Limits
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {Number(vipsmmService.min).toLocaleString()}–
-                    {Number(vipsmmService.max).toLocaleString()}
+                    {Number(mkapiService.min).toLocaleString()}â€“{Number(mkapiService.max).toLocaleString()}
+                    {Number(mkapiService.max).toLocaleString()}
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {vipsmmResult && (
+          {mkapiResult && (
             <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
-              {vipsmmResult}
+              {mkapiResult}
             </div>
           )}
         </section>
@@ -980,7 +1084,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{vipsmmService.service}
                     {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
+                      ? ` Â· ${vipsmmService.category}`
                       : ""}
                   </p>
                 </div>
@@ -1001,7 +1105,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{vipsmmService.rate}/1k
+                    â‚¹{vipsmmService.rate}/1k
                   </p>
                 </div>
 
@@ -1019,7 +1123,7 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    â‚¹{(
                       Number(vipsmmService.rate) *
                       (1 + (Number(vipsmmMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -1048,7 +1152,7 @@ useEffect(() => {
                     Limits
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {Number(vipsmmService.min).toLocaleString()}–
+                    {Number(vipsmmService.min).toLocaleString()}â€“{Number(vipsmmService.max).toLocaleString()}
                     {Number(vipsmmService.max).toLocaleString()}
                   </p>
                 </div>
@@ -1386,17 +1490,17 @@ useEffect(() => {
                         <p className="mt-1 text-xs text-gray-500">
                           {service.platform}
                           {service.category
-                            ? ` · ${service.category}`
+                            ? ` Â· ${service.category}`
                             : ""}
                         </p>
 
                         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate ₹{service.rate}/1k
+                            Rate â‚¹{service.rate}/1k
                           </span>
 
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            {service.min.toLocaleString()}–
+                            {service.min.toLocaleString()}â€“{service.max.toLocaleString()}
                             {service.max.toLocaleString()}
                           </span>
 
@@ -1405,7 +1509,7 @@ useEffect(() => {
                               "No provider"}
 
                             {service.providerId
-                              ? ` · ID ${service.providerId}`
+                              ? ` Â· ID ${service.providerId}`
                               : ""}
                           </span>
                         </div>

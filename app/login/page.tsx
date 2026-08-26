@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Script from "next/script";
 import {
@@ -56,6 +56,7 @@ export default function Home() {
 
   const googleButtonRef =
     useRef<HTMLDivElement>(null);
+  const googleInitializedRef = useRef(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,6 +65,8 @@ export default function Home() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const [showLoginSplash, setShowLoginSplash] = useState(false);
 
   const [googleLoading, setGoogleLoading] =
     useState(false);
@@ -77,6 +80,42 @@ export default function Home() {
   const busy =
     loading || googleLoading;
 
+  function hideDashboardSplash() {
+    document.getElementById("dreamsmm-login-splash")?.remove();
+  }
+
+  function showDashboardSplash() {
+    const existing = document.getElementById("dreamsmm-login-splash");
+    if (existing) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "dreamsmm-login-splash";
+    overlay.style.cssText = "position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#08060d;";
+
+    const box = document.createElement("div");
+    box.style.cssText = "width:240px;text-align:center;";
+
+    const logo = document.createElement("div");
+    logo.style.cssText = "margin-bottom:28px;color:#fff;font-size:30px;font-weight:900;letter-spacing:-.04em;";
+    logo.innerHTML = 'Dream<span style="color:#8b5cf6">SMM</span>';
+
+    const track = document.createElement("div");
+    track.style.cssText = "height:4px;width:100%;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.12);";
+
+    const bar = document.createElement("div");
+    bar.style.cssText = "height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#d946ef);transition:width 1.2s ease-out;";
+
+    track.appendChild(bar);
+    box.appendChild(logo);
+    box.appendChild(track);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { bar.style.width = "100%"; });
+    });
+  }
+
   /* ============================================================
      NORMAL EMAIL LOGIN
   ============================================================ */
@@ -89,6 +128,8 @@ export default function Home() {
     if (busy) return;
 
     setError("");
+    showDashboardSplash();
+    setShowLoginSplash(true);
     setLoading(true);
 
     try {
@@ -113,6 +154,8 @@ export default function Home() {
           .catch(() => ({}));
 
       if (!response.ok) {
+        hideDashboardSplash();
+        setShowLoginSplash(false);
         setError(
           data.error ||
             "Invalid email or password."
@@ -120,9 +163,15 @@ export default function Home() {
         return;
       }
 
+      setLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       router.replace("/dashboard");
       router.refresh();
+      return;
     } catch {
+      hideDashboardSplash();
+      setShowLoginSplash(false);
       setError(
         "Unable to connect to the server. Please try again."
       );
@@ -139,6 +188,7 @@ export default function Home() {
     credential: string
   ) {
     setError("");
+    setShowLoginSplash(true);
     setGoogleLoading(true);
 
     try {
@@ -162,6 +212,8 @@ export default function Home() {
           .catch(() => ({}));
 
       if (!response.ok) {
+        hideDashboardSplash();
+        setShowLoginSplash(false);
         console.error(
           "Google backend error:",
           data
@@ -175,9 +227,15 @@ export default function Home() {
         return;
       }
 
+      setLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       router.replace("/dashboard");
       router.refresh();
+      return;
     } catch (err) {
+      hideDashboardSplash();
+      setShowLoginSplash(false);
       console.error(
         "Google login request error:",
         err
@@ -196,6 +254,8 @@ export default function Home() {
   ============================================================ */
 
   function initializeGoogle() {
+    if (googleInitializedRef.current) return true;
+
     if (!window.google) {
       setGoogleReady(false);
       return false;
@@ -279,6 +339,7 @@ export default function Home() {
       }
     );
 
+    googleInitializedRef.current = true;
     setGoogleReady(true);
 
     return true;
@@ -290,6 +351,7 @@ export default function Home() {
 
   function handleGoogleLogin() {
     setError("");
+    showDashboardSplash();
 
     if (!window.google) {
       setError(
@@ -303,7 +365,10 @@ export default function Home() {
       const ready =
         initializeGoogle();
 
-      if (!ready) return;
+      if (!ready) {
+        hideDashboardSplash();
+        return;
+      }
     }
 
     setGoogleLoading(true);
@@ -916,4 +981,3 @@ function Feature({
     </div>
   );
 }
-

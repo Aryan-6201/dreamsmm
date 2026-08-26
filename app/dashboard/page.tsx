@@ -3,14 +3,14 @@ import { redirect } from "next/navigation";
 import {
   ArrowRight,
   ArrowUpRight,
+  UserRound,
+  Wallet,
+  Plus,
   BarChart3,
   Check,
   ClipboardList,
   Headphones,
-  Plus,
   Sparkles,
-  UserRound,
-  Wallet,
   Zap,
 } from "lucide-react";
 
@@ -42,6 +42,8 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
+  const balance = user.balance.toString();
+
   const [services, orderCount] = await Promise.all([
     prisma.service.findMany({
       where: {
@@ -70,18 +72,8 @@ export default async function DashboardPage() {
     max: service.max,
   }));
 
-  const initials = (
-    user.name?.trim() ||
-    user.email ||
-    "US"
-  )
-    .slice(0, 2)
-    .toUpperCase();
-
-  const balance = user.balance.toString();
-
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#fbfaff] text-slate-900 selection:bg-violet-200 selection:text-violet-900">
+    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#fbfaff] text-slate-900 selection:bg-violet-200 selection:text-violet-900">
 
       {/* =========================================================
           LIGHTWEIGHT PREMIUM BACKGROUND
@@ -115,7 +107,7 @@ export default async function DashboardPage() {
           MAIN
       ========================================================= */}
 
-      <div className="relative z-10 lg:ml-[250px]">
+      <div className="relative z-10 w-full min-w-0 max-w-full overflow-x-hidden box-border lg:ml-[260px] lg:w-[calc(100%-260px)]">
 
         {/* Luxury beam */}
 
@@ -127,122 +119,7 @@ export default async function DashboardPage() {
 
         <div className="mx-auto max-w-[1580px] px-4 py-4 sm:px-6 lg:px-8">
 
-          {/* =====================================================
-              PREMIUM HEADER
-          ===================================================== */}
-
-          <header className="group relative overflow-hidden rounded-[30px] border border-white bg-white/[.72] px-4 py-3.5 shadow-[0_16px_55px_rgba(76,29,149,.06)] backdrop-blur-lg sm:px-5">
-
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
-
-            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-violet-200/30 blur-[70px]" />
-
-            <div className="relative flex items-center justify-between gap-4">
-
-              <div className="flex min-w-0 items-center gap-3">
-
-                {/* Brand mark */}
-
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_9px_28px_rgba(124,58,237,.22)]">
-
-                  <span className="relative z-10">
-                    D
-                  </span>
-
-                  <span className="absolute inset-0 bg-gradient-to-br from-white/35 via-transparent to-transparent" />
-
-                </div>
-
-                <div className="min-w-0">
-
-                  <div className="flex items-center gap-2">
-
-                    <span className="text-[8px] font-black uppercase tracking-[.25em] text-violet-600">
-                      DreamSMM
-                    </span>
-
-                    <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:block" />
-
-                    <span className="hidden text-[8px] font-bold text-slate-400 sm:block">
-                      Premium Workspace
-                    </span>
-
-                  </div>
-
-                  <h1 className="mt-0.5 text-lg font-black tracking-[-.045em] text-slate-950 sm:text-xl">
-                    New Order
-                  </h1>
-
-                </div>
-
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
-
-                {/* Balance */}
-
-                <a
-                  href="/funds"
-                  className="group/balance inline-flex h-10 items-center gap-2 rounded-xl border border-violet-100 bg-white px-3 text-sm font-black text-violet-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_30px_rgba(76,29,149,.10)] sm:px-3.5"
-                >
-
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600 transition duration-300 group-hover/balance:bg-violet-100">
-
-                    <Wallet className="h-4 w-4" />
-
-                  </span>
-
-                  ₹{balance}
-
-                </a>
-
-                {/* Add Funds */}
-
-                <a
-                  href="/funds"
-                  className="group/funds relative hidden h-10 items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 px-4 text-xs font-black text-white shadow-[0_11px_30px_rgba(124,58,237,.22)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_17px_42px_rgba(124,58,237,.30)] sm:inline-flex"
-                >
-
-                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover/funds:translate-x-full" />
-
-                  <Plus className="relative h-4 w-4" />
-
-                  <span className="relative">
-                    Add Funds
-                  </span>
-
-                </a>
-
-                {/* Profile */}
-
-                <a
-                  href="/account"
-                  className="hidden h-10 items-center gap-2 rounded-xl border border-violet-100 bg-white px-2.5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 sm:flex"
-                >
-
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500 text-[8px] font-black text-white">
-                    {initials}
-                  </div>
-
-                  <div className="max-w-[130px]">
-
-                    <p className="truncate text-[10px] font-black text-slate-800">
-                      {user.name || "User"}
-                    </p>
-
-                    <p className="truncate text-[8px] font-medium text-slate-400">
-                      {user.email}
-                    </p>
-
-                  </div>
-
-                </a>
-
-              </div>
-
-            </div>
-
-          </header>
+          
 
           {/* =====================================================
               STATUS BAR
@@ -313,14 +190,14 @@ export default async function DashboardPage() {
 
           <section
             id="new-order"
-            className="mt-4 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_315px]"
+            className="mt-4 grid w-full min-w-0 max-w-full items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,315px)]"
           >
 
             {/* ===================================================
                 ORDER COMMAND CENTER
             =================================================== */}
 
-            <section className="relative overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(76,29,149,.07)] backdrop-blur-lg">
+            <section className="relative w-full min-w-0 max-w-full overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(76,29,149,.07)] backdrop-blur-lg">
 
               <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-violet-200/35 via-transparent to-fuchsia-200/30" />
 
@@ -749,3 +626,19 @@ function TrustItem({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
 import { addMkapiOrder } from "@/lib/providers/mkapi";
@@ -273,7 +274,31 @@ export async function POST(request: Request) {
       );
     }
 
-    const charge = service.rate.mul(quantity).div(1000);
+    const baseCharge = service.rate.mul(quantity).div(1000);
+
+    const userForDiscount = await prisma.user.findUnique({
+      where: {
+        id: session.userId,
+      },
+      select: {
+        discountPercent: true,
+      },
+    });
+
+    const discountPercent = userForDiscount?.discountPercent ?? service.rate.mul(0);
+
+    if (
+      discountPercent.lt(0) ||
+      discountPercent.gt(100)
+    ) {
+      throw new Error("INVALID_USER_DISCOUNT");
+    }
+
+    const discountAmount = baseCharge
+      .mul(discountPercent)
+      .div(100);
+
+    const charge = baseCharge.sub(discountAmount);
 
     if (charge.lte(0)) {
       return NextResponse.json(
