@@ -74,7 +74,7 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#f6f4fb] text-slate-900 selection:bg-violet-200 selection:text-violet-900 antialiased">
+    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#fbfaff] text-slate-900 selection:bg-violet-200 selection:text-violet-900">
 
       {/* =========================================================
           LIGHTWEIGHT PREMIUM BACKGROUND
@@ -82,14 +82,14 @@ export default async function DashboardPage() {
       ========================================================= */}
 
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(139,92,246,.10),transparent_30%),radial-gradient(circle_at_85%_15%,rgba(217,70,239,.08),transparent_28%),linear-gradient(135deg,#faf9ff_0%,#f5f3fa_48%,#fbfaff_100%)]" />
+        <div className="absolute inset-0 bg-[#fbfaff]" />
 
-        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-violet-300/20 blur-[110px]" />
+        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-violet-200/20 blur-[80px]" />
 
-        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-fuchsia-300/16 blur-[110px]" />
+        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-fuchsia-200/15 blur-[80px]" />
 
         <div
-          className="absolute inset-0 opacity-[.045]"
+          className="absolute inset-0 opacity-[.08]"
           style={{
             backgroundImage:
               "linear-gradient(rgba(91,33,182,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(91,33,182,.05) 1px, transparent 1px)",
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
 
         {/* Luxury beam */}
 
-        <div className="relative h-[3px] overflow-hidden bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500 shadow-[0_0_24px_rgba(124,58,237,.35)]">
+        <div className="relative h-[3px] overflow-hidden bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500">
 
           <div className="absolute inset-y-0 left-0 w-1/3 bg-white/70 blur-sm" />
 
@@ -198,19 +198,17 @@ export default async function DashboardPage() {
                 ORDER COMMAND CENTER
             =================================================== */}
 
-            <section className="relative w-full min-w-0 max-w-full overflow-visible rounded-[34px] border border-white/[.62] bg-white/[.30] shadow-[0_28px_100px_rgba(48,25,90,.14),inset_0_1px_0_rgba(255,255,255,.75),inset_0_-1px_0_rgba(124,58,237,.05)] backdrop-blur-2xl backdrop-saturate-150">
+            <section className="relative w-full min-w-0 max-w-full overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(76,29,149,.07)] backdrop-blur-lg">
 
-              <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-violet-300/25 via-white/10 to-fuchsia-300/20" />
+              <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-violet-200/35 via-transparent to-fuchsia-200/30" />
 
               {/* Top reflection */}
 
-              <div className="pointer-events-none absolute inset-x-[10%] top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
+              <div className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
 
-              <div className="pointer-events-none absolute inset-0 rounded-[34px] bg-gradient-to-b from-white/55 via-white/6 to-violet-100/10" />
-              <div className="pointer-events-none absolute inset-[1px] rounded-[33px] border border-white/20" />
               <div className="relative z-10 p-4 sm:p-6 lg:p-7">
 
-                <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-2/3 -translate-x-1/2 rounded-full bg-violet-400/[.10] blur-[85px]" />
+                <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-2/3 -translate-x-1/2 rounded-full bg-violet-400/[.08] blur-[70px]" />
 
                 <OrderForm services={formattedServices} />
 
@@ -246,8 +244,7 @@ export default async function DashboardPage() {
 
                 <div className="pointer-events-none absolute -left-24 top-0 h-24 w-80 rotate-[-18deg] bg-white/[.10] blur-2xl" />
 
-                <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-                 <div className="relative">
+                <div className="relative">
 
                   <div className="flex items-center justify-between">
 
@@ -302,7 +299,7 @@ export default async function DashboardPage() {
                   QUICK ACTIONS
               ================================================= */}
 
-              <div className="group rounded-[30px] border border-white border-white/[.62] bg-white/[.26] p-5 shadow-[0_28px_90px_rgba(48,25,90,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-blur-2xl backdrop-saturate-150 transition duration-300 hover:-translate-y-1 hover:border-violet-200/50 hover:bg-white/[.42] hover:shadow-[0_32px_90px_rgba(76,29,149,.16),0_0_35px_rgba(139,92,246,.07)]">
+              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-[0_16px_48px_rgba(76,29,149,.06)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(76,29,149,.12)]">
 
                 <div className="flex items-center justify-between">
 
@@ -357,7 +354,7 @@ export default async function DashboardPage() {
                   SUPPORT
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[29px] border border-white/[.62] bg-white/[.24] p-5 shadow-[0_30px_100px_rgba(48,25,90,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-blur-2xl backdrop-saturate-150">
+              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-[0_22px_70px_rgba(76,29,149,.065)] backdrop-blur-lg">
 
                 <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-violet-300/20 blur-[55px]" />
 
@@ -387,7 +384,7 @@ export default async function DashboardPage() {
 
                   <a
                     href="/tickets"
-                    className="group/support mt-4 flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(76,29,149,.10)]"
+                    className="group/support mt-4 flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
                   >
 
                     Create Ticket
@@ -444,7 +441,7 @@ export default async function DashboardPage() {
 
           </div>
 
-          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white/[.68] bg-white/[.26] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-lg sm:flex-row">
+          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(76,29,149,.035)] backdrop-blur-lg sm:flex-row">
 
             <p>
               © {new Date().getFullYear()} DreamSMM
@@ -524,9 +521,9 @@ function PremiumStat({
         : "from-fuchsia-100 to-violet-50 text-fuchsia-700 ring-fuchsia-100";
 
   return (
-    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white/[.62] bg-white/[.26] p-5 shadow-[0_28px_95px_rgba(48,25,90,.13),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-blur-2xl backdrop-saturate-150 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
+    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-[0_18px_60px_rgba(76,29,149,.075)] backdrop-blur-lg transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(76,29,149,.13)] sm:min-h-[118px] sm:p-6">
 
-      <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-95" />
+      <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/80 to-transparent" />
 
       <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-violet-300/15 blur-3xl transition duration-500 group-hover:bg-fuchsia-300/20" />
 
@@ -576,7 +573,7 @@ function QuickLink({
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-2xl border border-white/60 bg-white/[.27] p-3.5 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_7px_22px_rgba(76,29,149,.035)] transition duration-300 hover:-translate-y-0.5 hover:border-violet-100 hover:bg-violet-50/80 hover:shadow-[0_14px_35px_rgba(76,29,149,.09)]"
+      className="group flex items-center gap-3 rounded-2xl border border-slate-100/90 bg-white/[.60] p-3.5 shadow-[0_7px_22px_rgba(76,29,149,.035)] transition duration-300 hover:-translate-y-0.5 hover:border-violet-100 hover:bg-violet-50/80 hover:shadow-[0_14px_35px_rgba(76,29,149,.09)]"
     >
 
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-50 to-fuchsia-50 text-violet-600 shadow-sm ring-1 ring-violet-100 transition duration-300 group-hover:scale-105">
@@ -615,7 +612,7 @@ function TrustItem({
   text: string;
 }) {
   return (
-    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white/65 bg-white/[.25] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-lg transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
+    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(76,29,149,.045)] backdrop-blur-lg transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(76,29,149,.08)]">
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-200 to-transparent opacity-0 transition group-hover:opacity-100" />
 
