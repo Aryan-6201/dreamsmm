@@ -115,6 +115,7 @@ export async function POST(request: Request) {
           min: Number(providerService.min),
           max: Number(providerService.max),
           refill: providerService.refill,
+          averageTime: providerService.average_time != null ? String(providerService.average_time) : null,
         },
       });
     }
@@ -155,6 +156,11 @@ export async function POST(request: Request) {
     const providerRate =
       Number(providerService.rate);
 
+
+    const averageTime =
+      providerService.average_time != null
+        ? String(providerService.average_time).trim()
+        : null;
     const min =
       Number(providerService.min);
 
@@ -246,6 +252,7 @@ export async function POST(request: Request) {
               providerService.refill === true ||
               providerService.refill === "true",
             providerRate,
+            averageTime,
             markupPercent,
             autoSync,
             ...(autoSync
@@ -289,6 +296,7 @@ export async function POST(request: Request) {
           providerId,
           providerName: "MKAPI",
           providerRate,
+            averageTime,
           markupPercent,
           autoSync,
         },

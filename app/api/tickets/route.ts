@@ -79,14 +79,10 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const subject =
-      typeof body.subject === "string"
-        ? body.subject.trim()
-        : "";
+      typeof body.subject === "string" ? body.subject.trim() : "";
 
     const message =
-      typeof body.message === "string"
-        ? body.message.trim()
-        : "";
+      typeof body.message === "string" ? body.message.trim() : "";
 
     if (!subject || !message) {
       return NextResponse.json(

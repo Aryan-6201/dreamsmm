@@ -604,7 +604,7 @@ function Brand() {
   return (
     <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white shadow-[0_8px_22px_rgba(109,40,217,.24)]">
 
-      <Sparkles className="relative z-10 h-5 w-5" />
+      <span className="relative z-10 text-2xl font-black tracking-tight">D</span>
 
       <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
 
@@ -613,6 +613,7 @@ function Brand() {
     </div>
   );
 }
+
 
 
 

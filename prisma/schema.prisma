@@ -47,6 +47,7 @@ model Service {
   autoSync      Boolean  @default(false)
   markupPercent Decimal? @db.Decimal(8, 2)
   providerRate  Decimal? @db.Decimal(12, 4)
+  averageTime   String?
   orders        Order[]
 
   @@index([providerName])

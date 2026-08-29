@@ -101,10 +101,6 @@ export default function AdminServicesPage() {
   const [importing, setImporting] = useState(false);
   const [importedService, setImportedService] =
     useState<ImportedProviderService | null>(null);
-  const [vipsmmMarkup, setVipsmmMarkup] = useState("25");
-  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
-  const [vipsmmImporting, setVipsmmImporting] = useState(false);
-  const [vipsmmResult, setVipsmmResult] = useState("");
 
   async function loadServices() {
     setLoading(true);
@@ -283,18 +279,24 @@ useEffect(() => {
     }
   }
 
+  const [vipsmmServiceId, setVipsmmServiceId] = useState("");
+  const [vipsmmMarkup, setVipsmmMarkup] = useState("");
+  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
+  const [vipsmmImporting, setVipsmmImporting] = useState(false);
+  const [vipsmmService, setVipsmmService] =
+    useState<ImportedProviderService | null>(null);
 
-  async function importAllVipsmmServices() {
-    const markup = Number(vipsmmMarkup);
+  async function fetchVipsmmService() {
+    const serviceId = vipsmmServiceId.trim();
 
-    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
-      setMessage("Enter a valid MKAPI markup percentage.");
+    if (!serviceId) {
+      setMessage("Enter a MKAPI service ID first.");
       return;
     }
 
     setVipsmmImporting(true);
     setMessage("");
-    setVipsmmResult("");
+    setVipsmmService(null);
 
     try {
       const response = await fetch("/api/admin/services/import", {
@@ -303,6 +305,53 @@ useEffect(() => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          action: "fetch",
+          serviceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to fetch MKAPI service."
+        );
+      }
+
+      setVipsmmService(data.service);
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch MKAPI service."
+      );
+    } finally {
+      setVipsmmImporting(false);
+    }
+  }
+
+  async function importVipsmmService() {
+    if (!vipsmmService) return;
+
+    const markup = Number(vipsmmMarkup);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
+      setMessage("Enter a valid markup percentage.");
+      return;
+    }
+
+    setVipsmmImporting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/services/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "import",
+          serviceId: vipsmmService.service,
           markupPercent: markup,
           autoSync: vipsmmAutoSync,
         }),
@@ -312,30 +361,29 @@ useEffect(() => {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Unable to import MKAPI services."
+          data.error || "Unable to import MKAPI service."
         );
       }
 
-      setVipsmmResult(
-        "Imported: " + (data.created ?? 0) +
-        " Â· Updated: " + (data.updated ?? 0) +
-        " Â· Skipped: " + (data.skipped ?? 0) +
-        " Â· Categories: " + (data.categoriesCreated ?? 0)
+      setMessage(
+        `MKAPI service #${data.service.id} imported successfully.`
       );
-
-      setMessage("MKAPI services imported successfully.");
+      setVipsmmServiceId("");
+      setVipsmmMarkup("");
+      setVipsmmService(null);
       await loadServices();
       await loadCategories();
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Unable to import MKAPI services."
+          : "Unable to import MKAPI service."
       );
     } finally {
       setVipsmmImporting(false);
     }
   }
+
   async function saveService(event: React.FormEvent) {
     event.preventDefault();
 
@@ -675,15 +723,26 @@ useEffect(() => {
           )}
         </section>
 
+        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/[0.08] to-cyan-500/[0.04] p-5">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Import from MKAPI</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              Enter only the provider service ID. Details are fetched automatically.
+            </p>
+          </div>
 
-        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
-          <h3 className="text-lg font-semibold">Import from MKAPI</h3>
+          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
+            <input
+              value={vipsmmServiceId}
+              onChange={(e) => setVipsmmServiceId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") fetchVipsmmService();
+              }}
+              className={inputClass}
+              placeholder="MKAPI Service ID e.g. 12345"
+              inputMode="numeric"
+            />
 
-          <p className="mt-1 text-xs text-gray-500">
-            Import all available MKAPI services automatically.
-          </p>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
             <input
               type="number"
               min="0"
@@ -692,36 +751,90 @@ useEffect(() => {
               value={vipsmmMarkup}
               onChange={(e) => setVipsmmMarkup(e.target.value)}
               className={inputClass}
-              placeholder="Markup % e.g. 25"
+              placeholder="Markup %"
             />
 
             <button
               type="button"
-              onClick={importAllVipsmmServices}
+              onClick={fetchVipsmmService}
               disabled={vipsmmImporting}
-              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
             >
-              {vipsmmImporting
-                ? "Importing..."
-                : "Import All Services"}
+              {vipsmmImporting ? "Fetching..." : "Fetch Service"}
             </button>
           </div>
 
-          <label className="mt-3 inline-flex items-center gap-2 text-xs text-gray-400">
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
             <input
               type="checkbox"
               checked={vipsmmAutoSync}
               onChange={(e) => setVipsmmAutoSync(e.target.checked)}
             />
-            Automatically update selling prices when MKAPI rates change
+            Automatically update my selling price when provider rate changes
           </label>
 
-          {vipsmmResult && (
-            <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
-              {vipsmmResult}
+          {vipsmmService && (
+            <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="break-words font-semibold text-white">
+                    {vipsmmService.name}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Provider ID #{vipsmmService.service}
+                    {vipsmmService.category
+                      ? ` Â· ${vipsmmService.category}`
+                      : ""}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={importVipsmmService}
+                  disabled={vipsmmImporting}
+                  className="shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {vipsmmImporting ? "Importing..." : "Add Service"}
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg bg-white/[0.04] p-3">
+                  <p className="text-[10px] text-gray-600">Provider Rate</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-200">
+                    â‚¹{vipsmmService.rate}/1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-white/[0.04] p-3">
+                  <p className="text-[10px] text-gray-600">Your Markup</p>
+                  <p className="mt-1 text-sm font-semibold text-violet-300">
+                    {vipsmmMarkup || "0"}%
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-white/[0.04] p-3">
+                  <p className="text-[10px] text-gray-600">Selling Rate</p>
+                  <p className="mt-1 text-sm font-semibold text-green-300">
+                    â‚¹{(
+                      Number(vipsmmService.rate) *
+                      (1 + (Number(vipsmmMarkup) || 0) / 100)
+                    ).toFixed(4)}/1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-white/[0.04] p-3">
+                  <p className="text-[10px] text-gray-600">Limits</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-200">
+                    {vipsmmService.min.toLocaleString()}â€“
+                    {vipsmmService.max.toLocaleString()}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </section>
+
         <div className="grid gap-6 lg:grid-cols-[390px_1fr]">
           <section className="h-fit rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
             <div className="flex items-center justify-between">
@@ -1011,7 +1124,7 @@ useEffect(() => {
                             {service.max.toLocaleString()}
                           </span>
 
-                          <span className="rounded-lg bg bg-pink-300:/20 px-2 py-1 text-gray-500">
+                          <span className="rounded-lg bg-pink-300/10 px-2 py-1 text-gray-500">
                             {service.providerName ||
                               "No provider"}
 
@@ -1063,4 +1176,3 @@ useEffect(() => {
     </main>
   );
 }
-

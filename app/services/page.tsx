@@ -1,1178 +1,1022 @@
-"use client";
+﻿import { prisma } from "@/lib/prisma";
+import Sidebar from "@/app/components/Sidebar";
+export const dynamic = "force-dynamic";
+function normalize(value: string | null | undefined) {
+  return (value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
 
-import { useEffect, useState } from "react";
+function titleCase(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
-type Service = {
-  id: number;
-  name: string;
-  platform: string;
-  category: string | null;
-  description: string | null;
-  rate: string;
-  min: number;
-  max: number;
-  enabled: boolean;
-  refill: boolean;
-  providerId: string | null;
-  providerName: string | null;
-};
-type Category = {
-  id: number;
-  name: string;
-  platform: string;
-  enabled: boolean;
-  sortOrder: number;
-};
+export default async function ServicesPage() {
+  const categories = await prisma.category.findMany({
+    where: {
+      enabled: true,
+    },
+    orderBy: [
+      {
+        sortOrder: "asc",
+      },
+      {
+        name: "asc",
+      },
+    ],
+  });
+  const services = await prisma.service.findMany({
+    where: {
+      enabled: true,
+    },
+    orderBy: [
+      {
+        platform: "asc",
+      },
+      {
+        category: "asc",
+      },
+      {
+        id: "asc",
+      },
+    ],
+  });
 
-type ImportedProviderService = {
-  service: string;
-  name: string;
-  type?: string;
-  category?: string;
-  description?: string;
-  rate: string;
-  min: number;
-  max: number;
-  refill?: boolean | string;
-};
+  /*
+   * Remove duplicate services.
+   *
+   * Two records are treated as duplicates when they have the same:
+   * platform + category + name.
+   */
+ const categoryConfig = new Map(
+  categories.map((category) => [
+    normalize(category.name),
+    category,
+  ])
+);
+  const uniqueServices = Array.from(
+    new Map(
+      services.map((service) => {
+        const key = [
+          normalize(service.platform),
+          normalize(service.category),
+          normalize(service.name),
+        ].join("|");
 
-type FormState = {
-  name: string;
-  platform: string;
-  category: string;
-  description: string;
-  rate: string;
-  min: string;
-  max: string;
-  enabled: boolean;
-  refill: boolean;
-  providerId: string;
-  providerName: string;
-};
-
-const emptyForm: FormState = {
-  name: "",
-  platform: "",
-  category: "",
-  description: "",
-  rate: "",
-  min: "",
-  max: "",
-  enabled: true,
-  refill: false,
-  providerId: "",
-  providerName: "",
-};
-
-const inputClass =
-  "w-full rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-700 focus:border-blue-500/40";
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs font-medium text-gray-500">
-        {label}
-      </span>
-      {children}
-    </label>
+        return [key, service];
+      })
+    ).values()
   );
-}
 
-export default function AdminServicesPage() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [form, setForm] = useState<FormState>(emptyForm);
-  const [editingId, setEditingId] = useState<number | null>(null);
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [syncing, setSyncing] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const [providerServiceId, setProviderServiceId] = useState("");
-  const [providerMarkup, setProviderMarkup] = useState("");
-  const [providerAutoSync, setProviderAutoSync] = useState(true);
-  const [importing, setImporting] = useState(false);
-  const [importedService, setImportedService] =
-    useState<ImportedProviderService | null>(null);
-
-  async function loadServices() {
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/admin/services", {
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to load services.");
-      }
-
-      setServices(data.services || []);
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to load services."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-  async function loadCategories() {
-  try {
-    const response = await fetch("/api/categories", {
-      cache: "no-store",
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setCategories(data.categories || []);
-    }
-  } catch (error) {
-    console.error("Failed to load categories:", error);
-  }
-}
-
-useEffect(() => {
-  loadServices();
-  loadCategories();
-}, []);
-
-  function updateForm<K extends keyof FormState>(
-    key: K,
-    value: FormState[K]
-  ) {
-    setForm((current) => ({
-      ...current,
-      [key]: value,
-    }));
-  }
-
-  function resetForm() {
-    setEditingId(null);
-    setForm(emptyForm);
-  }
-
-  function startEdit(service: Service) {
-    setEditingId(service.id);
-
-    setForm({
-      name: service.name,
-      platform: service.platform,
-      category: service.category || "",
-      description: service.description || "",
-      rate: service.rate,
-      min: String(service.min),
-      max: String(service.max),
-      enabled: service.enabled,
-      refill: service.refill,
-      providerId: service.providerId || "",
-      providerName: service.providerName || "",
-    });
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-
-  async function fetchProviderService() {
-    const serviceId = providerServiceId.trim();
-
-    if (!serviceId) {
-      setMessage("Enter a MicoSMM service ID first.");
-      return;
-    }
-
-    setImporting(true);
-    setMessage("");
-    setImportedService(null);
-
-    try {
-      const response = await fetch("/api/admin/micosmm-import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "fetch",
-          serviceId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to fetch provider service.");
-      }
-
-      setImportedService(data.service);
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to fetch provider service."
-      );
-    } finally {
-      setImporting(false);
-    }
-  }
-
-  async function importProviderService() {
-    if (!importedService) return;
-
-    const markup = Number(providerMarkup);
-
-    if (!Number.isFinite(markup) || markup < 0) {
-      setMessage("Enter a valid markup percentage.");
-      return;
-    }
-
-    setImporting(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/admin/micosmm-import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "import",
-          serviceId: importedService.service,
-          markupPercent: markup,
-          autoSync: providerAutoSync,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to import provider service.");
-      }
-
-      setMessage(
-        `Service #${data.service.id} imported successfully at â‚¹${data.service.rate}/1k.`
-      );
-      setProviderServiceId("");
-      setProviderMarkup("");
-      setImportedService(null);
-      await loadServices();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to import provider service."
-      );
-    } finally {
-      setImporting(false);
-    }
-  }
-
-  const [vipsmmServiceId, setVipsmmServiceId] = useState("");
-  const [vipsmmMarkup, setVipsmmMarkup] = useState("");
-  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
-  const [vipsmmImporting, setVipsmmImporting] = useState(false);
-  const [vipsmmService, setVipsmmService] =
-    useState<ImportedProviderService | null>(null);
-
-  async function fetchVipsmmService() {
-    const serviceId = vipsmmServiceId.trim();
-
-    if (!serviceId) {
-      setMessage("Enter a MKAPI service ID first.");
-      return;
-    }
-
-    setVipsmmImporting(true);
-    setMessage("");
-    setVipsmmService(null);
-
-    try {
-      const response = await fetch("/api/admin/services/import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "fetch",
-          serviceId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Unable to fetch MKAPI service."
-        );
-      }
-
-      setVipsmmService(data.service);
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to fetch MKAPI service."
-      );
-    } finally {
-      setVipsmmImporting(false);
-    }
-  }
-
-  async function importVipsmmService() {
-    if (!vipsmmService) return;
-
-    const markup = Number(vipsmmMarkup);
-
-    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
-      setMessage("Enter a valid markup percentage.");
-      return;
-    }
-
-    setVipsmmImporting(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/admin/services/import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "import",
-          serviceId: vipsmmService.service,
-          markupPercent: markup,
-          autoSync: vipsmmAutoSync,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Unable to import MKAPI service."
-        );
-      }
-
-      setMessage(
-        `MKAPI service #${data.service.id} imported successfully.`
-      );
-      setVipsmmServiceId("");
-      setVipsmmMarkup("");
-      setVipsmmService(null);
-      await loadServices();
-      await loadCategories();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to import MKAPI service."
-      );
-    } finally {
-      setVipsmmImporting(false);
-    }
-  }
-
-  async function saveService(event: React.FormEvent) {
-    event.preventDefault();
-
-    setSaving(true);
-    setMessage("");
-
-    try {
-      const payload = {
-        name: form.name,
-        platform: form.platform,
-        category: form.category,
-        description: form.description,
-        rate: form.rate,
-        min: form.min,
-        max: form.max,
-        enabled: form.enabled,
-        refill: form.refill,
-        providerId: form.providerId,
-        providerName: form.providerName,
-      };
-
-      const response = await fetch("/api/admin/services", {
-        method: editingId ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          editingId
-            ? {
-                id: editingId,
-                ...payload,
-              }
-            : payload
-        ),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Unable to save service."
-        );
-      }
-
-      setMessage(
-        editingId
-          ? `Service #${editingId} updated successfully.`
-          : `Service #${data.service.id} created successfully.`
-      );
-
-      resetForm();
-      await loadServices();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to save service."
-      );
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function toggleService(service: Service) {
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/admin/services", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: service.id,
-          enabled: !service.enabled,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Unable to update service."
-        );
-      }
-
-      await loadServices();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to update service."
-      );
-    }
-  }
-
-  async function syncOrders() {
-    setSyncing(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/admin/orders/sync", {
-        method: "POST",
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to sync orders.");
-      }
-
-      setMessage(
-        `Order sync complete. Checked ${data.checked}, updated ${data.updated}, failed ${data.failed}.`
-      );
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to sync orders."
-      );
-    } finally {
-      setSyncing(false);
-    }
-  }
-
-  async function deleteService(service: Service) {
-    const confirmed = window.confirm(
-      `Delete "${service.name}"? This only works if the service has no orders.`
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(
-        `/api/admin/services?id=${service.id}`,
+  /*
+   * Group services by platform.
+   */
+  const platformGroups = new Map<
+    string,
+    {
+      label: string;
+      categories: Map<
+        string,
         {
-          method: "DELETE",
+          label: string;
+          services: typeof uniqueServices;
         }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Unable to delete service."
-        );
-      }
-
-      setMessage(`Service #${service.id} deleted.`);
-
-      await loadServices();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to delete service."
-      );
+      >;
     }
+  >();
+
+  for (const service of uniqueServices) {
+    const platformKey = normalize(service.platform) || "other";
+    const platformLabel = service.platform?.trim()
+      ? service.platform.trim()
+      : "Other";
+
+    if (!platformGroups.has(platformKey)) {
+      platformGroups.set(platformKey, {
+        label: platformLabel,
+        categories: new Map(),
+      });
+    }
+
+    const platformGroup = platformGroups.get(platformKey)!;
+
+    const categoryKey =
+  normalize(service.category) || "general";
+
+const config = categoryConfig.get(categoryKey);
+
+const categoryLabel = config?.name
+  ? config.name
+  : service.category?.trim()
+    ? service.category.trim()
+    : "General";
+
+    if (!platformGroup.categories.has(categoryKey)) {
+      platformGroup.categories.set(categoryKey, {
+        label: categoryLabel,
+        services: [],
+      });
+    }
+
+    platformGroup.categories
+      .get(categoryKey)!
+      .services.push(service);
   }
+
+  const platforms = Array.from(platformGroups.values());
 
   return (
-    <main className="min-h-screen bg-[#070a11] text-white">
-      <header className="border-b border-white/[0.07] bg-[#090c14]/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">
-              Dream<span className="text-blue-500">SMM</span>
-            </h1>
+    <main className="min-h-screen bg-[#f7f8fc] text-slate-900">
+      <Sidebar />
 
-            <p className="text-[11px] text-gray-500">
-              Administration Panel
-            </p>
-          </div>
+      <div className="min-h-screen lg:ml-[250px]">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+          {/* HERO */}
+          <section className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-br from-white via-violet-50/80 to-indigo-50/70 p-6 shadow-[0_20px_70px_rgba(79,70,229,0.10)] sm:p-8">
+            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-300/25 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl" />
 
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600/20 text-sm font-bold text-blue-400 ring-1 ring-blue-500/20">
-            A
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-              Admin Panel
-            </div>
-
-            <h2 className="text-3xl font-bold tracking-tight">
-              Service Management
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Manage services and provider configuration.
-            </p>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={syncOrders}
-              disabled={syncing}
-              className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
-            >
-              {syncing ? "Syncing..." : "Sync Orders"}
-            </button>
-
-            <button
-              onClick={loadServices}
-              disabled={loading}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/[0.08] disabled:opacity-50"
-            >
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        {message && (
-          <div className="mb-6 flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm text-blue-300">
-            <span>{message}</span>
-
-            <button
-              onClick={() => setMessage("")}
-              className="ml-4 text-blue-400 hover:text-white"
-            >
-              Ãƒâ€”
-            </button>
-          </div>
-        )}
-
-        <section className="mb-6 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/[0.08] to-blue-500/[0.04] p-5">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Import from MicoSMM</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Enter only the provider service ID. Details are fetched automatically.
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
-            <input
-              value={providerServiceId}
-              onChange={(e) => setProviderServiceId(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") fetchProviderService();
-              }}
-              className={inputClass}
-              placeholder="MicoSMM Service ID e.g. 12345"
-              inputMode="numeric"
-            />
-
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={providerMarkup}
-              onChange={(e) => setProviderMarkup(e.target.value)}
-              className={inputClass}
-              placeholder="Markup %"
-            />
-
-            <button
-              type="button"
-              onClick={fetchProviderService}
-              disabled={importing}
-              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50"
-            >
-              {importing ? "Fetching..." : "Fetch Service"}
-            </button>
-          </div>
-
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
-            <input
-              type="checkbox"
-              checked={providerAutoSync}
-              onChange={(e) => setProviderAutoSync(e.target.checked)}
-            />
-            Automatically update my selling price when provider rate changes
-          </label>
-
-          {importedService && (
-            <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-semibold text-white">
-                    {importedService.name}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Provider ID #{importedService.service}
-                    {importedService.category
-                      ? ` Â· ${importedService.category}`
-                      : ""}
-                  </p>
+            <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600 shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                  Service Marketplace
                 </div>
 
-                <button
-                  type="button"
-                  onClick={importProviderService}
-                  disabled={importing}
-                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
-                >
-                  {importing ? "Importing..." : "Add Service"}
-                </button>
-              </div>
+                <h1 className="mt-4 text-3xl font-black tracking-[-0.045em] text-slate-950 sm:text-4xl">
+                  Explore Services
+                </h1>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Provider Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    â‚¹{importedService.rate}/1k
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Your Markup</p>
-                  <p className="mt-1 text-sm font-semibold text-violet-300">
-                    {providerMarkup || "0"}%
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Selling Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-green-300">
-                    â‚¹{(
-                      Number(importedService.rate) *
-                      (1 + (Number(providerMarkup) || 0) / 100)
-                    ).toFixed(4)}
-                    /1k
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Limits</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {importedService.min.toLocaleString()}â€“
-                    {importedService.max.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/[0.08] to-cyan-500/[0.04] p-5">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold">Import from MKAPI</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Enter only the provider service ID. Details are fetched automatically.
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
-            <input
-              value={vipsmmServiceId}
-              onChange={(e) => setVipsmmServiceId(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") fetchVipsmmService();
-              }}
-              className={inputClass}
-              placeholder="MKAPI Service ID e.g. 12345"
-              inputMode="numeric"
-            />
-
-            <input
-              type="number"
-              min="0"
-              max="1000"
-              step="0.01"
-              value={vipsmmMarkup}
-              onChange={(e) => setVipsmmMarkup(e.target.value)}
-              className={inputClass}
-              placeholder="Markup %"
-            />
-
-            <button
-              type="button"
-              onClick={fetchVipsmmService}
-              disabled={vipsmmImporting}
-              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
-            >
-              {vipsmmImporting ? "Fetching..." : "Fetch Service"}
-            </button>
-          </div>
-
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
-            <input
-              type="checkbox"
-              checked={vipsmmAutoSync}
-              onChange={(e) => setVipsmmAutoSync(e.target.checked)}
-            />
-            Automatically update my selling price when provider rate changes
-          </label>
-
-          {vipsmmService && (
-            <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="break-words font-semibold text-white">
-                    {vipsmmService.name}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Provider ID #{vipsmmService.service}
-                    {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
-                      : ""}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={importVipsmmService}
-                  disabled={vipsmmImporting}
-                  className="shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
-                >
-                  {vipsmmImporting ? "Importing..." : "Add Service"}
-                </button>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Provider Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{vipsmmService.rate}/1k
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Your Markup</p>
-                  <p className="mt-1 text-sm font-semibold text-violet-300">
-                    {vipsmmMarkup || "0"}%
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Selling Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
-                      Number(vipsmmService.rate) *
-                      (1 + (Number(vipsmmMarkup) || 0) / 100)
-                    ).toFixed(4)}/1k
-                  </p>
-                </div>
-
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Limits</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {vipsmmService.min.toLocaleString()}–
-                    {vipsmmService.max.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <div className="grid gap-6 lg:grid-cols-[390px_1fr]">
-          <section className="h-fit rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {editingId
-                    ? `Edit Service #${editingId}`
-                    : "Add Service"}
-                </h3>
-
-                <p className="mt-1 text-xs text-gray-600">
-                  Provider ID is the provider's service ID.
+                <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+                  Browse available social media services, compare rates and
+                  limits, then place your order directly from DreamSMM.
                 </p>
               </div>
 
-              {editingId && (
-                <button
-                  onClick={resetForm}
-                  className="text-xs text-gray-500 hover:text-white"
-                >
-                  Cancel
-                </button>
-              )}
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard label="Services" value={String(uniqueServices.length)} icon="⚙️" />
+                <StatCard label="Platforms" value={String(platforms.length)} icon="🌐" />
+              </div>
             </div>
-
-            <form
-              onSubmit={saveService}
-              className="mt-5 space-y-4"
-            >
-              <Field label="Service Name">
-                <input
-                  value={form.name}
-                  onChange={(e) =>
-                    updateForm("name", e.target.value)
-                  }
-                  className={inputClass}
-                  placeholder="Instagram Followers"
-                  required
-                />
-              </Field>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Platform">
-                  <input
-                    value={form.platform}
-                    onChange={(e) =>
-                      updateForm("platform", e.target.value)
-                    }
-                    className={inputClass}
-                    placeholder="Instagram"
-                    required
-                  />
-                </Field>
-
- <Field label="Category">
-  <select
-    value={form.category}
-    onChange={(e) =>
-      updateForm("category", e.target.value)
-    }
-    className={inputClass}
-  >
-    <option value="">Select category</option>
-
-    {categories.map((category) => (
-      <option key={category.id} value={category.name}>
-        {category.name}
-      </option>
-    ))}
-  </select>
-</Field>
-              </div>
-
-              <Field label="Description">
-                <textarea
-                  value={form.description}
-                  onChange={(e) =>
-                    updateForm("description", e.target.value)
-                  }
-                  className={`${inputClass} min-h-20 resize-none`}
-                  placeholder="Service description..."
-                />
-              </Field>
-
-              <Field label="Rate per 1,000">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.0001"
-                  value={form.rate}
-                  onChange={(e) =>
-                    updateForm("rate", e.target.value)
-                  }
-                  className={inputClass}
-                  placeholder="25"
-                  required
-                />
-              </Field>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Minimum">
-                  <input
-                    type="number"
-                    min="1"
-                    value={form.min}
-                    onChange={(e) =>
-                      updateForm("min", e.target.value)
-                    }
-                    className={inputClass}
-                    placeholder="100"
-                    required
-                  />
-                </Field>
-
-                <Field label="Maximum">
-                  <input
-                    type="number"
-                    min="1"
-                    value={form.max}
-                    onChange={(e) =>
-                      updateForm("max", e.target.value)
-                    }
-                    className={inputClass}
-                    placeholder="100000"
-                    required
-                  />
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Provider Name">
-                  <input
-                    value={form.providerName}
-                    onChange={(e) =>
-                      updateForm(
-                        "providerName",
-                        e.target.value
-                      )
-                    }
-                    className={inputClass}
-                    placeholder="Provider A"
-                  />
-                </Field>
-
-                <Field label="Provider Service ID">
-                  <input
-                    value={form.providerId}
-                    onChange={(e) =>
-                      updateForm(
-                        "providerId",
-                        e.target.value
-                      )
-                    }
-                    className={inputClass}
-                    placeholder="12345"
-                  />
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-black/10 p-3">
-                  <input
-                    type="checkbox"
-                    checked={form.enabled}
-                    onChange={(e) =>
-                      updateForm(
-                        "enabled",
-                        e.target.checked
-                      )
-                    }
-                  />
-
-                  <span className="text-xs text-gray-300">
-                    Enabled
-                  </span>
-                </label>
-
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-black/10 p-3">
-                  <input
-                    type="checkbox"
-                    checked={form.refill}
-                    onChange={(e) =>
-                      updateForm(
-                        "refill",
-                        e.target.checked
-                      )
-                    }
-                  />
-
-                  <span className="text-xs text-gray-300">
-                    Refill
-                  </span>
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                disabled={saving}
-                className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold transition hover:bg-blue-500 disabled:opacity-50"
-              >
-                {saving
-                  ? "Saving..."
-                  : editingId
-                    ? "Update Service"
-                    : "Create Service"}
-              </button>
-            </form>
           </section>
 
-          <section>
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold">
-                Services
-              </h3>
+          {/* PLATFORM NAVIGATION */}
+          <div className="mt-5 overflow-x-auto pb-1">
+            <div className="flex min-w-max gap-2">
+              <a
+                href="#all"
+                className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-[10px] font-black text-violet-700 shadow-sm"
+              >
+                All Services
+              </a>
 
-              <p className="mt-1 text-xs text-gray-600">
-                {services.length} service
-                {services.length === 1 ? "" : "s"} in database
-              </p>
+              {platforms.map((platform) => (
+                <a
+                  key={platform.label}
+                  href={`#platform-${normalize(platform.label).replace(/\s+/g, "-")}`}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                >
+                  {titleCase(platform.label)}
+                </a>
+              ))}
             </div>
+          </div>
 
-            {loading ? (
-              <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-12 text-center text-sm text-gray-500">
-                Loading services...
+          {/* SERVICES */}
+          {uniqueServices.length === 0 ? (
+            <section
+              id="all"
+              className="mt-7 rounded-[28px] border border-dashed border-slate-300 bg-white p-16 text-center shadow-sm"
+            >
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-2xl font-black text-violet-500">
+                ⚙️
               </div>
-            ) : services.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-[#0c1019] p-12 text-center">
-                <p className="font-semibold text-gray-300">
-                  No services yet
-                </p>
-
-                <p className="mt-2 text-sm text-gray-600">
-                  Create your first service using the form.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {services.map((service) => (
-                  <article
-                    key={service.id}
-                    className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 transition hover:border-white/[0.12]"
-                  >
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-bold text-blue-400">
-                            #{service.id}
-                          </span>
-
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                              service.enabled
-                                ? "bg-green-500/10 text-green-400"
-                                : "bg-red-500/10 text-red-400"
-                            }`}
-                          >
-                            {service.enabled
-                              ? "Enabled"
-                              : "Disabled"}
-                          </span>
-
-                          {service.refill && (
-                            <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400">
-                              Refill
-                            </span>
-                          )}
-                        </div>
-
-                        <h4 className="mt-2 font-semibold text-gray-200">
-                          {service.name}
-                        </h4>
-
-                        <p className="mt-1 text-xs text-gray-500">
-                          {service.platform}
-                          {service.category
-                            ? ` Ã‚Â· ${service.category}`
-                            : ""}
-                        </p>
-
-                        <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
-                          <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate Ã¢â€šÂ¹{service.rate}/1k
-                          </span>
-
-                          <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            {service.min.toLocaleString()}Ã¢â‚¬â€œ
-                            {service.max.toLocaleString()}
-                          </span>
-
-                          <span className="rounded-lg bg-pink-300/10 px-2 py-1 text-gray-500">
-                            {service.providerName ||
-                              "No provider"}
-
-                            {service.providerId
-                              ? ` Ã‚Â· ID ${service.providerId}`
-                              : ""}
-                          </span>
-                        </div>
+              <h2 className="mt-5 text-xl font-black text-slate-900">
+                No services available
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-slate-400">
+                Services will appear here once they are added and enabled.
+              </p>
+            </section>
+          ) : (
+            <div id="all" className="mt-8 space-y-12">
+              {platforms.map((platform) => (
+                <section
+                  key={platform.label}
+                  id={`platform-${normalize(platform.label).replace(/\s+/g, "-")}`}
+                >
+                  {/* PLATFORM HEADING */}
+                  <div className="mb-5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-lg font-black text-violet-600 ring-1 ring-violet-100">
+                        {platformIcon(platform.label)}
                       </div>
 
-                      <div className="flex shrink-0 gap-2">
-                        <button
-                          onClick={() =>
-                            toggleService(service)
-                          }
-                          className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-gray-300 hover:bg-white/[0.08]"
-                        >
-                          {service.enabled
-                            ? "Disable"
-                            : "Enable"}
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            startEdit(service)
-                          }
-                          className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            deleteService(service)
-                          }
-                          className="rounded-xl border border-red-500/20 bg-red-500/[0.05] px-3 py-2 text-xs text-red-400 hover:bg-red-500/10"
-                        >
-                          Delete
-                        </button>
+                      <div>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+                          {titleCase(platform.label)}
+                        </h2>
+                        <p className="mt-1 text-xs font-semibold text-slate-400">
+                          {Array.from(platform.categories.values()).reduce(
+                            (total, category) => total + category.services.length,
+                            0,
+                          )}{" "}
+                          services available
+                        </p>
                       </div>
                     </div>
-                  </article>
-                ))}
-              </div>
-            )}
+
+                    <span className="hidden rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-violet-600 sm:inline-flex">
+                      Available
+                    </span>
+                  </div>
+
+                  <div className="space-y-8">
+                    {Array.from(platform.categories.values()).map((category) => (
+                      <div key={category.label}>
+                        {/* CATEGORY */}
+                        <div className="mb-4 flex items-center gap-3">
+                          <h3 className="text-lg font-black text-slate-800 sm:text-xl">
+                            {titleCase(category.label)}
+                          </h3>
+
+                          <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-400 shadow-sm">
+                            {category.services.length}
+                          </span>
+                        </div>
+
+                        {/* SERVICE CARDS */}
+                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                          {category.services.map((service, serviceIndex) => (
+                            <PremiumServiceCard
+                              key={service.id}
+                              service={service}
+                              category={category.label}
+                              index={serviceIndex}
+                            />
+                          ))}
+                        </div>
+                        {false && <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                          {category.services.map((service) => (
+                            <article
+                              key={service.id}
+                              className="group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(99,102,241,0.10)]"
+                            >
+                              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-violet-100/50 blur-2xl transition group-hover:bg-violet-200/50" />
+
+                              <div className="relative flex items-start justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-3">
+                                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-xl font-black text-violet-600 ring-1 ring-violet-100">
+                                    {platformIcon(service.platform)}
+                                  </div>
+
+                                  <div className="min-w-0">
+                                    <h4 className="truncate text-base font-black text-slate-900">
+                                      {service.name}
+                                    </h4>
+                                    <p className="mt-1 text-[10px] font-black uppercase tracking-wider text-violet-500">
+                                      {service.platform}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[8px] font-black uppercase tracking-wider text-emerald-700">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                  Active
+                                </span>
+                              </div>
+
+                              <div className="relative mt-5 min-h-[54px]">
+                                <p className="text-xs font-medium leading-5 text-slate-500">
+                                  {service.description ||
+                                    "High-quality social media service with fast processing."}
+                                </p>
+                              </div>
+
+                              <div className="relative mt-5 grid grid-cols-2 gap-3">
+                                <div className="rounded-2xl border border-violet-100 bg-violet-50/70 p-3.5">
+                                  <p className="text-[8px] font-black uppercase tracking-wider text-violet-500">
+                                    Rate / 1K
+                                  </p>
+                                  <p className="mt-1.5 text-lg font-black text-violet-800">
+                                    ₹{service.rate.toString()}
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                                  <p className="text-[8px] font-black uppercase tracking-wider text-slate-400">
+                                    Range
+                                  </p>
+                                  <p className="mt-1.5 text-xs font-black leading-5 text-slate-700">
+                                    {service.min.toLocaleString()} –{" "}
+                                    {service.max.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="relative mt-3 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-3.5 py-3">
+                                <div>
+                                  <p className="text-[8px] font-black uppercase tracking-wider text-slate-400">
+                                    Service ID
+                                  </p>
+                                  <p className="mt-1 text-xs font-black text-slate-700">
+                                    #{service.id}
+                                  </p>
+                                </div>
+
+                                <span className="rounded-lg bg-white px-2.5 py-1.5 text-[9px] font-black text-slate-400 shadow-sm">
+                                  {titleCase(category.label)}
+                                </span>
+                              </div>
+
+                              <a
+                                href={`/dashboard?serviceId=${service.id}`}
+                                className="relative mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(99,102,241,0.28)]"
+                              >
+                                Order Now
+                                <span className="text-base transition-transform group-hover:translate-x-1">
+                                  →
+                                </span>
+                              </a>
+                            </article>
+                          ))}
+                        </div>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+
+          <TrustStrip />
+          <MarketplaceGuide />
+          <ServiceFAQ />
+          <CatalogFooter />
+
+          {/* BOTTOM INFO */}
+          <section className="mt-12 grid gap-4 md:grid-cols-3">
+            <InfoCard
+              icon="✓"
+              title="Reliable Services"
+              description="Services are monitored and managed through your DreamSMM panel."
+            />
+
+            <InfoCard
+              icon="⚡"
+              title="Fast Processing"
+              description="Place orders directly from your DreamSMM account."
+            />
+
+            <InfoCard
+              icon="?"
+              title="Need Help?"
+              description="Contact support if you need help with an order."
+              link="/tickets"
+              linkText="Contact Support →"
+            />
           </section>
         </div>
       </div>
     </main>
   );
 }
+
+
+/* =========================================================
+   PREMIUM SERVICE UI HELPERS
+   ---------------------------------------------------------
+   These helpers keep the page visually consistent while
+   keeping the actual service data untouched.
+========================================================= */
+
+function serviceAccent(index: number) {
+  const accents = [
+    "from-violet-50 to-indigo-50",
+    "from-indigo-50 to-blue-50",
+    "from-fuchsia-50 to-violet-50",
+    "from-purple-50 to-pink-50",
+  ];
+
+  return accents[index % accents.length];
+}
+
+function serviceTier(rate: string) {
+  const numeric = Number(rate);
+
+  if (!Number.isFinite(numeric)) {
+    return "Standard";
+  }
+
+  if (numeric <= 10) return "Budget";
+  if (numeric <= 50) return "Popular";
+  if (numeric <= 200) return "Premium";
+
+  return "Pro";
+}
+
+function serviceTierClass(rate: string) {
+  const tier = serviceTier(rate);
+
+  if (tier === "Budget") {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+
+  if (tier === "Popular") {
+    return "border-violet-200 bg-violet-50 text-violet-700";
+  }
+
+  if (tier === "Premium") {
+    return "border-indigo-200 bg-indigo-50 text-indigo-700";
+  }
+
+  return "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700";
+}
+
+function compactNumber(value: number) {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`;
+  }
+
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1)}K`;
+  }
+
+    return value.toLocaleString();
+}
+
+function platformDescription(platform: string) {
+  const value = normalize(platform);
+
+  if (value.includes("instagram")) {
+    return "Growth, engagement and visibility services for Instagram.";
+  }
+
+  if (value.includes("youtube")) {
+    return "Audience and engagement services for YouTube creators.";
+  }
+
+  if (value.includes("facebook")) {
+    return "Social growth and engagement services for Facebook.";
+  }
+
+  if (value.includes("tiktok")) {
+    return "Discovery and engagement services for TikTok.";
+  }
+
+  if (value.includes("telegram")) {
+    return "Channel, group and community growth services.";
+  }
+
+  if (value.includes("spotify")) {
+    return "Audience and discovery services for Spotify.";
+  }
+
+  if (value.includes("linkedin")) {
+    return "Professional audience and profile growth services.";
+  }
+
+  return `Available services for ${titleCase(platform)}.`;
+}
+
+function categoryIcon(category: string) {
+  const value = normalize(category);
+
+  if (value.includes("follower")) return "👥";
+  if (value.includes("follow")) return "👥";
+  if (value.includes("like")) return "❤️";
+  if (value.includes("view")) return "👁️";
+  if (value.includes("comment")) return "💬";
+  if (value.includes("share")) return "↗️";
+  if (value.includes("save")) return "🔖";
+  if (value.includes("story")) return "📖";
+  if (value.includes("subscriber")) return "👥";
+  if (value.includes("watch")) return "👁️";
+  if (value.includes("traffic")) return "↗️";
+  if (value.includes("member")) return "👥";
+
+  return "Γ£ª";
+}
+
+function CategoryHeader({
+  category,
+  count,
+}: {
+  category: string;
+  count: number;
+}) {
+  return (
+    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sm font-black text-violet-600 shadow-sm ring-1 ring-violet-100">
+          {categoryIcon(category)}
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-black tracking-tight text-slate-800">
+              {titleCase(category)}
+            </h3>
+
+            <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[8px] font-black text-slate-400">
+              {count}
+            </span>
+          </div>
+
+          <p className="mt-0.5 text-[10px] font-semibold text-slate-400">
+            Services available in this category
+          </p>
+        </div>
+      </div>
+
+      <span className="self-start rounded-full bg-slate-100 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-slate-500 sm:self-auto">
+        {count} services
+      </span>
+    </div>
+  );
+}
+
+function PlatformHeader({
+  platform,
+  count,
+  categories,
+}: {
+  platform: string;
+  count: number;
+  categories: number;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-[26px] border border-violet-100 bg-gradient-to-r from-white via-violet-50/70 to-indigo-50/70 p-5 shadow-sm sm:p-6">
+      <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-violet-200/30 blur-3xl" />
+
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm ring-1 ring-violet-100">
+            {platformIcon(platform)}
+          </div>
+
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+              Platform
+            </p>
+
+            <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900">
+              {titleCase(platform)}
+            </h2>
+
+            <p className="mt-1 max-w-xl text-xs font-medium leading-5 text-slate-500">
+              {platformDescription(platform)}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-2xl border border-white bg-white/80 px-4 py-3 text-center shadow-sm">
+            <p className="text-lg font-black text-violet-700">
+              {count}
+            </p>
+            <p className="mt-0.5 text-[8px] font-black uppercase tracking-wider text-slate-400">
+              Services
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white bg-white/80 px-4 py-3 text-center shadow-sm">
+            <p className="text-lg font-black text-indigo-700">
+              {categories}
+            </p>
+            <p className="mt-0.5 text-[8px] font-black uppercase tracking-wider text-slate-400">
+              Categories
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ServiceMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
+      <p className="text-[8px] font-black uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+
+      <p className="mt-1 truncate text-[11px] font-black text-slate-700">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function PremiumServiceCard({
+  service,
+  category,
+  index,
+}: {
+  service: {
+    id: number;
+    name: string;
+    platform: string;
+    category: string | null;
+    description: string | null;
+    rate: unknown;
+    min: number;
+    max: number;
+  };
+  category: string;
+  index: number;
+}) {
+  const tier = serviceTier(String(service.rate));
+
+  return (
+    <article className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_50px_rgba(99,102,241,0.11)]">
+      <div
+        className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${serviceAccent(index)} opacity-80 blur-3xl transition group-hover:opacity-100`}
+      />
+
+      <div className="relative min-w-0">
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <div className="flex min-w-0 max-w-full items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-lg font-black text-violet-600 ring-1 ring-violet-100">
+              {platformIcon(service.platform)}
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="rounded-md bg-slate-100 px-2 py-1 text-[8px] font-black text-slate-500">
+                  #{service.id}
+                </span>
+
+                <span
+                  className={`rounded-md border px-2 py-1 text-[8px] font-black ${serviceTierClass(
+                    String(service.rate),
+                  )}`}
+                >
+                  {tier}
+                </span>
+              </div>
+
+              <h4 className="mt-2 min-w-0 max-w-full break-words whitespace-normal text-sm font-black leading-5 text-slate-900 sm:text-[15px]">
+                {service.name}
+              </h4>
+            </div>
+          </div>
+
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[8px] font-black uppercase tracking-wider text-emerald-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Active
+          </span>
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
+          <p className="text-[10px] font-black uppercase tracking-wider text-violet-500">
+            Service overview
+          </p>
+
+          <p className="mt-1.5 min-h-[40px] text-xs font-medium leading-5 text-slate-500">
+            {service.description ||
+              "High-quality social media service with fast processing."}
+          </p>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <ServiceMetric
+            label="Rate / 1K"
+            value={`₹${String(service.rate)}`}
+          />
+
+          <ServiceMetric
+            label="Category"
+            value={titleCase(category)}
+          />
+
+          <ServiceMetric
+            label="Minimum"
+            value={service.min.toLocaleString()}
+          />
+
+          <ServiceMetric
+            label="Maximum"
+            value={service.max.toLocaleString()}
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/60 px-3.5 py-3">
+          <div>
+            <p className="text-[8px] font-black uppercase tracking-wider text-violet-500">
+              Order range
+            </p>
+            <p className="mt-1 text-[10px] font-black text-violet-800">
+              {compactNumber(service.min)} — {compactNumber(service.max)}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p className="text-[8px] font-black uppercase tracking-wider text-violet-400">
+              Platform
+            </p>
+            <p className="mt-1 text-[10px] font-black text-violet-800">
+              {titleCase(service.platform)}
+            </p>
+          </div>
+        </div>
+
+        <a
+          href={`/dashboard?serviceId=${service.id}`}
+          className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.30)]"
+        >
+          Order Now
+          <span className="text-base transition-transform group-hover:translate-x-1">
+            →
+          </span>
+        </a>
+      </div>
+    </article>
+  );
+}
+
+function ServiceFAQ() {
+  const questions = [
+    {
+      question: "How do I choose a service?",
+      answer:
+        "Start with the platform, then compare the category, rate, minimum and maximum quantity shown on each service card.",
+    },
+    {
+      question: "What does Rate / 1K mean?",
+      answer:
+        "It is the displayed service rate for one thousand units. Your final charge is calculated from the quantity you enter in the order form.",
+    },
+    {
+      question: "Why do services have different limits?",
+      answer:
+        "Each service can have its own minimum and maximum quantity. Always keep your order within the displayed range.",
+    },
+    {
+      question: "Where does Order Now take me?",
+      answer:
+        "Order Now opens the main order panel with the selected service ID in the URL so the service can be selected for your order.",
+    },
+    {
+      question: "Can I browse by category?",
+      answer:
+        "Yes. Services are grouped underneath each platform by category, making it easier to compare similar services together.",
+    },
+    {
+      question: "What if a service is not available?",
+      answer:
+        "Only services returned by the current service catalog are shown on this page. If a service is missing, check the catalog again later or contact support.",
+    },
+  ];
+
+  return (
+    <section className="mt-12 rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.045)] sm:p-7">
+      <div className="max-w-2xl">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+          Service guide
+        </p>
+
+        <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+          Frequently asked questions
+        </h2>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-slate-500">
+          Quick answers to help you understand the catalog before placing an
+          order.
+        </p>
+      </div>
+
+      <div className="mt-6 grid gap-3 md:grid-cols-2">
+        {questions.map((item, index) => (
+          <details
+            key={item.question}
+            className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-violet-200 hover:bg-violet-50/40"
+            open={index === 0}
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-xs font-black text-slate-800">
+              <span>{item.question}</span>
+
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-600 shadow-sm transition group-open:bg-violet-100">
+                +
+              </span>
+            </summary>
+
+            <p className="mt-3 border-t border-slate-200 pt-3 text-[10px] font-medium leading-5 text-slate-500">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CatalogFooter() {
+  return (
+    <section className="mt-8 overflow-hidden rounded-[28px] border border-violet-100 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-5 text-white shadow-[0_20px_50px_rgba(79,70,229,0.18)] sm:p-7">
+      <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
+            Ready to order?
+          </p>
+
+          <h2 className="mt-2 text-2xl font-black tracking-tight">
+            Pick a service and get started.
+          </h2>
+
+          <p className="mt-2 max-w-xl text-xs font-medium leading-5 text-white/70">
+            Use the service catalog to compare options, then open the order
+            panel with your selected service.
+          </p>
+        </div>
+
+        <a
+          href="/dashboard"
+          className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl bg-white px-6 text-xs font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
+        >
+          Open Order Panel →
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function MarketplaceGuide() {
+  const steps = [
+    {
+      number: "01",
+      title: "Choose a platform",
+      text: "Find the social network or platform that matches your target.",
+    },
+    {
+      number: "02",
+      title: "Compare services",
+      text: "Review category, rate, minimum and maximum limits before ordering.",
+    },
+    {
+      number: "03",
+      title: "Place your order",
+      text: "Open the order form with the selected service ready to use.",
+    },
+  ];
+
+  return (
+    <section className="mt-12 rounded-[30px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 shadow-sm sm:p-7">
+      <div className="max-w-2xl">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+          How it works
+        </p>
+
+        <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+          Choose the right service in three steps
+        </h2>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-slate-500">
+          Everything you need to compare services is shown before you place
+          an order.
+        </p>
+      </div>
+
+      <div className="mt-6 grid gap-3 md:grid-cols-3">
+        {steps.map((step) => (
+          <div
+            key={step.number}
+            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+          >
+            <span className="text-[10px] font-black text-violet-500">
+              {step.number}
+            </span>
+
+            <h3 className="mt-2 text-sm font-black text-slate-900">
+              {step.title}
+            </h3>
+
+            <p className="mt-2 text-[10px] font-medium leading-5 text-slate-500">
+              {step.text}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function TrustStrip() {
+  const items = [
+    ["✓", "Clear pricing", "Rates are shown directly on every service card."],
+    ["•", "Visible limits", "Minimum and maximum quantities are easy to compare."],
+    ["→", "Quick ordering", "Order Now takes you directly to the order panel."],
+    ["⚙️", "Organized catalog", "Services are grouped by platform and category."],
+  ];
+
+  return (
+    <section className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map(([icon, title, text]) => (
+        <div
+          key={title}
+          className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-600">
+              {icon}
+            </div>
+
+            <div>
+              <h3 className="text-xs font-black text-slate-800">
+                {title}
+              </h3>
+              <p className="mt-1 text-[9px] font-medium leading-4 text-slate-400">
+                {text}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+}) {
+  return (
+    <div className="min-w-[118px] rounded-2xl border border-white bg-white/80 px-4 py-4 shadow-sm backdrop-blur">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm font-black text-violet-600">{icon}</span>
+        <p className="text-[8px] font-black uppercase tracking-wider text-slate-400">
+          {label}
+        </p>
+      </div>
+      <p className="mt-2 text-2xl font-black text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  title,
+  description,
+  link,
+  linkText,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  link?: string;
+  linkText?: string;
+}) {
+  return (
+    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-base font-black text-violet-600 ring-1 ring-violet-100">
+        {icon}
+      </div>
+
+      <h3 className="mt-4 text-base font-black text-slate-900">{title}</h3>
+
+      <p className="mt-2 text-xs font-medium leading-5 text-slate-500">
+        {description}
+      </p>
+
+      {link && linkText && (
+        <a
+          href={link}
+          className="mt-4 inline-block text-xs font-black text-violet-600 transition hover:text-violet-800"
+        >
+          {linkText}
+        </a>
+      )}
+    </div>
+  );
+}
+
+function platformIcon(platform: string) {
+  const value = normalize(platform);
+
+  if (value.includes("instagram")) return "⚙️";
+  if (value.includes("youtube")) return "▶️";
+  if (value.includes("facebook")) return "f";
+  if (value.includes("tiktok")) return "ΓÖ¬";
+  if (value.includes("telegram")) return "Γ₧ñ";
+  if (value.includes("twitter") || value === "x") return "𝕏";
+  if (value.includes("spotify")) return "👁️";
+  if (value.includes("linkedin")) return "in";
+  if (value.includes("reddit")) return "💬";
+
+  return "Γ£ª";
+}
+
+

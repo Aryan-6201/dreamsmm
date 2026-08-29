@@ -137,7 +137,6 @@ export async function GET(request: Request) {
               name: true,
               platform: true,
               category: true,
-              refill: true,
             },
           },
         },
@@ -549,7 +548,6 @@ export async function POST(request: Request) {
     );
   }
 }
-
 
 
 

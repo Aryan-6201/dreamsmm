@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    DREAMSMM — ULTRA PREMIUM ORDERS PAGE
    Light UI • Responsive • Existing /api/orders compatible
 ========================================================= */
@@ -23,7 +23,6 @@ type Order = {
     name: string;
     platform: string;
     category: string | null;
-    refill: boolean | string | null;
   };
 };
 
@@ -141,12 +140,12 @@ export default function OrdersPage() {
   const stats = useMemo(() => {
     const active = orders.filter(
       (order) =>
-        normalizeStatus(order.status) === "PENDING" ||
-        normalizeStatus(order.status) === "PROCESSING",
+        order.status === "PENDING" ||
+        order.status === "PROCESSING",
     ).length;
 
     const completed = orders.filter(
-      (order) => normalizeStatus(order.status) === "COMPLETED",
+      (order) => order.status === "COMPLETED",
     ).length;
 
     const totalCharge = orders.reduce(
@@ -198,12 +197,12 @@ export default function OrdersPage() {
                   <HeroStat
                     label="Showing"
                     value={String(orders.length)}
-                    icon="â—Œ"
+                    icon="◌"
                   />
                   <HeroStat
                     label="Active"
                     value={String(stats.active)}
-                    icon="â†—"
+                    icon="↗"
                   />
                   <HeroStat
                     label="Completed"
@@ -296,10 +295,10 @@ export default function OrdersPage() {
               label="On this page"
               value={String(orders.length)}
               description="Currently displayed"
-              icon="◈"
+              icon="▦"
             />
             <SummaryCard
-              label="Active on page"
+              label="Active orders"
               value={String(stats.active)}
               description="Pending or processing"
               icon="↻"
@@ -386,8 +385,8 @@ export default function OrdersPage() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  disabled={pagination.page <= 1}
-                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                  disabled={page <= 1}
+                  onClick={() => setPage((value) => value - 1)}
                   className="flex-1 rounded-xl border border-slate-200 px-5 py-2.5 text-[10px] font-black text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
                 >
                   ← Previous
@@ -395,8 +394,8 @@ export default function OrdersPage() {
 
                 <button
                   type="button"
-                  disabled={pagination.page >= pagination.totalPages}
-                  onClick={() => setPage((value) => Math.min(pagination.totalPages, value + 1))}
+                  disabled={page >= pagination.totalPages}
+                  onClick={() => setPage((value) => value + 1)}
                   className="flex-1 rounded-xl bg-violet-600 px-5 py-2.5 text-[10px] font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
                 >
                   Next →
@@ -848,7 +847,7 @@ function platformIcon(platform: string) {
   if (value.includes("instagram")) return "◎";
   if (value.includes("youtube")) return "▶";
   if (value.includes("facebook")) return "f";
-  if (value.includes("tiktok")) return "♫";
+  if (value.includes("tiktok")) return "♪";
   if (value.includes("telegram")) return "➤";
   if (value.includes("twitter")) return "𝕏";
   if (value === "x") return "𝕏";
@@ -878,4 +877,3 @@ function formatDate(value: string) {
     minute: "2-digit",
   }).format(date);
 }
-
