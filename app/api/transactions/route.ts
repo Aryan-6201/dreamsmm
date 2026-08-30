@@ -20,23 +20,16 @@ export async function GET(request: Request) {
     const token = cookieStore.get("session")?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { error: "You must be logged in." },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "You must be logged in." }, { status: 401 });
     }
 
     const session = await verifySession(token);
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Your session has expired." },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Your session has expired." }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-
     const requestedPage = Number(searchParams.get("page") || "1");
     const requestedLimit = Number(searchParams.get("limit") || "10");
     const type = searchParams.get("type") || "ALL";
@@ -51,10 +44,7 @@ export async function GET(request: Request) {
         ? Math.min(20, Math.max(5, requestedLimit))
         : 10;
 
-    if (
-      type !== "ALL" &&
-      !VALID_TYPES.includes(type as TransactionType)
-    ) {
+    if (type !== "ALL" && !VALID_TYPES.includes(type as TransactionType)) {
       return NextResponse.json(
         { error: "Invalid transaction type." },
         { status: 400 }
@@ -77,11 +67,7 @@ export async function GET(request: Request) {
         skip: (page - 1) * limit,
         take: limit,
       }),
-
-      prisma.transaction.count({
-        where,
-      }),
-
+      prisma.transaction.count({ where }),
       prisma.user.findUnique({
         where: {
           id: session.userId,
@@ -117,10 +103,7 @@ export async function GET(request: Request) {
         page,
         limit,
         total,
-        totalPages: Math.max(
-          1,
-          Math.ceil(total / limit)
-        ),
+        totalPages: Math.max(1, Math.ceil(total / limit)),
       },
     });
   } catch (error) {

@@ -87,8 +87,6 @@ function Field({
 
 export default function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
-  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
-  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");

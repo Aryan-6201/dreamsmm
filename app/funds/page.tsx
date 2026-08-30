@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 /* ============================================================================
-   DREAMSMM — ULTRA PREMIUM ADD FUNDS
+   DREAMSMM â€” ULTRA PREMIUM ADD FUNDS
    ----------------------------------------------------------------------------
    Design goals:
    - Light premium UI
@@ -483,7 +483,7 @@ function NoticeCard({
           className="rounded-lg px-2 py-1 text-xs font-black opacity-50 transition hover:bg-white/60 hover:opacity-100"
           aria-label="Close message"
         >
-          ×
+          Ã—
         </button>
       </div>
     </div>
@@ -769,7 +769,7 @@ export default function FundsPage() {
             <div className="relative">
               <SectionEyebrow icon={<IconWallet />}>Payment Verification</SectionEyebrow>
               <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">Add Money to Wallet</h2>
-              <p className="mt-1 text-xs font-medium text-violet-100 sm:text-sm">Payment Method → Transaction ID → Amount → QR → Check</p>
+
             </div>
           </div>
 
@@ -884,7 +884,7 @@ export default function FundsPage() {
           </div>
         </section>
 
-        <footer className="px-2 pb-6 pt-6 text-center"><p className="text-[10px] font-semibold text-slate-400">DreamSMM Wallet • UPI Payment • Manual Deposit Verification</p></footer>
+        <footer className="px-2 pb-6 pt-6 text-center"><p className="text-[10px] font-semibold text-slate-400">DreamSMM Wallet â€¢ UPI Payment â€¢ Manual Deposit Verification</p></footer>
       </div>
     </main>
   );}

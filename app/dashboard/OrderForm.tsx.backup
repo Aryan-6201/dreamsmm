@@ -257,73 +257,7 @@ const categories = useMemo(() => {
           return false;
         }
 
-        <style jsx global>{`
-@keyframes categoryShine {
-  0%, 35% { left: -70%; opacity: 0; }
-  45% { opacity: 1; }
-  65% { left: 140%; opacity: .9; }
-  100% { left: 140%; opacity: 0; }
-}
-
-.category-icon-live {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: linear-gradient(145deg, #24262d, #0b0d12 55%, #020306) !important;
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.18),
-    inset 0 -2px 4px rgba(0,0,0,.8),
-    0 3px 9px rgba(0,0,0,.25);
-}
-
-.category-icon-live::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: 7px;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,.18),
-    transparent 35%,
-    transparent 70%,
-    rgba(255,255,255,.06)
-  );
-  z-index: 2;
-  pointer-events: none;
-}
-
-.category-icon-live::after {
-  content: "";
-  position: absolute;
-  top: -30px;
-  left: -70%;
-  width: 9px;
-  height: 90px;
-  transform: rotate(20deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,.95),
-    transparent
-  );
-  filter: blur(.5px);
-  z-index: 5;
-  pointer-events: none;
-  animation: categoryShine 2.2s ease-in-out infinite;
-}
-
-.category-icon-live > svg {
-  position: relative;
-  z-index: 4;
-  color: #111318 !important;
-  stroke: #111318 !important;
-  filter:
-    drop-shadow(0 1px 0 rgba(255,255,255,.2))
-    drop-shadow(0 2px 2px rgba(0,0,0,.9));
-}
-`}</style>
-return (
+        return (
           service.name
             .toLowerCase()
             .includes(categoryQuery) ||
@@ -695,7 +629,7 @@ useEffect(() => {
             aria-expanded={categoryOpen}
             className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(76,29,149,.045)] transition-all duration-200 "border-violet-100 hover:border-violet-200 hover:shadow-[0_10px_28px_rgba(76,29,149,.07)]"`}
           >
-            <span className="category-main-icon">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-black shadow-sm ring-1 ring-slate-100">
               {(() => {
                 const platform = getCategoryPlatform(
                   category,
@@ -761,7 +695,7 @@ return BrandIcon ? (
                         }`}
                       >
                         <span
-  className="category-icon-live flex h-7 w-7 shrink-0 items-center justify-center rounded-md shadow-sm"
+  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white shadow-sm ring-1 ring-slate-100"
 >
   {(() => {
     const platform = getCategoryPlatform(
@@ -1310,14 +1244,6 @@ function getCategoryLucideIcon(icon: string): LucideIcon {
       return Sparkles;
   }
 }
-
-
-
-
-
-
-
-
 
 
 
