@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
@@ -329,14 +329,73 @@ export async function DELETE(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const id = Number(searchParams.get("id"));
+    const singleId = Number(searchParams.get("id"));
 
-    if (!Number.isInteger(id) || id <= 0) {
-      return NextResponse.json(
-        { error: "Invalid service ID." },
-        { status: 400 }
-      );
+    // BULK DELETE
+    if (!Number.isInteger(singleId) || singleId <= 0) {
+      let body: any = {};
+
+      try {
+        body = await request.json();
+      } catch {
+        body = {};
+      }
+
+      const ids: number[] = Array.isArray(body.ids)
+        ? Array.from(
+            new Set<number>(
+              body.ids
+                .map((id: unknown) => Number(id))
+                .filter(
+                  (id: number): id is number =>
+                    Number.isInteger(id) && id > 0
+                )
+            )
+          )
+        : [];
+
+      if (ids.length === 0) {
+        return NextResponse.json(
+          { error: "No valid service IDs provided." },
+          { status: 400 }
+        );
+      }
+
+      const orderCount = await prisma.order.count({
+        where: {
+          serviceId: {
+            in: ids,
+          },
+        },
+      });
+
+      if (orderCount > 0) {
+        return NextResponse.json(
+          {
+            error:
+              "One or more selected services have orders. Disable those services instead of deleting them.",
+          },
+          { status: 409 }
+        );
+      }
+
+      const result = await prisma.service.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `${result.count} service(s) deleted successfully.`,
+        deletedCount: result.count,
+      });
     }
+
+    // SINGLE DELETE
+    const id = singleId;
 
     const orderCount = await prisma.order.count({
       where: {
@@ -373,3 +432,5 @@ export async function DELETE(request: Request) {
     );
   }
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -308,7 +308,7 @@ useEffect(() => {
       }
 
       setMessage(
-        `Service #${data.service.id} imported successfully at ₹${data.service.rate}/1k.`
+        `Service #${data.service.id} imported successfully at Γé╣${data.service.rate}/1k.`
       );
       setProviderServiceId("");
       setProviderMarkup("");
@@ -869,7 +869,7 @@ useEffect(() => {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-400 hover:text-white"
             >
-              ÃƒÆ’Ã¢â‚¬â€
+              ├â╞Æ├åΓÇÖ├â┬ó├óΓÇÜ┬¼├óΓé¼┬¥
             </button>
           </div>
         )}
@@ -933,7 +933,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{importedService.service}
                     {importedService.category
-                      ? ` · ${importedService.category}`
+                      ? ` ┬╖ ${importedService.category}`
                       : ""}
                   </p>
                 </div>
@@ -952,7 +952,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Provider Rate</p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    Ã¢â€šÂ¹{importedService.rate}/1k
+                    ├â┬ó├óΓé¼┼í├é┬╣{importedService.rate}/1k
                   </p>
                 </div>
                 <div className="rounded-lg bg-white/[0.04] p-3">
@@ -964,7 +964,7 @@ useEffect(() => {
                 <div className="rounded-lg bg-white/[0.04] p-3">
                   <p className="text-[10px] text-gray-600">Selling Rate</p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    Ã¢â€šÂ¹{(
+                    ├â┬ó├óΓé¼┼í├é┬╣{(
                       Number(importedService.rate) *
                       (1 + (Number(providerMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -1054,7 +1054,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{smmgenService.service}
                     {smmgenService.category
-                      ? ` · ${smmgenService.category}`
+                      ? ` ┬╖ ${smmgenService.category}`
                       : ""}
                   </p>
                 </div>
@@ -1075,7 +1075,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    ₹{smmgenService.rate}/1k
+                    Γé╣{smmgenService.rate}/1k
                   </p>
                 </div>
 
@@ -1093,7 +1093,7 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    ₹{(
+                    Γé╣{(
                       Number(smmgenService.rate) *
                       (1 + (Number(smmgenMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -1177,7 +1177,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{mkapiService.service}
                     {mkapiService.category
-                      ? ` · ${mkapiService.category}`
+                      ? ` ┬╖ ${mkapiService.category}`
                       : ""}
                   </p>
                 </div>
@@ -1198,7 +1198,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    Ã¢â€šÂ¹{mkapiService.rate}/1k
+                    ├â┬ó├óΓé¼┼í├é┬╣{mkapiService.rate}/1k
                   </p>
                 </div>
 
@@ -1216,7 +1216,7 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    Ã¢â€šÂ¹{(
+                    ├â┬ó├óΓé¼┼í├é┬╣{(
                       Number(mkapiService.rate) *
                       (1 + (Number(mkapiMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -1322,7 +1322,7 @@ useEffect(() => {
                   <p className="mt-1 text-xs text-gray-500">
                     Provider ID #{vipsmmService.service}
                     {vipsmmService.category
-                      ? ` · ${vipsmmService.category}`
+                      ? ` ┬╖ ${vipsmmService.category}`
                       : ""}
                   </p>
                 </div>
@@ -1343,7 +1343,7 @@ useEffect(() => {
                     Provider Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-gray-200">
-                    Ã¢â€šÂ¹{vipsmmService.rate}/1k
+                    ├â┬ó├óΓé¼┼í├é┬╣{vipsmmService.rate}/1k
                   </p>
                 </div>
 
@@ -1361,7 +1361,7 @@ useEffect(() => {
                     Selling Rate
                   </p>
                   <p className="mt-1 text-sm font-semibold text-green-300">
-                    Ã¢â€šÂ¹{(
+                    ├â┬ó├óΓé¼┼í├é┬╣{(
                       Number(vipsmmService.rate) *
                       (1 + (Number(vipsmmMarkup) || 0) / 100)
                     ).toFixed(4)}
@@ -1728,13 +1728,13 @@ useEffect(() => {
                         <p className="mt-1 text-xs text-gray-500">
                           {service.platform}
                           {service.category
-                            ? ` · ${service.category}`
+                            ? ` ┬╖ ${service.category}`
                             : ""}
                         </p>
 
                         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate Ã¢â€šÂ¹{service.rate}/1k
+                            Rate ├â┬ó├óΓé¼┼í├é┬╣{service.rate}/1k
                           </span>
 
                           <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
@@ -1747,7 +1747,7 @@ useEffect(() => {
                               "No provider"}
 
                             {service.providerId
-                              ? ` · ID ${service.providerId}`
+                              ? ` ┬╖ ID ${service.providerId}`
                               : ""}
                           </span>
                         </div>
