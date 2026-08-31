@@ -131,7 +131,7 @@ export default function FundsPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-5xl">
-        <header className="rounded-3xl bg-gradient-to-r from-violet-700 via-indigo-700 to-fuchsia-700 px-5 py-6 text-white shadow-xl shadow-violet-200 sm:px-8">
+        <header className="rounded-3xl bg-gradient-to-r from-violet-700 via-indigo-700 to-fuchsia-700 px-3 py-2 text-white shadow-md sm:px-8 sm:py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.18em] text-violet-100">
@@ -139,26 +139,26 @@ export default function FundsPage() {
                 Secure UPI payment
               </span>
 
-              <h1 className="mt-3 text-3xl font-black tracking-tight">
+              <h1 className="mt-0.5 text-xl font-black tracking-tight sm:mt-3 sm:text-3xl">
                 Add Funds
               </h1>
 
-              <p className="mt-1 text-sm font-medium text-violet-100">
+              <p className="text-[10px] font-medium text-violet-100 sm:mt-1 sm:text-sm">
                 Pay with UPI and submit your payment UTR.
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white/10 px-4 py-3 text-sm backdrop-blur">
+            <div className="rounded-lg bg-white/10 px-2 py-1.5 text-[10px] backdrop-blur sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
               <p className="text-[10px] font-bold uppercase tracking-wider text-violet-200">
                 Selected amount
               </p>
-              <p className="mt-1 text-2xl font-black">{displayAmount}</p>
+              <p className="text-lg font-black sm:mt-1 sm:text-2xl">{displayAmount}</p>
             </div>
           </div>
         </header>
 
         <div className="mt-3 grid items-start gap-3 sm:gap-5 lg:grid-cols-[280px_1fr]">
-          <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-5">
+          <aside className="order-2 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
@@ -205,7 +205,7 @@ export default function FundsPage() {
             </p>
           </aside>
 
-          <section className="rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-950/5">
+          <section className="order-1 rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-950/5 lg:order-2">
             <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
               <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
                 Payment verification
@@ -237,7 +237,7 @@ export default function FundsPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <label htmlFor="paymentMethod" className="text-sm font-black">
-                    Payment Method
+                    Method
                   </label>
 
                   <span className="text-[11px] font-bold text-slate-400">
@@ -252,7 +252,7 @@ export default function FundsPage() {
                     setPaymentMethod(event.target.value);
                     setNotice(null);
                   }}
-                  className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 >
                   {PAYMENT_METHODS.map((method) => (
                     <option key={method} value={method}>
@@ -264,60 +264,8 @@ export default function FundsPage() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="amount" className="text-sm font-black">
-                    Amount
-                  </label>
-
-                  <span className="text-[11px] font-bold text-slate-400">
-                    Min. ₹{MIN_AMOUNT}
-                  </span>
-                </div>
-
-                <div className="relative mt-2">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-violet-600">
-                    ₹
-                  </span>
-
-                  <input
-                    id="amount"
-                    type="number"
-                    min={MIN_AMOUNT}
-                    step="0.01"
-                    value={amount}
-                    onChange={(event) => {
-                      setAmount(event.target.value);
-                      setNotice(null);
-                    }}
-                    placeholder="0.00"
-                    required
-                    className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-lg font-black outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
-                  />
-                </div>
-
-                <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
-                  {PRESETS.map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => {
-                        setAmount(String(preset));
-                        setNotice(null);
-                      }}
-                      className={`rounded-xl border py-2.5 text-xs font-black transition ${
-                        numberAmount === preset
-                          ? "border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-200"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:text-violet-700"
-                      }`}
-                    >
-                      ₹{preset}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between">
                   <label htmlFor="utr" className="text-sm font-black">
-                    UTR / Transaction ID
+                    UPI Transaction Number/UTR
                   </label>
 
                   <span
@@ -340,14 +288,76 @@ export default function FundsPage() {
                   placeholder="Enter UTR or transaction reference"
                   autoComplete="off"
                   required
-                  className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                 />
 
-                <p className="mt-2 text-xs font-medium text-slate-400">
+                <p className="mt-1 text-xs font-medium text-slate-400">
                   Payment receipt se exact UTR copy karein.
                 </p>
               </div>
 
+              <div>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="amount" className="text-sm font-black">
+                    Amount
+                  </label>
+
+                  <span className="text-[11px] font-bold text-slate-400">
+                    Min. ₹{MIN_AMOUNT}
+                  </span>
+                </div>
+
+                <div className="mt-2 flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-violet-600">
+                      ₹
+                    </span>
+
+                    <input
+                      id="amount"
+                      type="number"
+                      min={MIN_AMOUNT}
+                      step="0.01"
+                      value={amount}
+                      onChange={(event) => {
+                        setAmount(event.target.value);
+                        setNotice(null);
+                      }}
+                      placeholder="0.00"
+                      required
+                      className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-lg font-black outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!validAmount || !validUtr || loading}
+                    className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 text-sm font-black text-white shadow-md shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {loading ? "..." : "Pay"}
+                  </button>
+                </div>
+
+                <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+                  {PRESETS.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => {
+                        setAmount(String(preset));
+                        setNotice(null);
+                      }}
+                      className={`rounded-lg border py-2 text-xs font-black transition ${
+                        numberAmount === preset
+                          ? "border-violet-600 bg-violet-600 text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:text-violet-700"
+                      }`}
+                    >
+                      ₹{preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-500">
@@ -453,5 +463,12 @@ export default function FundsPage() {
     </main>
   );
 }
+
+
+
+
+
+
+
 
 
