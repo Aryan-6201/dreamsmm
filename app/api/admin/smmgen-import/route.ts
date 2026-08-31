@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 import { prisma } from "@/lib/prisma";
@@ -70,13 +70,35 @@ export async function POST(request: Request) {
 
     const provider = await getSmmGenService(serviceId);
 
+    // SMMGen rate is USD per 1k.
+    // Convert it to INR once.
+    const providerRateUsd = Number(provider.rate);
+
+    if (!Number.isFinite(providerRateUsd) || providerRateUsd < 0) {
+      return NextResponse.json(
+        { error: "SMMGen returned an invalid rate." },
+        { status: 400 }
+      );
+    }
+
+    const providerRate = Number(
+      (providerRateUsd * 95.426).toFixed(4)
+    );
+
+    if (!Number.isFinite(providerRate) || providerRate < 0) {
+      return NextResponse.json(
+        { error: "SMMGen returned an invalid rate." },
+        { status: 400 }
+      );
+    }
+
     const service = {
       service: String(provider.service),
       name: provider.name,
       type: provider.type || "",
       category: provider.category || "",
       description: provider.description || "",
-      rate: String(provider.rate),
+      rate: String(providerRate),
       min: Number(provider.min),
       max: Number(provider.max),
       refill:
@@ -103,15 +125,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const providerRate = Number(service.rate);
-
-    if (!Number.isFinite(providerRate) || providerRate < 0) {
-      return NextResponse.json(
-        { error: "SMMGen returned an invalid rate." },
-        { status: 400 }
-      );
-    }
-
     if (
       !Number.isInteger(service.min) ||
       !Number.isInteger(service.max)
@@ -122,8 +135,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const sellingRate =
-      providerRate * (1 + markupPercent / 100);
+    // Provider rate is already INR here.
+    const sellingRate = Number(
+      (providerRate * (1 + markupPercent / 100)).toFixed(4)
+    );
 
     const existing = await prisma.service.findFirst({
       where: {
@@ -158,7 +173,10 @@ export async function POST(request: Request) {
         refill: service.refill,
         providerId: service.service,
         providerName: "SMMGen",
+
+        // INR provider cost per 1k
         providerRate,
+
         markupPercent,
         autoSync: Boolean(body.autoSync),
       },
