@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, Sparkles, ShieldCheck, Headphones } from "lucide-react";
+import { Mail, LockKeyhole, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 type GoogleIdApi = {
   initialize: (options: {
@@ -597,7 +597,7 @@ export default function Home() {
             HERO
         ====================================================== */}
 
-        <section className="relative z-10 mx-auto max-w-6xl px-4 pb-3 pt-1 text-center sm:px-6">
+        <section className="relative z-10 mx-auto max-w-5xl px-4 pb-1 pt-1 text-center sm:px-6">
 
           <div className="mx-auto mb-5 flex items-center justify-center gap-2">
 
@@ -609,50 +609,25 @@ export default function Home() {
 
           </div>
 
-          <h1 className="mx-auto max-w-5xl text-[42px] font-black leading-[0.98] tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-[76px]">
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-violet-600 shadow-[0_8px_25px_rgba(124,58,237,0.08)] backdrop-blur-xl">
+            <span className="h-1.5 w-1.5 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+            Welcome to DreamSMM
+          </div>
 
-            Grow smarter.
+          <h1 className="mx-auto max-w-4xl text-[36px] font-black leading-[1.03] tracking-[-0.052em] text-slate-950 sm:text-5xl lg:text-[60px]">
+
+            Your social growth,
 
             <span className="mt-2 block bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 bg-clip-text text-transparent">
-              Manage everything.
+              beautifully managed.
             </span>
 
           </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl text-sm font-medium leading-6 text-slate-500 sm:text-base">
+          <p className="mx-auto mt-3 max-w-xl text-[13px] font-medium leading-6 text-slate-500 sm:text-sm">
             One modern workspace for your social media services, orders,
             balance and support.
           </p>
-
-          {/* FEATURES */}
-
-          <div className="mx-auto mt-7 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-
-            <Feature
-              icon="fast"
-              title="Fast Orders"
-              text="Quick service ordering"
-            />
-
-            <Feature
-              icon="services"
-              title="1000+ Services"
-              text="Large service catalog"
-            />
-
-            <Feature
-              icon="secure"
-              title="Secure"
-              text="Protected account"
-            />
-
-            <Feature
-              icon="support"
-              title="24/7 Support"
-              text="Help when needed"
-            />
-
-          </div>
 
         </section>
 
@@ -662,31 +637,36 @@ export default function Home() {
 
         <section
           id="login-card"
-          className="relative z-10 mx-auto -mt-1 w-full max-w-[500px] px-4 pb-12 pt-5 sm:px-6"
+          className="relative z-10 mx-auto mt-1 w-full max-w-[480px] px-4 pb-10 pt-4 sm:px-6"
         >
 
           <div className="pointer-events-none absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-violet-400/20 blur-[90px]" />
 
-          <div className="relative overflow-hidden rounded-[30px] border border-white/80 bg-white/75 p-5 shadow-[0_30px_100px_rgba(76,29,149,0.13)] backdrop-blur-2xl sm:p-8">
+          <div className="relative overflow-hidden rounded-[30px] border border-white/95 bg-white/88 p-5 shadow-[0_30px_100px_rgba(76,29,149,0.15)] backdrop-blur-2xl sm:p-8">
 
             <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-400 to-transparent" />
 
             {/* LOGIN HEADER */}
 
-            <div className="mb-7 text-center">
+            <div className="mb-5 text-center">
 
-              <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-950">
+              <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 ring-1 ring-violet-100 shadow-[0_8px_25px_rgba(124,58,237,0.10)]">
+                <ShieldCheck className="h-5 w-5" strokeWidth={2.3} />
+              </div>
+
+              <h2 className="text-[28px] font-black tracking-[-0.045em] text-slate-950">
                 Welcome back
               </h2>
 
-              <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+              <p className="mx-auto mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">
+                One powerful workspace for orders, services, balance and support.
               </p>
 
             </div>
 
             {/* GOOGLE */}
 
-            <div className="relative h-14 w-full">
+            <div className="relative h-[58px] w-full">
 
               <button
                 type="button"
@@ -694,7 +674,7 @@ export default function Home() {
                   handleGoogleLogin
                 }
                 disabled={busy}
-                className="pointer-events-none absolute inset-0 z-0 flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200/80 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(15,23,42,0.05)] transition disabled:opacity-50"
+                className="pointer-events-none absolute inset-0 z-0 flex h-[58px] w-full items-center justify-center gap-3 rounded-2xl border border-slate-200/80 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(15,23,42,0.05)] transition disabled:opacity-50"
               >
 
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-100 bg-white text-xl font-black shadow-sm">
@@ -722,14 +702,14 @@ export default function Home() {
                     );
                   }
                 }}
-                className="absolute inset-0 z-10 flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
+                className="absolute inset-0 z-10 flex h-[58px] w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
               />
 
             </div>
 
             {/* DIVIDER */}
 
-            <div className="my-6 flex items-center gap-3">
+            <div className="my-5 flex items-center gap-3">
 
               <div className="h-px flex-1 bg-slate-200" />
 
@@ -744,7 +724,7 @@ export default function Home() {
             {/* ERROR */}
 
             {error && (
-              <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-600">
+              <div className="mb-4 rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-xs font-bold leading-5 text-red-600 shadow-sm">
                 {error}
               </div>
             )}
@@ -757,7 +737,7 @@ export default function Home() {
 
               {/* EMAIL */}
 
-              <div className="mb-5">
+              <div className="mb-4">
 
                 <label
                   htmlFor="email"
@@ -777,12 +757,12 @@ export default function Home() {
                         e.target.value
                       )
                     }
-                    placeholder="you@example.com"
+                    placeholder="Enter your email address"
                     autoComplete="email"
                     inputMode="email"
                     required
                     disabled={busy}
-                    className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
                   />
 
                 </div>
@@ -791,7 +771,7 @@ export default function Home() {
 
               {/* PASSWORD */}
 
-              <div className="mb-5">
+              <div className="mb-4">
 
                 <div className="mb-2 flex items-center justify-between">
 
@@ -830,7 +810,7 @@ export default function Home() {
                     autoComplete="new-password"
                     required
                     disabled={busy}
-                    className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-violet-200 hover:bg-white focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:opacity-50"
                   />
 
                   <button
@@ -842,7 +822,8 @@ export default function Home() {
                       )
                     }
                     disabled={busy}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl px-3 py-2 text-[10px] font-black text-slate-400 transition hover:bg-violet-50 hover:text-violet-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                     className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-400 transition hover:bg-violet-50 hover:text-violet-600"
                   >
                     {showPassword
                       ? "Hide"
@@ -857,7 +838,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={busy}
-                className="group relative h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(124,58,237,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(124,58,237,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative h-[56px] w-full overflow-hidden rounded-[18px] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(124,58,237,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(124,58,237,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
               >
 
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -877,9 +858,22 @@ export default function Home() {
 
             </form>
 
+            {/* TRUST ROW */}
+
+            <div className="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Secure sign-in
+              </span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>DreamSMM</span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>Fast access</span>
+            </div>
+
             {/* REGISTER */}
 
-            <div className="mt-6 border-t border-slate-200/70 pt-6 text-center">
+            <div className="mt-4 border-t border-slate-200/70 pt-5 text-center">
 
               <p className="text-sm font-medium text-slate-500">
 
@@ -894,7 +888,7 @@ export default function Home() {
                   }
                   className="ml-1 font-black text-violet-600 transition hover:text-fuchsia-600"
                 >
-                  Create account
+                  Create your account
                 </button>
 
               </p>
@@ -909,7 +903,7 @@ export default function Home() {
 
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">&#10003;</span>
 
-            Secure DreamSMM workspace
+            Protected by secure authentication
 
           </div>
 
@@ -917,67 +911,5 @@ export default function Home() {
 
       </main>
     </>
-  );
-}
-
-/* ================================================================
-   FEATURE CARD
-================================================================ */
-
-function Feature({
-  icon,
-  title,
-  text,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="group relative overflow-hidden rounded-[22px] border border-white/80 bg-white/65 p-4 shadow-[0_10px_35px_rgba(76,29,149,0.06)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/85 hover:shadow-[0_18px_45px_rgba(76,29,149,0.12)] sm:p-5">
-
-      <div className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-violet-300/20 blur-2xl transition-all duration-300 group-hover:bg-violet-400/30" />
-
-      <div className="relative mx-auto flex h-12 w-12 items-center justify-center rounded-[18px] border border-white/90 bg-gradient-to-br from-white via-white to-slate-100 shadow-[0_5px_14px_rgba(15,23,42,0.10),inset_0_1px_2px_rgba(255,255,255,0.95)] ring-1 ring-slate-200/70 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105">
-        {icon === "fast" && (
-          <Zap
-            className="h-7 w-7 text-violet-600 drop-shadow-[0_1px_1px_rgba(15,23,42,0.18)]"
-            strokeWidth={2.5}
-          />
-        )}
-
-        {icon === "services" && (
-          <Sparkles
-            className="h-7 w-7 text-violet-600 drop-shadow-[0_1px_1px_rgba(15,23,42,0.18)]"
-            strokeWidth={2.5}
-          />
-        )}
-
-        {icon === "secure" && (
-          <ShieldCheck
-            className="h-7 w-7 text-violet-600 drop-shadow-[0_1px_1px_rgba(15,23,42,0.18)]"
-            strokeWidth={2.5}
-          />
-        )}
-
-        {icon === "support" && (
-          <Headphones
-            className="h-7 w-7 text-violet-600 drop-shadow-[0_1px_1px_rgba(15,23,42,0.18)]"
-            strokeWidth={2.5}
-          />
-        )}
-      </div>
-
-      <div className="mt-3 text-xs font-black text-slate-800 sm:text-sm">
-        {title}
-      </div>
-
-      <div className="mt-1 text-[9px] font-medium leading-4 text-slate-400 sm:text-[10px]">
-        {text}
-      </div>
-
-      <div className="mx-auto mt-3 h-0.5 w-5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-50 transition-all duration-300 group-hover:w-10 group-hover:opacity-100" />
-
-    </div>
   );
 }
