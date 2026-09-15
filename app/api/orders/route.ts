@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
+import { addSmmGenOrder } from "@/lib/providers/smmgen";
 import { addMkapiOrder } from "@/lib/providers/mkapi";
 import { addVipSmmOrder } from "@/lib/providers/vipsmm";
 
@@ -406,7 +407,13 @@ export async function POST(request: Request) {
     try {
       let providerResult;
 
-      if (service.providerName?.toUpperCase() === "MKAPI") {
+      if (service.providerName?.toUpperCase() === "SMMGEN") {
+        providerResult = await addSmmGenOrder({
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else if (service.providerName?.toUpperCase() === "MKAPI") {
         providerResult = await addMkapiOrder({
           serviceId: service.providerId!,
           link,
@@ -450,7 +457,7 @@ export async function POST(request: Request) {
             userId: session.userId,
             type: "REFUND",
             amount: result.order.charge,
-            note: `Refund for failed MicoSMM order #${result.order.id}`,
+            note: `Refund for failed provider order #${result.order.id}`,
           },
         });
 
@@ -469,7 +476,7 @@ export async function POST(request: Request) {
           error:
             providerError instanceof Error
               ? providerError.message
-              : "MicoSMM rejected the order. Your balance has been refunded.",
+              : "Provider rejected the order. Your balance has been refunded.",
         },
         { status: 502 }
       );
