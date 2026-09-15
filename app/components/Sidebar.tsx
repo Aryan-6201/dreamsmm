@@ -75,6 +75,11 @@ const mainItems = [
     href: "/massorder",
     icon: ListOrdered,
   },
+  {
+    label: "My Account",
+    href: "/account",
+    icon: UserRound,
+  },
 ];
 
 /* ============================================================
@@ -112,6 +117,34 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userName, setUserName] = useState("My Account");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/me", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+
+        const name =
+          data?.name ??
+          data?.user?.name ??
+          data?.username ??
+          data?.user?.username;
+
+        if (typeof name === "string" && name.trim()) {
+          setUserName(name.trim());
+        }
+      })
+      .catch(() => {
+        // Keep the fallback label if the profile endpoint is unavailable.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /* ----------------------------------------------------------
      Lock body while mobile sidebar is open
@@ -433,12 +466,12 @@ export default function Sidebar() {
 
             <div className="min-w-0 flex-1">
 
-              <p className="text-[12px] font-bold text-slate-800">
-                My Account
+              <p className="truncate text-[12px] font-bold text-slate-800">
+                {userName}
               </p>
 
               <p className="mt-0.5 text-[9px] font-medium text-slate-400">
-                Profile & settings
+                My Account
               </p>
 
             </div>

@@ -129,36 +129,14 @@ export default function FundsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-5xl">
-        <header className="rounded-3xl bg-gradient-to-r from-violet-700 via-indigo-700 to-fuchsia-700 px-3 py-2 text-white shadow-md sm:px-8 sm:py-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.18em] text-violet-100">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Secure UPI payment
-              </span>
-
-              <h1 className="mt-0.5 text-xl font-black tracking-tight sm:mt-3 sm:text-3xl">
-                Add Funds
-              </h1>
-
-              <p className="text-[10px] font-medium text-violet-100 sm:mt-1 sm:text-sm">
-                Pay with UPI and submit your payment UTR.
-              </p>
-            </div>
-
-            <div className="rounded-lg bg-white/10 px-2 py-1.5 text-[10px] backdrop-blur sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-violet-200">
-                Selected amount
-              </p>
-              <p className="text-lg font-black sm:mt-1 sm:text-2xl">{displayAmount}</p>
-            </div>
-          </div>
-        </header>
-
-        <div className="mt-3 grid items-start gap-3 sm:gap-5 lg:grid-cols-[280px_1fr]">
-          <aside className="order-2 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="absolute -bottom-40 -right-20 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+      </div>
+      <div className="relative mx-auto max-w-5xl">
+<div className="mt-3 grid items-start gap-3 sm:gap-5 lg:grid-cols-[280px_1fr]">
+          <aside className="order-2 rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
@@ -176,7 +154,7 @@ export default function FundsPage() {
               <img
                 src={QR_IMAGE}
                 alt="UPI payment QR code"
-                className="mx-auto aspect-square w-full max-w-[190px] rounded-xl bg-white object-contain sm:max-w-none"
+                className="mx-auto aspect-square w-full max-w-[190px] rounded-xl bg-white object-contain shadow-md sm:max-w-none"
               />
             </div>
 
@@ -205,7 +183,7 @@ export default function FundsPage() {
             </p>
           </aside>
 
-          <section className="order-1 rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-950/5 lg:order-2">
+          <section className="order-1 overflow-hidden rounded-3xl border border-white/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 lg:order-2">
             <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
               <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
                 Payment verification
@@ -325,7 +303,7 @@ export default function FundsPage() {
                       }}
                       placeholder="0.00"
                       required
-                      className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-lg font-black outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                      className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-lg font-black outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </div>
 
@@ -358,36 +336,6 @@ export default function FundsPage() {
                   ))}
                 </div>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-500">
-                    Deposit total
-                  </span>
-
-                  <span className="text-xl font-black text-violet-700">
-                    {displayAmount}
-                  </span>
-                </div>
-
-                <div className="my-3 h-px bg-slate-200" />
-
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-500">
-                    UTR verification
-                  </span>
-
-                  <span
-                    className={
-                      validUtr
-                        ? "font-black text-emerald-600"
-                        : "font-black text-amber-600"
-                    }
-                  >
-                    {validUtr ? "Ready to submit" : "UTR required"}
-                  </span>
-                </div>
-              </div>
-
               <button
                 type="submit"
                 disabled={!validAmount || !validUtr || loading}
@@ -408,7 +356,7 @@ export default function FundsPage() {
           </section>
         </div>
 
-        <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="mt-6 rounded-3xl border border-white/10 bg-white/95 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
@@ -460,9 +408,19 @@ export default function FundsPage() {
           </div>
         </section>
       </div>
+
+<style>{`
+@keyframes premiumFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+main { animation: premiumFade .45s ease-out; }
+@media (prefers-reduced-motion: reduce) { main { animation: none; } }
+`}</style>
     </main>
   );
 }
+
+
+
+
 
 
 

@@ -20,6 +20,7 @@ export default function AdminDepositsPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [search, setSearch] = useState("");
 
   async function loadDeposits() {
     try {
@@ -99,16 +100,26 @@ export default function AdminDepositsPage() {
     0
   );
 
+  const filteredDeposits = deposits.filter((deposit) => {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+
+    return (
+      (deposit.user.name || "").toLowerCase().includes(query) ||
+      (deposit.user.email || "").toLowerCase().includes(query)
+    );
+  });
+
   return (
-    <main className="min-h-screen bg-[#070a11] text-white">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 text-slate-900">
       {/* Top bar */}
-      <header className="border-b border-white/[0.07] bg-[#090c14]/90 backdrop-blur">
+      <header className="border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div>
             <h1 className="text-lg font-bold tracking-tight">
               Dream<span className="text-blue-500">SMM</span>
             </h1>
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-slate-500">
               Administration Panel
             </p>
           </div>
@@ -116,10 +127,10 @@ export default function AdminDepositsPage() {
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
               <p className="text-sm font-medium">Administrator</p>
-              <p className="text-xs text-gray-500">System Admin</p>
+              <p className="text-xs text-slate-500">System Admin</p>
             </div>
 
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600/20 text-sm font-bold text-blue-400 ring-1 ring-blue-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600 ring-1 ring-blue-200">
               A
             </div>
           </div>
@@ -130,7 +141,7 @@ export default function AdminDepositsPage() {
         {/* Heading */}
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
               <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
               Admin Panel
             </div>
@@ -139,7 +150,7 @@ export default function AdminDepositsPage() {
               Deposit Management
             </h2>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               Review and manage manual UPI deposit requests.
             </p>
           </div>
@@ -147,7 +158,7 @@ export default function AdminDepositsPage() {
           <button
             onClick={loadDeposits}
             disabled={loading}
-            className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
           >
             ↻ Refresh
           </button>
@@ -155,10 +166,10 @@ export default function AdminDepositsPage() {
 
         {/* Stats */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Pending Requests</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-400">
+              <p className="text-sm text-slate-500">Pending Requests</p>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                 ⏳
               </div>
             </div>
@@ -167,15 +178,15 @@ export default function AdminDepositsPage() {
               {deposits.length}
             </p>
 
-            <p className="mt-1 text-xs text-gray-600">
+            <p className="mt-1 text-xs text-slate-400">
               Awaiting verification
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Pending Amount</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
+              <p className="text-sm text-slate-500">Pending Amount</p>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                 ₹
               </div>
             </div>
@@ -184,15 +195,15 @@ export default function AdminDepositsPage() {
               ₹{totalPending.toFixed(2)}
             </p>
 
-            <p className="mt-1 text-xs text-gray-600">
+            <p className="mt-1 text-xs text-slate-400">
               Total awaiting approval
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 sm:col-span-2 lg:col-span-1">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Payment Method</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+              <p className="text-sm text-slate-500">Payment Method</p>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
                 UPI
               </div>
             </div>
@@ -201,7 +212,7 @@ export default function AdminDepositsPage() {
               Manual UPI
             </p>
 
-            <p className="mt-1 text-xs text-gray-600">
+            <p className="mt-1 text-xs text-slate-400">
               PhonePe · Google Pay · UPI
             </p>
           </div>
@@ -209,12 +220,12 @@ export default function AdminDepositsPage() {
 
         {/* Message */}
         {message && (
-          <div className="mt-6 flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm text-blue-300">
+          <div className="mt-6 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
             <span>{message}</span>
 
             <button
               onClick={() => setMessage("")}
-              className="ml-4 text-blue-400 hover:text-white"
+              className="ml-4 text-blue-600 hover:text-slate-900"
             >
               ×
             </button>
@@ -228,26 +239,41 @@ export default function AdminDepositsPage() {
               <h3 className="text-lg font-semibold">
                 Pending Deposits
               </h3>
-              <p className="mt-1 text-xs text-gray-600">
+              <p className="mt-1 text-xs text-slate-400">
                 Verify the UTR against your UPI payment before approving.
               </p>
             </div>
 
-            <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-xs font-medium text-yellow-400">
-              {deposits.length} pending
-            </span>
+            <div className="flex items-center gap-3">
+              <div className="relative w-full sm:w-72">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  🔎
+                </span>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search username or Gmail..."
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm font-medium text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+
+              <span className="hidden rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600 sm:inline-flex">
+                {filteredDeposits.length} pending
+              </span>
+            </div>
           </div>
 
           {loading ? (
-            <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-12 text-center">
-              <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-white/10 border-t-blue-500" />
-              <p className="mt-4 text-sm text-gray-500">
+            <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
+              <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-slate-200 border-t-blue-500" />
+              <p className="mt-4 text-sm text-slate-500">
                 Loading deposits...
               </p>
             </div>
-          ) : deposits.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/10 bg-[#0c1019] p-14 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-2xl">
+          ) : filteredDeposits.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-2xl">
                 ✓
               </div>
 
@@ -255,21 +281,21 @@ export default function AdminDepositsPage() {
                 All caught up
               </h3>
 
-              <p className="mt-2 text-sm text-gray-600">
-                There are no pending deposit requests.
+              <p className="mt-2 text-sm text-slate-400">
+                {search.trim() ? "No deposits found for this username or Gmail." : "There are no pending deposit requests."}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {deposits.map((deposit) => (
+              {filteredDeposits.map((deposit) => (
                 <div
                   key={deposit.id}
-                  className="group rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 transition hover:border-white/[0.12] hover:bg-[#0e121c]"
+                  className="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:bg-slate-50"
                 >
                   <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                     {/* User */}
                     <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 font-semibold text-blue-400">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 font-semibold text-blue-600">
                         {(deposit.user.name || "U")
                           .charAt(0)
                           .toUpperCase()}
@@ -281,16 +307,16 @@ export default function AdminDepositsPage() {
                             {deposit.user.name || "User"}
                           </h4>
 
-                          <span className="rounded-md bg-yellow-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-yellow-400">
+                          <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-600">
                             Pending
                           </span>
                         </div>
 
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-slate-500">
                           {deposit.user.email}
                         </p>
 
-                        <p className="mt-2 text-xs text-gray-600">
+                        <p className="mt-2 text-xs text-slate-400">
                           Request #{deposit.id} ·{" "}
                           {new Date(deposit.createdAt).toLocaleString()}
                         </p>
@@ -299,7 +325,7 @@ export default function AdminDepositsPage() {
 
                     {/* Amount */}
                     <div className="xl:min-w-[150px]">
-                      <p className="text-xs uppercase tracking-wider text-gray-600">
+                      <p className="text-xs uppercase tracking-wider text-slate-400">
                         Amount
                       </p>
 
@@ -310,12 +336,12 @@ export default function AdminDepositsPage() {
 
                     {/* UTR */}
                     <div className="xl:min-w-[220px]">
-                      <p className="text-xs uppercase tracking-wider text-gray-600">
+                      <p className="text-xs uppercase tracking-wider text-slate-400">
                         UTR / Transaction ID
                       </p>
 
-                      <div className="mt-1 rounded-lg border border-white/[0.06] bg-black/20 px-3 py-2">
-                        <code className="break-all text-sm text-gray-300">
+                      <div className="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                        <code className="break-all text-sm text-slate-700">
                           {deposit.utr}
                         </code>
                       </div>
@@ -328,7 +354,7 @@ export default function AdminDepositsPage() {
                           processDeposit(deposit.id, "REJECT")
                         }
                         disabled={processing === deposit.id}
-                        className="rounded-xl border border-red-500/20 bg-red-500/[0.05] px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Reject
                       </button>
@@ -338,7 +364,7 @@ export default function AdminDepositsPage() {
                           processDeposit(deposit.id, "APPROVE")
                         }
                         disabled={processing === deposit.id}
-                        className="rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {processing === deposit.id
                           ? "Processing..."
