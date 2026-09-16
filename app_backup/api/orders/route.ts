@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
+import { addSmmGenOrder } from "@/lib/providers/smmgen";
 import { addMkapiOrder } from "@/lib/providers/mkapi";
+import { addVipSmmOrder } from "@/lib/providers/vipsmm";
 
 /**
  * GET /api/orders
@@ -84,7 +87,10 @@ export async function GET(request: Request) {
         | { link: { contains: string; mode: "insensitive" } }
         | {
             service: {
-              name: { contains: string; mode: "insensitive" };
+              name: {
+                contains: string;
+                mode: "insensitive";
+              };
             };
           }
       >;
@@ -135,6 +141,7 @@ export async function GET(request: Request) {
               name: true,
               platform: true,
               category: true,
+              refill: true,
             },
           },
         },
@@ -182,9 +189,13 @@ export async function GET(request: Request) {
 /**
  * POST /api/orders
  *
- * Creates an order, sends it to MicoSMM,
- * stores the provider order ID,
- * and refunds the customer if the provider rejects the order.
+ * Pricing priority:
+ *
+ * 1. User + Service specific discount
+ * 2. User global discountPercent
+ * 3. Normal service rate
+ *
+ * Specific service discount overrides global user discount.
  */
 export async function POST(request: Request) {
   try {
@@ -211,8 +222,11 @@ export async function POST(request: Request) {
 
     const serviceId = Number(body.serviceId);
     const quantity = Number(body.quantity);
+
     const link =
-      typeof body.link === "string" ? body.link.trim() : "";
+      typeof body.link === "string"
+        ? body.link.trim()
+        : "";
 
     if (
       !Number.isInteger(serviceId) ||
@@ -222,7 +236,10 @@ export async function POST(request: Request) {
       !link
     ) {
       return NextResponse.json(
-        { error: "Service, link and valid quantity are required." },
+        {
+          error:
+            "Service, link and valid quantity are required.",
+        },
         { status: 400 }
       );
     }
@@ -234,6 +251,9 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Load service.
+     */
     const service = await prisma.service.findFirst({
       where: {
         id: serviceId,
@@ -257,6 +277,9 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Validate quantity.
+     */
     if (quantity < service.min || quantity > service.max) {
       return NextResponse.json(
         {
@@ -266,15 +289,173 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Provider must exist.
+     */
     if (!service.providerId) {
       return NextResponse.json(
-        { error: "This service is not connected to a provider yet." },
+        {
+          error:
+            "This service is not connected to a provider yet.",
+        },
         { status: 400 }
       );
     }
 
-    const charge = service.rate.mul(quantity).div(1000);
+    /**
+     * Normal service charge.
+     * Service rate = price per 1000 quantity.
+     */
+    const baseCharge = service.rate
+      .mul(quantity)
+      .div(1000);
 
+    /**
+     * Load user global discount.
+     */
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.userId,
+      },
+      select: {
+        discountPercent: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User account not found." },
+        { status: 404 }
+      );
+    }
+
+    /**
+     * Find user + service specific discount.
+     *
+     * Only enabled and non-expired discounts
+     * are considered active.
+     */
+    const now = new Date();
+
+    const serviceDiscount =
+      await prisma.userServiceDiscount.findFirst({
+        where: {
+          userId: session.userId,
+          serviceId: service.id,
+          enabled: true,
+          OR: [
+            {
+              expiresAt: null,
+            },
+            {
+              expiresAt: {
+                gt: now,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          type: true,
+          value: true,
+          expiresAt: true,
+        },
+      });
+
+    let discountAmount = baseCharge;
+    let charge = baseCharge;
+
+    /**
+     * =====================================================
+     * SPECIFIC USER + SERVICE DISCOUNT
+     * =====================================================
+     */
+    if (serviceDiscount) {
+      const discountValue = Number(serviceDiscount.value);
+
+      if (
+        !Number.isFinite(discountValue) ||
+        discountValue < 0
+      ) {
+        throw new Error("INVALID_SERVICE_DISCOUNT");
+      }
+
+      /**
+       * Percentage discount
+       *
+       * Example:
+       * Base = ₹100
+       * 20% = ₹20 discount
+       * Customer pays ₹80
+       */
+      if (serviceDiscount.type === "PERCENTAGE") {
+        if (discountValue > 100) {
+          throw new Error("INVALID_SERVICE_DISCOUNT");
+        }
+
+        discountAmount = baseCharge
+          .mul(discountValue)
+          .div(100);
+
+        charge = baseCharge.sub(discountAmount);
+      }
+
+      /**
+       * Fixed discount
+       *
+       * Example:
+       * Base = ₹100
+       * Fixed = ₹10
+       * Customer pays ₹90
+       */
+      else if (serviceDiscount.type === "FIXED") {
+        // Fixed discount is an actual currency amount.
+        // Example: base ₹100, value ₹10 => customer pays ₹90.
+        const fixedDiscount = serviceDiscount.value;
+
+        discountAmount = baseCharge.gte(fixedDiscount)
+          ? fixedDiscount
+          : baseCharge;
+
+        charge = baseCharge.sub(discountAmount);
+      }
+
+      else {
+        throw new Error("INVALID_SERVICE_DISCOUNT");
+      }
+    }
+
+    /**
+     * =====================================================
+     * GLOBAL USER DISCOUNT
+     * =====================================================
+     *
+     * Used only when there is no active
+     * user + service discount.
+     */
+    else {
+      const discountPercentValue = Number(
+        user.discountPercent ?? 0
+      );
+
+      if (
+        !Number.isFinite(discountPercentValue) ||
+        discountPercentValue < 0 ||
+        discountPercentValue > 100
+      ) {
+        throw new Error("INVALID_USER_DISCOUNT");
+      }
+
+      discountAmount = baseCharge
+        .mul(discountPercentValue)
+        .div(100);
+
+      charge = baseCharge.sub(discountAmount);
+    }
+
+    /**
+     * Never allow zero or negative charge.
+     */
     if (charge.lte(0)) {
       return NextResponse.json(
         { error: "Invalid service price." },
@@ -282,54 +463,225 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await prisma.$transaction(async (tx) => {
-      const balanceUpdate = await tx.user.updateMany({
-        where: {
-          id: session.userId,
-          status: "ACTIVE",
-          balance: {
-            gte: charge,
-          },
-        },
-        data: {
-          balance: {
-            decrement: charge,
-          },
-          totalSpent: {
-            increment: charge,
-          },
-        },
-      });
+    /**
+     * =====================================================
+     * CREATE ORDER + DEDUCT BALANCE ATOMICALLY
+     * =====================================================
+     */
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const balanceUpdate =
+          await tx.user.updateMany({
+            where: {
+              id: session.userId,
+              status: "ACTIVE",
+              balance: {
+                gte: charge,
+              },
+            },
+            data: {
+              balance: {
+                decrement: charge,
+              },
+              totalSpent: {
+                increment: charge,
+              },
+            },
+          });
 
-      if (balanceUpdate.count !== 1) {
-        const user = await tx.user.findUnique({
-          where: {
-            id: session.userId,
+        if (balanceUpdate.count !== 1) {
+          const currentUser =
+            await tx.user.findUnique({
+              where: {
+                id: session.userId,
+              },
+              select: {
+                status: true,
+              },
+            });
+
+          if (!currentUser) {
+            throw new Error("USER_NOT_FOUND");
+          }
+
+          if (currentUser.status !== "ACTIVE") {
+            throw new Error("ACCOUNT_NOT_ACTIVE");
+          }
+
+          throw new Error("INSUFFICIENT_BALANCE");
+        }
+
+        /**
+         * Save FINAL discounted charge.
+         */
+        const order = await tx.order.create({
+          data: {
+            userId: session.userId,
+            serviceId: service.id,
+            link,
+            quantity,
+            charge,
+            status: "PENDING",
           },
           select: {
+            id: true,
+            serviceId: true,
+            quantity: true,
+            charge: true,
             status: true,
+            createdAt: true,
           },
         });
 
-        if (!user) {
+        /**
+         * Save the actual amount paid.
+         */
+        await tx.transaction.create({
+          data: {
+            userId: session.userId,
+            type: "ORDER",
+            amount: charge,
+            note: `Order #${order.id} - ${service.name}`,
+          },
+        });
+
+        const updatedUser =
+          await tx.user.findUnique({
+            where: {
+              id: session.userId,
+            },
+            select: {
+              balance: true,
+              totalSpent: true,
+            },
+          });
+
+        if (!updatedUser) {
           throw new Error("USER_NOT_FOUND");
         }
 
-        if (user.status !== "ACTIVE") {
-          throw new Error("ACCOUNT_NOT_ACTIVE");
-        }
-
-        throw new Error("INSUFFICIENT_BALANCE");
+        return {
+          order,
+          balance: updatedUser.balance,
+          totalSpent: updatedUser.totalSpent,
+        };
       }
+    );
 
-      const order = await tx.order.create({
-        data: {
-          userId: session.userId,
-          serviceId: service.id,
+    /**
+     * =====================================================
+     * SEND ORDER TO PROVIDER
+     * =====================================================
+     */
+    let providerOrderId: string;
+
+    try {
+      let providerResult;
+
+      const providerName =
+        service.providerName?.toUpperCase() || "";
+
+      if (providerName === "SMMGEN") {
+        providerResult = await addSmmGenOrder({
+          serviceId: service.providerId!,
           link,
           quantity,
-          charge,
-          status: "PENDING",
+        });
+      } else if (providerName === "MKAPI") {
+        providerResult = await addMkapiOrder({
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else if (
+        providerName.startsWith("VIPSMM")
+      ) {
+        providerResult = await addVipSmmOrder({
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else {
+        providerResult = await addMicoSmmOrder({
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      }
+
+      providerOrderId =
+        providerResult.providerOrderId;
+    } catch (providerError) {
+      console.error(
+        "Provider order error:",
+        providerError
+      );
+
+      /**
+       * ===================================================
+       * PROVIDER FAILED → EXACT REFUND
+       * ===================================================
+       */
+      await prisma.$transaction(
+        async (tx) => {
+          await tx.user.update({
+            where: {
+              id: session.userId,
+            },
+            data: {
+              balance: {
+                increment: result.order.charge,
+              },
+              totalSpent: {
+                decrement: result.order.charge,
+              },
+            },
+          });
+
+          await tx.transaction.create({
+            data: {
+              userId: session.userId,
+              type: "REFUND",
+              amount: result.order.charge,
+              note: `Refund for failed provider order #${result.order.id}`,
+            },
+          });
+
+          await tx.order.update({
+            where: {
+              id: result.order.id,
+            },
+            data: {
+              status: "REFUNDED",
+            },
+          });
+        }
+      );
+
+      return NextResponse.json(
+        {
+          error:
+            providerError instanceof Error
+              ? providerError.message
+              : "Provider rejected the order. Your balance has been refunded.",
+        },
+        { status: 502 }
+      );
+    }
+
+    /**
+     * =====================================================
+     * PROVIDER SUCCESS
+     * =====================================================
+     */
+    const finalOrder =
+      await prisma.order.update({
+        where: {
+          id: result.order.id,
+        },
+        data: {
+          providerId: providerOrderId,
+          status: "PROCESSING",
         },
         select: {
           id: true,
@@ -337,126 +689,10 @@ export async function POST(request: Request) {
           quantity: true,
           charge: true,
           status: true,
+          providerId: true,
           createdAt: true,
         },
       });
-
-      await tx.transaction.create({
-        data: {
-          userId: session.userId,
-          type: "ORDER",
-          amount: charge,
-          note: `Order #${order.id} - ${service.name}`,
-        },
-      });
-
-      const updatedUser = await tx.user.findUnique({
-        where: {
-          id: session.userId,
-        },
-        select: {
-          balance: true,
-          totalSpent: true,
-        },
-      });
-
-      if (!updatedUser) {
-        throw new Error("USER_NOT_FOUND");
-      }
-
-      return {
-        order,
-        balance: updatedUser.balance,
-        totalSpent: updatedUser.totalSpent,
-      };
-    });
-
-    let providerOrderId: string;
-
-    try {
-      let providerResult;
-
-      if (service.providerName === "MKAPI") {
-        providerResult = await addMkapiOrder({
-          serviceId: service.providerId,
-          link,
-          quantity,
-        });
-      } else {
-        providerResult = await addMicoSmmOrder({
-          serviceId: service.providerId,
-          link,
-          quantity,
-        });
-      }
-
-      providerOrderId = providerResult.providerOrderId;
-    } catch (providerError) {
-      console.error("MicoSMM order error:", providerError);
-
-      await prisma.$transaction(async (tx) => {
-        await tx.user.update({
-          where: {
-            id: session.userId,
-          },
-          data: {
-            balance: {
-              increment: result.order.charge,
-            },
-            totalSpent: {
-              decrement: result.order.charge,
-            },
-          },
-        });
-
-        await tx.transaction.create({
-          data: {
-            userId: session.userId,
-            type: "REFUND",
-            amount: result.order.charge,
-            note: `Refund for failed MicoSMM order #${result.order.id}`,
-          },
-        });
-
-        await tx.order.update({
-          where: {
-            id: result.order.id,
-          },
-          data: {
-            status: "REFUNDED",
-          },
-        });
-      });
-
-      return NextResponse.json(
-        {
-          error:
-            providerError instanceof Error
-              ? providerError.message
-              : "MicoSMM rejected the order. Your balance has been refunded.",
-        },
-        { status: 502 }
-      );
-    }
-
-    const finalOrder = await prisma.order.update({
-      where: {
-        id: result.order.id,
-      },
-      data: {
-        providerId: providerOrderId,
-        status: "PROCESSING",
-      },
-      select: {
-        id: true,
-        serviceId: true,
-        quantity: true,
-        charge: true,
-        status: true,
-        providerId: true,
-        createdAt: true,
-      },
-    });
 
     return NextResponse.json(
       {
@@ -480,14 +716,18 @@ export async function POST(request: Request) {
     if (error instanceof Error) {
       if (error.message === "USER_NOT_FOUND") {
         return NextResponse.json(
-          { error: "User account not found." },
+          {
+            error: "User account not found.",
+          },
           { status: 404 }
         );
       }
 
       if (error.message === "ACCOUNT_NOT_ACTIVE") {
         return NextResponse.json(
-          { error: "Your account is not active." },
+          {
+            error: "Your account is not active.",
+          },
           { status: 403 }
         );
       }
@@ -501,13 +741,39 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+
+      if (error.message === "INVALID_USER_DISCOUNT") {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid user discount configuration.",
+          },
+          { status: 500 }
+        );
+      }
+
+      if (
+        error.message === "INVALID_SERVICE_DISCOUNT"
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid service discount configuration.",
+          },
+          { status: 500 }
+        );
+      }
     }
 
-    console.error("Order creation error:", error);
+    console.error(
+      "Order creation error:",
+      error
+    );
 
     return NextResponse.json(
       {
-        error: "Something went wrong while processing your request.",
+        error:
+          "Something went wrong while processing your request.",
       },
       { status: 500 }
     );
