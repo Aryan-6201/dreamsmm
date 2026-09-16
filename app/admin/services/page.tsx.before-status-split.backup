@@ -1688,22 +1688,9 @@ useEffect(() => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-
-                <details open className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-                  <summary className="cursor-pointer list-none px-4 py-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-900">
-                        🟢 ENABLED SERVICES
-                      </span>
-                      <span className="text-xs text-slate-400">
-                        {services.filter((service) => service.enabled).length}
-                      </span>
-                    </div>
-                  </summary>
-
-                  <div className="space-y-2 border-t border-gray-100 p-3">
-                    {services.filter((service) => service.enabled).map((service) => (<article
+              <div className="space-y-3">
+                {services.map((service) => (
+                  <article
                     key={service.id}
                     className="rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-sm"
                   >
@@ -1796,120 +1783,8 @@ useEffect(() => {
                         </button>
                       </div>
                     </div>
-                  </article>                    ))}
-                  </div>
-                </details>
-
-                <details className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-                  <summary className="cursor-pointer list-none px-4 py-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-900">
-                        🔴 DISABLED SERVICES
-                      </span>
-                      <span className="text-xs text-slate-400">
-                        {services.filter((service) => !service.enabled).length}
-                      </span>
-                    </div>
-                  </summary>
-
-                  <div className="space-y-2 border-t border-gray-100 p-3">
-                    {services.filter((service) => !service.enabled).map((service) => (<article
-                    key={service.id}
-                    className="rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-sm"
-                  >
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-xs font-bold text-blue-400">
-                            #{service.id}
-                          </span>
-
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                              service.enabled
-                                ? "bg-green-500/10 text-green-400"
-                                : "bg-red-500/10 text-red-400"
-                            }`}
-                          >
-                            {service.enabled
-                              ? "Enabled"
-                              : "Disabled"}
-                          </span>
-
-                          {service.refill && (
-                            <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400">
-                              Refill
-                            </span>
-                          )}
-                        </div>
-
-                        <h4 className="mt-1.5 font-semibold text-gray-900">
-                          {service.name}
-                        </h4>
-
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {service.platform}
-                          {service.category
-                            ? ` â”¬â•– ${service.category}`
-                            : ""}
-                        </p>
-
-                        <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
-                          <span className="rounded-md bg-gray-50 px-2 py-0.5 text-slate-500">
-                            Rate â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{service.rate}/1k
-                          </span>
-
-                          <span className="rounded-md bg-gray-50 px-2 py-0.5 text-slate-500">
-                            {service.min.toLocaleString()}-{service.max.toLocaleString()}
-                            {service.max.toLocaleString()}
-                          </span>
-
-                          <span className="rounded-lg bg bg-pink-300:/20 px-2 py-1 text-slate-500">
-                            {service.providerName ||
-                              "No provider"}
-
-                            {service.providerId
-                              ? ` â”¬â•– ID ${service.providerId}`
-                              : ""}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 gap-1.5">
-                        <button
-                          onClick={() =>
-                            toggleService(service)
-                          }
-                          className="rounded-lg border border-gray-200 bg-gray-100 px-2.5 py-1.5 text-[11px] text-slate-400 hover:bg-gray-200"
-                        >
-                          {service.enabled
-                            ? "Disable"
-                            : "Enable"}
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            startEdit(service)
-                          }
-                          className="rounded-lg bg-blue-600 px-2.5 py-1.5 text-[11px] font-semibold text-slate-900 hover:bg-blue-500"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            deleteService(service)
-                          }
-                          className="rounded-lg border border-red-500/20 bg-red-500/[0.05] px-2.5 py-1.5 text-[11px] text-red-400 hover:bg-red-500/10"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </article>                    ))}
-                  </div>
-                </details>
-
+                  </article>
+                ))}
               </div>
             )}
           </section>
@@ -1918,9 +1793,6 @@ useEffect(() => {
     </main>
   );
 }
-
-
-
 
 
 

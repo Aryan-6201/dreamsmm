@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -25,6 +25,7 @@ type Category = {
 };
 
 type ImportedProviderService = {
+  averageTime?: string | number | null;
   service: string;
   name: string;
   type?: string;
@@ -65,7 +66,7 @@ const emptyForm: FormState = {
 };
 
 const inputClass =
-  "w-full rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-700 focus:border-blue-500/40";
+  "w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500/40";
 
 function Field({
   label,
@@ -86,7 +87,13 @@ function Field({
 
 export default function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryPlatform, setNewCategoryPlatform] = useState("Other");
+
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -101,10 +108,6 @@ export default function AdminServicesPage() {
   const [importing, setImporting] = useState(false);
   const [importedService, setImportedService] =
     useState<ImportedProviderService | null>(null);
-  const [vipsmmMarkup, setVipsmmMarkup] = useState("25");
-  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
-  const [vipsmmImporting, setVipsmmImporting] = useState(false);
-  const [vipsmmResult, setVipsmmResult] = useState("");
 
   async function loadServices() {
     setLoading(true);
@@ -152,6 +155,45 @@ useEffect(() => {
   loadCategories();
 }, []);
 
+  async function createCategory() {
+    const name = newCategoryName.trim();
+
+    if (!name) {
+      setMessage("Enter a category name.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/categories/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          platform: newCategoryPlatform,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to create category.");
+      }
+
+      setCategories((current) => [...current, data.category]);
+      updateForm("category", data.category.name);
+      setNewCategoryName("");
+      setShowCreateCategory(false);
+      setMessage("Category created successfully.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to create category."
+      );
+    }
+  }
   function updateForm<K extends keyof FormState>(
     key: K,
     value: FormState[K]
@@ -266,7 +308,7 @@ useEffect(() => {
       }
 
       setMessage(
-        `Service #${data.service.id} imported successfully at Ã¢â€šÂ¹${data.service.rate}/1k.`
+        `Service #${data.service.id} imported successfully at Î“Ã©â•£${data.service.rate}/1k.`
       );
       setProviderServiceId("");
       setProviderMarkup("");
@@ -282,27 +324,192 @@ useEffect(() => {
       setImporting(false);
     }
   }
+  const [mkapiService, setMkapiService] =
+    useState<ImportedProviderService | null>(null);
+  const [mkapiServiceId, setMkapiServiceId] = useState("");
+  const [mkapiMarkup, setMkapiMarkup] = useState("25");
+  const [mkapiAutoSync, setMkapiAutoSync] = useState(true);
+  const [mkapiImporting, setMkapiImporting] = useState(false);
+  const [mkapiResult, setMkapiResult] = useState("");
 
+  const [vipsmmService, setVipsmmService] =
+    useState<ImportedProviderService | null>(null);
+  const [vipsmmServiceId, setVipsmmServiceId] = useState("");
+  const [vipsmmMarkup, setVipsmmMarkup] = useState("25");
+  const [vipsmmAutoSync, setVipsmmAutoSync] = useState(true);
+  const [vipsmmImporting, setVipsmmImporting] = useState(false);
+  const [vipsmmResult, setVipsmmResult] = useState("");
 
-  async function importAllVipsmmServices() {
-    const markup = Number(vipsmmMarkup);
+  const [smmgenService, setSmmgenService] =
+    useState<ImportedProviderService | null>(null);
+  const [smmgenServiceId, setSmmgenServiceId] = useState("");
+  const [smmgenMarkup, setSmmgenMarkup] = useState("25");
+  const [smmgenAutoSync, setSmmgenAutoSync] = useState(true);
+  const [smmgenImporting, setSmmgenImporting] = useState(false);
+  const [smmgenResult, setSmmgenResult] = useState("");
 
-    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
-      setMessage("Enter a valid MKAPI markup percentage.");
+  async function fetchMkapiService() {
+    const serviceId = mkapiServiceId.trim();
+
+    if (!serviceId) {
+      setMessage("Enter a MKAPI service ID first.");
       return;
     }
 
-    setVipsmmImporting(true);
+    setMkapiImporting(true);
     setMessage("");
-    setVipsmmResult("");
+    setMkapiService(null);
 
     try {
-      const response = await fetch("/api/admin/services/import", {
+      const response = await fetch("/api/admin/mkapi-import", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          action: "fetch",
+          serviceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to fetch MKAPI service."
+        );
+      }
+
+      setMkapiService({ ...data.service, averageTime: data.service.average_time ?? null });
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch MKAPI service."
+      );
+    } finally {
+      setMkapiImporting(false);
+    }
+  }
+
+  async function importMkapiService() {
+    if (!mkapiService) return;
+
+    const markup = Number(mkapiMarkup);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
+      setMessage("Enter a valid markup percentage.");
+      return;
+    }
+
+    setMkapiImporting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/mkapi-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "import",
+          serviceId: mkapiService.service,
+          markupPercent: markup,
+          autoSync: mkapiAutoSync,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to import MKAPI service."
+        );
+      }
+
+      setMessage("MKAPI service imported successfully.");
+      setMkapiServiceId("");
+      setMkapiMarkup("");
+      setMkapiService(null);
+
+      await loadServices();
+      await loadCategories();
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to import MKAPI service."
+      );
+    } finally {
+      setMkapiImporting(false);
+    }
+  }
+  async function fetchVipsmmService() {
+    const serviceId = vipsmmServiceId.trim();
+
+    if (!serviceId) {
+      setMessage("Enter a VIPSMM service ID first.");
+      return;
+    }
+
+    setVipsmmImporting(true);
+    setMessage("");
+    setVipsmmService(null);
+
+    try {
+      const response = await fetch("/api/admin/vipsmm-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "fetch",
+          serviceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to fetch VIPSMM service."
+        );
+      }
+
+      setVipsmmService({ ...data.service, averageTime: data.service.average_time ?? null });
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch VIPSMM service."
+      );
+    } finally {
+      setVipsmmImporting(false);
+    }
+  }
+
+  async function importVipsmmService() {
+    if (!vipsmmService) return;
+
+    const markup = Number(vipsmmMarkup);
+
+    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) {
+      setMessage("Enter a valid markup percentage.");
+      return;
+    }
+
+    setVipsmmImporting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/vipsmm-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "import",
+          serviceId: vipsmmService.service,
           markupPercent: markup,
           autoSync: vipsmmAutoSync,
         }),
@@ -312,28 +519,129 @@ useEffect(() => {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Unable to import MKAPI services."
+          data.error || "Unable to import VIPSMM service."
         );
       }
 
-      setVipsmmResult(
-        "Imported: " + (data.created ?? 0) +
-        " Â· Updated: " + (data.updated ?? 0) +
-        " Â· Skipped: " + (data.skipped ?? 0) +
-        " Â· Categories: " + (data.categoriesCreated ?? 0)
-      );
+      setMessage("VIPSMM service imported successfully.");
+      setVipsmmServiceId("");
+      setVipsmmMarkup("");
+      setVipsmmService(null);
 
-      setMessage("MKAPI services imported successfully.");
       await loadServices();
       await loadCategories();
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Unable to import MKAPI services."
+          : "Unable to import VIPSMM service."
       );
     } finally {
       setVipsmmImporting(false);
+    }
+  }
+  async function fetchSmmgenService() {
+    const serviceId = smmgenServiceId.trim();
+
+    if (!serviceId) {
+      setMessage("Enter a SMMGen service ID first.");
+      return;
+    }
+
+    setSmmgenImporting(true);
+    setMessage("");
+    setSmmgenService(null);
+
+    try {
+      const response = await fetch("/api/admin/smmgen-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "fetch",
+          serviceId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to fetch SMMGen service."
+        );
+      }
+
+      setSmmgenService({
+        ...data.service,
+        averageTime: data.service.average_time ?? null,
+      });
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch SMMGen service."
+      );
+    } finally {
+      setSmmgenImporting(false);
+    }
+  }
+
+  async function importSmmgenService() {
+    if (!smmgenService) return;
+
+    const markup = Number(smmgenMarkup);
+
+    if (
+      !Number.isFinite(markup) ||
+      markup < 0 ||
+      markup > 1000
+    ) {
+      setMessage("Enter a valid markup percentage.");
+      return;
+    }
+
+    setSmmgenImporting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/smmgen-import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "import",
+          serviceId: smmgenService.service,
+          markupPercent: markup,
+          autoSync: smmgenAutoSync,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to import SMMGen service."
+        );
+      }
+
+      setMessage("SMMGen service imported successfully.");
+      setSmmgenServiceId("");
+      setSmmgenMarkup("25");
+      setSmmgenService(null);
+      setSmmgenResult("");
+
+      await loadServices();
+      await loadCategories();
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to import SMMGen service."
+      );
+    } finally {
+      setSmmgenImporting(false);
     }
   }
   async function saveService(event: React.FormEvent) {
@@ -499,7 +807,7 @@ useEffect(() => {
 
   return (
     <main className="min-h-screen bg-[#070a11] text-white">
-      <header className="border-b border-white/[0.07] bg-[#090c14]/90 backdrop-blur">
+      <header className="border-b border-gray-200 bg-[#090c14]/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div>
             <h1 className="text-lg font-bold tracking-tight">
@@ -525,11 +833,11 @@ useEffect(() => {
               Admin Panel
             </div>
 
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-2xl font-bold tracking-tight">
               Service Management
             </h2>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500">
               Manage services and provider configuration.
             </p>
           </div>
@@ -546,7 +854,7 @@ useEffect(() => {
             <button
               onClick={loadServices}
               disabled={loading}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/[0.08] disabled:opacity-50"
+              className="rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-200 disabled:opacity-50"
             >
               Refresh
             </button>
@@ -561,15 +869,15 @@ useEffect(() => {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-400 hover:text-white"
             >
-              ÃƒÆ’Ã¢â‚¬â€
+              â”œÃ¢â•žÃ†â”œÃ¥Î“Ã‡Ã–â”œÃ¢â”¬Ã³â”œÃ³Î“Ã‡Ãœâ”¬Â¼â”œÃ³Î“Ã©Â¼â”¬Â¥
             </button>
           </div>
         )}
 
         <section className="mb-6 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/[0.08] to-blue-500/[0.04] p-5">
-          <div className="mb-4">
+          <div className="mb-3">
             <h3 className="text-lg font-semibold">Import from MicoSMM</h3>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-0.5 text-xs text-gray-500">
               Enter only the provider service ID. Details are fetched automatically.
             </p>
           </div>
@@ -606,7 +914,7 @@ useEffect(() => {
             </button>
           </div>
 
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-400">
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-500">
             <input
               type="checkbox"
               checked={providerAutoSync}
@@ -616,16 +924,16 @@ useEffect(() => {
           </label>
 
           {importedService && (
-            <div className="mt-4 rounded-xl border border-white/[0.08] bg-black/20 p-4">
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold text-white">
                     {importedService.name}
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-0.5 text-xs text-gray-500">
                     Provider ID #{importedService.service}
                     {importedService.category
-                      ? ` · ${importedService.category}`
+                      ? ` â”¬â•– ${importedService.category}`
                       : ""}
                   </p>
                 </div>
@@ -641,32 +949,37 @@ useEffect(() => {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Provider Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    Ã¢â€šÂ¹{importedService.rate}/1k
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">Provider Rate</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{importedService.rate}/1k
                   </p>
                 </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Your Markup</p>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">Your Markup</p>
                   <p className="mt-1 text-sm font-semibold text-violet-300">
                     {providerMarkup || "0"}%
                   </p>
                 </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Selling Rate</p>
-                  <p className="mt-1 text-sm font-semibold text-green-300">
-                    Ã¢â€šÂ¹{(
-                      Number(importedService.rate) *
-                      (1 + (Number(providerMarkup) || 0) / 100)
-                    ).toFixed(4)}
-                    /1k
-                  </p>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">Selling Rate</p>
+                                      <p className="mt-1 text-sm font-semibold text-green-300">
+                      â‚¹{(
+                        Number(smmgenService?.rate ?? 0) * (1 + (Number(smmgenMarkup) || 0) / 100)
+                      ).toFixed(4)}
+                      /1k
+                    </p>
                 </div>
-                <div className="rounded-lg bg-white/[0.04] p-3">
-                  <p className="text-[10px] text-gray-600">Limits</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-200">
-                    {importedService.min.toLocaleString()}-
+                <div className="rounded-lg bg-gray-100 p-3">
+                <p className="text-[10px] text-gray-500">Average Time</p>
+                <p className="mt-1 text-sm font-semibold text-blue-300">
+                  {vipsmmService?.averageTime || "N/A"}
+                </p>
+              </div>
+              <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">Limits</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    {importedService.min.toLocaleString()}-{importedService.max.toLocaleString()}
                     {importedService.max.toLocaleString()}
                   </p>
                 </div>
@@ -676,45 +989,413 @@ useEffect(() => {
         </section>
 
 
-        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
-          <h3 className="text-lg font-semibold">Import from MKAPI</h3>
+        <section className="mb-6 rounded-2xl border border-violet-500/20 bg-violet-500/[0.05] p-5">
+          <div className="mb-3">
+            <h3 className="text-lg font-semibold">
+              Import from SMMGen
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Enter the SMMGen service ID. Details are fetched automatically.
+            </p>
+          </div>
 
-          <p className="mt-1 text-xs text-gray-500">
-            Import all available MKAPI services automatically.
-          </p>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
             <input
               type="number"
               min="0"
-              max="1000"
-              step="0.01"
-              value={vipsmmMarkup}
-              onChange={(e) => setVipsmmMarkup(e.target.value)}
+              value={smmgenServiceId}
+              onChange={(e) => setSmmgenServiceId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") fetchSmmgenService();
+              }}
               className={inputClass}
-              placeholder="Markup % e.g. 25"
+              placeholder="SMMGen Service ID e.g. 12345"
+              inputMode="numeric"
+            />
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={smmgenMarkup}
+              onChange={(e) => setSmmgenMarkup(e.target.value)}
+              className={inputClass}
+              placeholder="Markup %"
             />
 
             <button
               type="button"
-              onClick={importAllVipsmmServices}
-              disabled={vipsmmImporting}
-              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              onClick={fetchSmmgenService}
+              disabled={smmgenImporting}
+              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50"
             >
-              {vipsmmImporting
-                ? "Importing..."
-                : "Import All Services"}
+              {smmgenImporting ? "Fetching..." : "Fetch Service"}
             </button>
           </div>
 
-          <label className="mt-3 inline-flex items-center gap-2 text-xs text-gray-400">
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-500">
+            <input
+              type="checkbox"
+              checked={smmgenAutoSync}
+              onChange={(e) => setSmmgenAutoSync(e.target.checked)}
+            />
+            Automatically update my selling price when provider rate changes
+          </label>
+
+          {smmgenService && (
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-white">
+                    {smmgenService.name}
+                  </p>
+
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Provider ID #{smmgenService.service}
+                    {smmgenService.category
+                      ? ` â”¬â•– ${smmgenService.category}`
+                      : ""}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={importSmmgenService}
+                  disabled={smmgenImporting}
+                  className="rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-violet-500 disabled:opacity-50"
+                >
+                  {smmgenImporting ? "Importing..." : "Add Service"}
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Provider Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    Î“Ã©â•£{(Number(smmgenService.rate)).toFixed(4)}/1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Your Markup
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-violet-300">
+                    {smmgenMarkup || "0"}%
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Selling Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-green-300">
+                    Î“Ã©â•£{(
+                      Number(smmgenService.rate) *
+                      (1 + (Number(smmgenMarkup) || 0) / 100)
+                    ).toFixed(4)}
+                    /1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Limits
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    {smmgenService.min.toLocaleString()}-
+                    {smmgenService.max.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+        <section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
+          <div className="mb-3">
+            <h3 className="text-lg font-semibold">
+              Import from MKAPI
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Enter only the MKAPI service ID. Details are fetched automatically.
+            </p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
+            <input
+              type="number"
+              min="0"
+              value={mkapiServiceId}
+              onChange={(e) => setMkapiServiceId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") fetchMkapiService();
+              }}
+              className={inputClass}
+              placeholder="MKAPI Service ID e.g. 12345"
+              inputMode="numeric"
+            />
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={mkapiMarkup}
+              onChange={(e) => setMkapiMarkup(e.target.value)}
+              className={inputClass}
+              placeholder="Markup %"
+            />
+
+            <button
+              type="button"
+              onClick={fetchMkapiService}
+              disabled={mkapiImporting}
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
+            >
+              {mkapiImporting ? "Fetching..." : "Fetch Service"}
+            </button>
+          </div>
+
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-500">
+            <input
+              type="checkbox"
+              checked={mkapiAutoSync}
+              onChange={(e) => setMkapiAutoSync(e.target.checked)}
+            />
+            Automatically update my selling price when provider rate changes
+          </label>
+
+          {mkapiService && (
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-white">
+                    {mkapiService.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Provider ID #{mkapiService.service}
+                    {mkapiService.category
+                      ? ` â”¬â•– ${mkapiService.category}`
+                      : ""}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={importMkapiService}
+                  disabled={mkapiImporting}
+                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {mkapiImporting ? "Importing..." : "Add Service"}
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Provider Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{mkapiService.rate}/1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Your Markup
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-violet-300">
+                    {mkapiMarkup || "0"}%
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Selling Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-green-300">
+                    â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{(
+                      Number(mkapiService.rate) *
+                      (1 + (Number(mkapiMarkup) || 0) / 100)
+                    ).toFixed(4)}
+                    /1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Average Time
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-blue-300">
+                    {mkapiService.averageTime || "N/A"}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Average Time
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-blue-300">
+                    {mkapiService.averageTime || "N/A"}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Limits
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    {Number(mkapiService.min).toLocaleString()}-{Number(mkapiService.max).toLocaleString()}
+                    {Number(mkapiService.max).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mkapiResult && (
+            <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
+              {mkapiResult}
+            </div>
+          )}
+        </section>
+<section className="mb-6 rounded-2xl border border-blue-500/20 bg-blue-500/[0.05] p-5">
+          <div className="mb-3">
+            <h3 className="text-lg font-semibold">
+              Import from VIPSMM
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Enter only the VIPSMM service ID. Details are fetched automatically.
+            </p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-[1fr_160px_auto]">
+            <input
+              type="number"
+              min="0"
+              value={vipsmmServiceId}
+              onChange={(e) => setVipsmmServiceId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") fetchVipsmmService();
+              }}
+              className={inputClass}
+              placeholder="VIPSMM Service ID e.g. 12345"
+              inputMode="numeric"
+            />
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={vipsmmMarkup}
+              onChange={(e) => setVipsmmMarkup(e.target.value)}
+              className={inputClass}
+              placeholder="Markup %"
+            />
+
+            <button
+              type="button"
+              onClick={fetchVipsmmService}
+              disabled={vipsmmImporting}
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
+            >
+              {vipsmmImporting ? "Fetching..." : "Fetch Service"}
+            </button>
+          </div>
+
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-gray-500">
             <input
               type="checkbox"
               checked={vipsmmAutoSync}
               onChange={(e) => setVipsmmAutoSync(e.target.checked)}
             />
-            Automatically update selling prices when MKAPI rates change
+            Automatically update my selling price when provider rate changes
           </label>
+
+          {vipsmmService && (
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-white">
+                    {vipsmmService.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Provider ID #{vipsmmService.service}
+                    {vipsmmService.category
+                      ? ` â”¬â•– ${vipsmmService.category}`
+                      : ""}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={importVipsmmService}
+                  disabled={vipsmmImporting}
+                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {vipsmmImporting ? "Importing..." : "Add Service"}
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Provider Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{vipsmmService.rate}/1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Your Markup
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-violet-300">
+                    {vipsmmMarkup || "0"}%
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Selling Rate
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-green-300">
+                    â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{(
+                      Number(vipsmmService.rate) *
+                      (1 + (Number(vipsmmMarkup) || 0) / 100)
+                    ).toFixed(4)}
+                    /1k
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Average Time
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-blue-300">
+                    {vipsmmService.averageTime || "N/A"}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Average Time
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-blue-300">
+                    {vipsmmService.averageTime || "N/A"}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-100 p-3">
+                  <p className="text-[10px] text-gray-500">
+                    Limits
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900">
+                    {Number(vipsmmService.min).toLocaleString()}-{Number(vipsmmService.max).toLocaleString()}
+                    {Number(vipsmmService.max).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {vipsmmResult && (
             <div className="mt-4 rounded-xl bg-blue-500/10 px-4 py-3 text-xs text-blue-300">
@@ -722,8 +1403,8 @@ useEffect(() => {
             </div>
           )}
         </section>
-        <div className="grid gap-6 lg:grid-cols-[390px_1fr]">
-          <section className="h-fit rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5">
+        <div className="grid gap-4 lg:grid-cols-[390px_1fr]">
+          <section className="h-fit rounded-2xl border border-gray-200 bg-white p-5">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
@@ -732,7 +1413,7 @@ useEffect(() => {
                     : "Add Service"}
                 </h3>
 
-                <p className="mt-1 text-xs text-gray-600">
+                <p className="mt-1 text-xs text-gray-500">
                   Provider ID is the provider's service ID.
                 </p>
               </div>
@@ -749,7 +1430,7 @@ useEffect(() => {
 
             <form
               onSubmit={saveService}
-              className="mt-5 space-y-4"
+              className="mt-5 space-y-3"
             >
               <Field label="Service Name">
                 <input
@@ -777,21 +1458,70 @@ useEffect(() => {
                 </Field>
 
  <Field label="Category">
-  <select
-    value={form.category}
-    onChange={(e) =>
-      updateForm("category", e.target.value)
-    }
-    className={inputClass}
-  >
-    <option value="">Select category</option>
+  <div className="flex gap-2">
+    <select
+      value={form.category}
+      onChange={(e) => updateForm("category", e.target.value)}
+      className={inputClass}
+    >
+      <option value="">Select category</option>
 
-    {categories.map((category) => (
-      <option key={category.id} value={category.name}>
-        {category.name}
-      </option>
-    ))}
-  </select>
+      {categories.map((category) => (
+        <option key={category.id} value={category.name}>
+          {category.name}
+        </option>
+      ))}
+    </select>
+
+    <button
+      type="button"
+      onClick={() => setShowCreateCategory((value) => !value)}
+      className="shrink-0 rounded-xl border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:bg-gray-200"
+    >
+      + New
+    </button>
+  </div>
+
+  {showCreateCategory && (
+    <div className="mt-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
+      <input
+        type="text"
+        value={newCategoryName}
+        onChange={(e) => setNewCategoryName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") createCategory();
+        }}
+        className={inputClass}
+        placeholder="Enter new category name"
+      />
+
+      <div className="mt-2 flex gap-2">
+        <select
+          value={newCategoryPlatform}
+          onChange={(e) => setNewCategoryPlatform(e.target.value)}
+          className={inputClass}
+        >
+          <option value="Instagram">Instagram</option>
+          <option value="YouTube">YouTube</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Telegram">Telegram</option>
+          <option value="Twitter">Twitter</option>
+          <option value="Spotify">Spotify</option>
+          <option value="Reddit">Reddit</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <button
+          type="button"
+          onClick={createCategory}
+          className="shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500"
+        >
+          Create
+        </button>
+      </div>
+    </div>
+  )}
 </Field>
               </div>
 
@@ -882,7 +1612,7 @@ useEffect(() => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-black/10 p-3">
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
                   <input
                     type="checkbox"
                     checked={form.enabled}
@@ -894,12 +1624,12 @@ useEffect(() => {
                     }
                   />
 
-                  <span className="text-xs text-gray-300">
+                  <span className="text-xs text-gray-700">
                     Enabled
                   </span>
                 </label>
 
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-black/10 p-3">
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
                   <input
                     type="checkbox"
                     checked={form.refill}
@@ -911,7 +1641,7 @@ useEffect(() => {
                     }
                   />
 
-                  <span className="text-xs text-gray-300">
+                  <span className="text-xs text-gray-700">
                     Refill
                   </span>
                 </label>
@@ -932,41 +1662,41 @@ useEffect(() => {
           </section>
 
           <section>
-            <div className="mb-4">
+            <div className="mb-3">
               <h3 className="text-lg font-semibold">
                 Services
               </h3>
 
-              <p className="mt-1 text-xs text-gray-600">
+              <p className="mt-1 text-xs text-gray-500">
                 {services.length} service
                 {services.length === 1 ? "" : "s"} in database
               </p>
             </div>
 
             {loading ? (
-              <div className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-12 text-center text-sm text-gray-500">
+              <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center text-sm text-gray-500">
                 Loading services...
               </div>
             ) : services.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-[#0c1019] p-12 text-center">
-                <p className="font-semibold text-gray-300">
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center">
+                <p className="font-semibold text-gray-700">
                   No services yet
                 </p>
 
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-gray-500">
                   Create your first service using the form.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {services.map((service) => (
                   <article
                     key={service.id}
-                    className="rounded-2xl border border-white/[0.07] bg-[#0c1019] p-5 transition hover:border-white/[0.12]"
+                    className="rounded-2xl border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-sm"
                   >
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                    <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="text-xs font-bold text-blue-400">
                             #{service.id}
                           </span>
@@ -990,24 +1720,24 @@ useEffect(() => {
                           )}
                         </div>
 
-                        <h4 className="mt-2 font-semibold text-gray-200">
+                        <h4 className="mt-1.5 font-semibold text-gray-900">
                           {service.name}
                         </h4>
 
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-0.5 text-xs text-gray-500">
                           {service.platform}
                           {service.category
-                            ? ` Ãƒâ€š· ${service.category}`
+                            ? ` â”¬â•– ${service.category}`
                             : ""}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
-                          <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            Rate ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¹{service.rate}/1k
+                        <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
+                          <span className="rounded-md bg-gray-50 px-2 py-0.5 text-gray-500">
+                            Rate â”œÃ¢â”¬Ã³â”œÃ³Î“Ã©Â¼â”¼Ã­â”œÃ©â”¬â•£{service.rate}/1k
                           </span>
 
-                          <span className="rounded-lg bg-black/20 px-2 py-1 text-gray-500">
-                            {service.min.toLocaleString()}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“
+                          <span className="rounded-md bg-gray-50 px-2 py-0.5 text-gray-500">
+                            {service.min.toLocaleString()}-{service.max.toLocaleString()}
                             {service.max.toLocaleString()}
                           </span>
 
@@ -1016,18 +1746,18 @@ useEffect(() => {
                               "No provider"}
 
                             {service.providerId
-                              ? ` Ãƒâ€š· ID ${service.providerId}`
+                              ? ` â”¬â•– ID ${service.providerId}`
                               : ""}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex shrink-0 gap-2">
+                      <div className="flex shrink-0 gap-1.5">
                         <button
                           onClick={() =>
                             toggleService(service)
                           }
-                          className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-gray-300 hover:bg-white/[0.08]"
+                          className="rounded-lg border border-gray-200 bg-gray-100 px-2.5 py-1.5 text-[11px] text-gray-700 hover:bg-gray-200"
                         >
                           {service.enabled
                             ? "Disable"
@@ -1038,7 +1768,7 @@ useEffect(() => {
                           onClick={() =>
                             startEdit(service)
                           }
-                          className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500"
+                          className="rounded-lg bg-blue-600 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-blue-500"
                         >
                           Edit
                         </button>
@@ -1047,7 +1777,7 @@ useEffect(() => {
                           onClick={() =>
                             deleteService(service)
                           }
-                          className="rounded-xl border border-red-500/20 bg-red-500/[0.05] px-3 py-2 text-xs text-red-400 hover:bg-red-500/10"
+                          className="rounded-lg border border-red-500/20 bg-red-500/[0.05] px-2.5 py-1.5 text-[11px] text-red-400 hover:bg-red-500/10"
                         >
                           Delete
                         </button>
@@ -1063,4 +1793,25 @@ useEffect(() => {
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
