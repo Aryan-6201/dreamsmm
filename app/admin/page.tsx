@@ -23,6 +23,7 @@ const navigation = [
   { href: "/admin/users", icon: "👥", label: "Users" },
   { href: "/admin/deposits", icon: "₹", label: "Deposits" },
   { href: "/admin/services", icon: "⚙", label: "Services" },
+  { href: "/admin/discounts", icon: "%", label: "Discounts" },
   { href: "/admin/categories", icon: "✦", label: "Categories" },
   { href: "/admin/blog", icon: "📝", label: "Blog" },
 ];
