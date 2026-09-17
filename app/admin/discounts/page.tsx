@@ -61,7 +61,7 @@ export default function DiscountsPage() {
       setLoading(true);
 
       const [discountRes, userRes, serviceRes] = await Promise.all([
-        fetch("/api/admin/discounts", { cache: "no-store" }),
+        fetch("/api/admin/user-service-discounts", { cache: "no-store" }),
         fetch("/api/admin/users", { cache: "no-store" }),
         fetch("/api/admin/services", { cache: "no-store" }),
       ]);
@@ -117,7 +117,7 @@ export default function DiscountsPage() {
     try {
       setSaving(true);
 
-      const response = await fetch("/api/admin/discounts", {
+      const response = await fetch("/api/admin/user-service-discounts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +151,7 @@ export default function DiscountsPage() {
 
   async function toggleDiscount(discount: Discount) {
     try {
-      const response = await fetch(`/api/admin/discounts/${discount.id}`, {
+      const response = await fetch("/api/admin/user-service-discounts", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -595,5 +595,7 @@ export default function DiscountsPage() {
     </main>
   );
 }
+
+
 
 
