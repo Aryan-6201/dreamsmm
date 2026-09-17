@@ -33,7 +33,7 @@ export async function GET() {
       select: {
         id: true,
         discountPercent: true,
-        serviceDiscounts: {
+        userServiceDiscounts: {
           where: {
             enabled: true,
             OR: [
@@ -67,7 +67,7 @@ export async function GET() {
       user: {
         id: user.id,
         discountPercent: user.discountPercent.toString(),
-        serviceDiscounts: user.serviceDiscounts.map((discount) => ({
+        userServiceDiscounts: user.userServiceDiscounts.map((discount) => ({
           serviceId: discount.serviceId,
           type: discount.type,
           value: discount.value.toString(),
@@ -87,3 +87,4 @@ export async function GET() {
     );
   }
 }
+
