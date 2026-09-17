@@ -24,6 +24,8 @@ export async function GET() {
       );
     }
 
+    const now = new Date();
+
     const user = await prisma.user.findUnique({
       where: {
         id: session.userId,
@@ -31,6 +33,25 @@ export async function GET() {
       select: {
         id: true,
         discountPercent: true,
+        serviceDiscounts: {
+          where: {
+            enabled: true,
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: now } },
+            ],
+          },
+          select: {
+            serviceId: true,
+            type: true,
+            value: true,
+            expiresAt: true,
+            enabled: true,
+          },
+          orderBy: {
+            updatedAt: "desc",
+          },
+        },
       },
     });
 
@@ -46,6 +67,15 @@ export async function GET() {
       user: {
         id: user.id,
         discountPercent: user.discountPercent.toString(),
+        serviceDiscounts: user.serviceDiscounts.map((discount) => ({
+          serviceId: discount.serviceId,
+          type: discount.type,
+          value: discount.value.toString(),
+          expiresAt: discount.expiresAt
+            ? discount.expiresAt.toISOString()
+            : null,
+          enabled: discount.enabled,
+        })),
       },
     });
   } catch (error) {

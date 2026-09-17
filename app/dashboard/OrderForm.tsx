@@ -435,10 +435,19 @@ useEffect(() => {
         Number(selectedService.rate)
       : 0;
 
+  type ServiceDiscount = {
+    type: "FIXED" | "PERCENTAGE";
+    value: number;
+    expiresAt: string | null;
+    enabled: boolean;
+  };
+
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [serviceDiscount, setServiceDiscount] =
+    useState<ServiceDiscount | null>(null);
 
   useEffect(() => {
-    async function loadDiscount() {
+    async function loadDiscounts() {
       try {
         const response = await fetch("/api/me", {
           cache: "no-store",
@@ -447,25 +456,69 @@ useEffect(() => {
         if (!response.ok) return;
 
         const data = await response.json();
-        const discount = Number(data.user?.discountPercent ?? 0);
 
-        if (Number.isFinite(discount) && discount >= 0 && discount <= 100) {
-          setDiscountPercent(discount);
+        const globalDiscount = Number(
+          data.user?.discountPercent ?? 0
+        );
+
+        if (
+          Number.isFinite(globalDiscount) &&
+          globalDiscount >= 0 &&
+          globalDiscount <= 100
+        ) {
+          setDiscountPercent(globalDiscount);
         }
+
+        const discounts = Array.isArray(
+          data.user?.serviceDiscounts
+        )
+          ? data.user.serviceDiscounts
+          : [];
+
+        setServiceDiscount(
+          discounts.find(
+            (discount: ServiceDiscount & { serviceId: number }) =>
+              discount.serviceId === selectedService?.id &&
+              discount.enabled === true &&
+              (
+                !discount.expiresAt ||
+                new Date(discount.expiresAt).getTime() > Date.now()
+              )
+          ) || null
+        );
       } catch (error) {
         console.error("Failed to load discount:", error);
       }
     }
 
-    loadDiscount();
-  }, []);
+    loadDiscounts();
+  }, [selectedService?.id]);
 
-  const discountAmount =
-    total > 0
-      ? total * (discountPercent / 100)
-      : 0;
+  let discountAmount = 0;
+  let discountedTotal = total;
 
-  const discountedTotal = total - discountAmount;
+  if (total > 0) {
+    if (serviceDiscount) {
+      if (serviceDiscount.type === "PERCENTAGE") {
+        discountAmount =
+          total * (serviceDiscount.value / 100);
+      } else {
+        discountAmount = Math.min(
+          total,
+          serviceDiscount.value
+        );
+      }
+
+      discountedTotal = total - discountAmount;
+    } else {
+      discountAmount =
+        total * (discountPercent / 100);
+
+      discountedTotal = total - discountAmount;
+    }
+  }
+
+  const hasDiscount = discountAmount > 0;
 
   /* =========================================================
      SELECT CATEGORY
@@ -1140,15 +1193,19 @@ return BrandIcon ? (
     <span className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">
       Total charge
     </span>
-    {discountPercent > 0 && (
+    {hasDiscount && (
       <p className="mt-1 text-[10px] font-bold text-emerald-600">
-        {discountPercent}% discount applied
+        {serviceDiscount
+          ? serviceDiscount.type === "PERCENTAGE"
+            ? `${serviceDiscount.value}% discount applied`
+            : `₹${serviceDiscount.value.toFixed(2)} discount applied`
+          : `${discountPercent}% discount applied`}
       </p>
     )}
   </div>
 
   <div className="text-right">
-    {discountPercent > 0 && (
+    {hasDiscount && (
       <p className="text-xs font-semibold text-slate-400 line-through">
         &#8377;{total.toFixed(2)}
       </p>
