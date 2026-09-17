@@ -1,10 +1,12 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 import { verifySession } from "@/lib/auth";
 import { addMicoSmmOrder } from "@/lib/providers/micosmm";
+import { addSmmGenOrder } from "@/lib/providers/smmgen";
 import { addMkapiOrder } from "@/lib/providers/mkapi";
+import { addVipSmmOrder } from "@/lib/providers/vipsmm";
 
 /**
  * GET /api/orders
@@ -136,6 +138,7 @@ export async function GET(request: Request) {
               name: true,
               platform: true,
               category: true,
+              refill: true,
             },
           },
         },
@@ -285,17 +288,20 @@ export async function POST(request: Request) {
       },
     });
 
-    const discountPercent = userForDiscount?.discountPercent ?? service.rate.mul(0);
+    const discountPercent = userForDiscount?.discountPercent ?? 0;
+
+    const discountPercentValue = Number(discountPercent);
 
     if (
-      discountPercent.lt(0) ||
-      discountPercent.gt(100)
+      !Number.isFinite(discountPercentValue) ||
+      discountPercentValue < 0 ||
+      discountPercentValue > 100
     ) {
       throw new Error("INVALID_USER_DISCOUNT");
     }
 
     const discountAmount = baseCharge
-      .mul(discountPercent)
+      .mul(discountPercentValue)
       .div(100);
 
     const charge = baseCharge.sub(discountAmount);
@@ -401,15 +407,27 @@ export async function POST(request: Request) {
     try {
       let providerResult;
 
-      if (service.providerName === "MKAPI") {
+      if (service.providerName?.toUpperCase() === "SMMGEN") {
+        providerResult = await addSmmGenOrder({
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else if (service.providerName?.toUpperCase() === "MKAPI") {
         providerResult = await addMkapiOrder({
-          serviceId: service.providerId,
+          serviceId: service.providerId!,
+          link,
+          quantity,
+        });
+      } else if (service.providerName?.toUpperCase().startsWith("VIPSMM")) {
+        providerResult = await addVipSmmOrder({
+          serviceId: service.providerId!,
           link,
           quantity,
         });
       } else {
         providerResult = await addMicoSmmOrder({
-          serviceId: service.providerId,
+          serviceId: service.providerId!,
           link,
           quantity,
         });
@@ -417,7 +435,7 @@ export async function POST(request: Request) {
 
       providerOrderId = providerResult.providerOrderId;
     } catch (providerError) {
-      console.error("MicoSMM order error:", providerError);
+      console.error("Provider order error:", providerError);
 
       await prisma.$transaction(async (tx) => {
         await tx.user.update({
@@ -439,7 +457,7 @@ export async function POST(request: Request) {
             userId: session.userId,
             type: "REFUND",
             amount: result.order.charge,
-            note: `Refund for failed MicoSMM order #${result.order.id}`,
+            note: `Refund for failed provider order #${result.order.id}`,
           },
         });
 
@@ -458,7 +476,7 @@ export async function POST(request: Request) {
           error:
             providerError instanceof Error
               ? providerError.message
-              : "MicoSMM rejected the order. Your balance has been refunded.",
+              : "Provider rejected the order. Your balance has been refunded.",
         },
         { status: 502 }
       );
@@ -538,3 +556,14 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -288,21 +288,61 @@ export async function POST(request: Request) {
       },
     });
 
-    const discountPercent = userForDiscount?.discountPercent ?? 0;
+    const serviceDiscount = await prisma.userServiceDiscount.findFirst({
+      where: {
+        userId: session.userId,
+        serviceId: service.id,
+        enabled: true,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } },
+        ],
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
 
-    const discountPercentValue = Number(discountPercent);
+    let discountAmount = baseCharge;
 
-    if (
-      !Number.isFinite(discountPercentValue) ||
-      discountPercentValue < 0 ||
-      discountPercentValue > 100
-    ) {
-      throw new Error("INVALID_USER_DISCOUNT");
+    if (serviceDiscount) {
+      const discountValue = Number(serviceDiscount.value);
+
+      if (!Number.isFinite(discountValue) || discountValue < 0) {
+        throw new Error("INVALID_SERVICE_DISCOUNT");
+      }
+
+      if (serviceDiscount.type === "PERCENTAGE") {
+        if (discountValue > 100) {
+          throw new Error("INVALID_SERVICE_DISCOUNT");
+        }
+
+        discountAmount = baseCharge
+          .mul(discountValue)
+          .div(100);
+      } else {
+        // FIXED discount is a direct currency amount.
+        discountAmount = baseCharge.gte(serviceDiscount.value)
+          ? serviceDiscount.value
+          : baseCharge;
+      }
+    } else {
+      // Fall back to the user's global percentage discount.
+      const discountPercent = userForDiscount?.discountPercent ?? 0;
+      const discountPercentValue = Number(discountPercent);
+
+      if (
+        !Number.isFinite(discountPercentValue) ||
+        discountPercentValue < 0 ||
+        discountPercentValue > 100
+      ) {
+        throw new Error("INVALID_USER_DISCOUNT");
+      }
+
+      discountAmount = baseCharge
+        .mul(discountPercentValue)
+        .div(100);
     }
-
-    const discountAmount = baseCharge
-      .mul(discountPercentValue)
-      .div(100);
 
     const charge = baseCharge.sub(discountAmount);
 
