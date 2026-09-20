@@ -429,499 +429,477 @@ export default function Home() {
 
   return (
     <>
+
+      <style jsx global>{`
+        @keyframes dreamFloat {
+          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+          50% { transform: translate3d(0, -12px, 0) rotate(2deg); }
+        }
+        @keyframes dreamGlow {
+          0%, 100% { opacity: .35; transform: scale(1); }
+          50% { opacity: .65; transform: scale(1.08); }
+        }
+        @keyframes dreamShimmer {
+          0% { transform: translateX(-120%); }
+          100% { transform: translateX(120%); }
+        }
+        .dream-float { animation: dreamFloat 5s ease-in-out infinite; }
+        .dream-float-slow { animation: dreamFloat 7s ease-in-out infinite; }
+        .dream-glow { animation: dreamGlow 4s ease-in-out infinite; }
+        .dream-shimmer { position: relative; overflow: hidden; }
+        .dream-shimmer::after {
+          content: "";
+          position: absolute;
+          inset: 0 auto 0 -45%;
+          width: 35%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+          transform: skewX(-18deg);
+          animation: dreamShimmer 3.8s ease-in-out infinite;
+          pointer-events: none;
+        }
+        html { scroll-behavior: smooth; }
+      `}</style>
+
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={initializeGoogle}
       />
 
-      <main className="relative min-h-screen overflow-hidden bg-[#2d93a8] text-slate-900">
+      <main className="min-h-screen overflow-x-hidden bg-[#eefbfb] text-slate-900">
+        {/* ========================= HERO ========================= */}
+        <section className="relative min-h-[800px] overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,.18),transparent_28%),radial-gradient(circle_at_85%_25%,rgba(255,255,255,.12),transparent_26%),linear-gradient(135deg,#087f8a_0%,#159aa5_42%,#45c2bd_72%,#8bd8cf_100%)]">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="dream-glow absolute -left-32 -top-24 h-[520px] w-[520px] rounded-full bg-cyan-100/20 blur-3xl" />
+            <div className="dream-glow absolute -right-32 top-24 h-[500px] w-[500px] rounded-full bg-white/15 blur-3xl" />
+            <div className="absolute left-[45%] top-[40%] h-[400px] w-[400px] rounded-full bg-teal-100/10 blur-3xl" />
+            <div
+              className="absolute inset-0 opacity-[.16]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(255,255,255,.9) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+                maskImage: "linear-gradient(to bottom, black, transparent 80%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, black, transparent 80%)",
+              }}
+            />
+            <div className="absolute left-[4%] top-[35%] h-24 w-24 rounded-full bg-white/10 blur-xl" />
+            <div className="absolute right-[8%] top-[55%] h-32 w-32 rounded-full bg-white/10 blur-xl" />
+            <div className="dream-float absolute left-[7%] top-[28%] text-5xl opacity-50">💜</div>
+            <div className="dream-float-slow absolute right-[8%] top-[31%] rotate-12 text-5xl opacity-60">🚀</div>
+            <div className="absolute left-[4%] bottom-[13%] text-4xl opacity-50 animate-pulse">💬</div>
+            <div className="absolute right-[4%] bottom-[15%] text-4xl opacity-50 animate-pulse">💎</div>
+          </div>
 
-        {/* ======================================================
-            PREMIUM BACKGROUND
-        ====================================================== */}
-
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-
-          {/* Base ambient gradient */}
-
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(139,92,246,0.18),transparent_32%),radial-gradient(circle_at_85%_15%,rgba(217,70,239,0.14),transparent_30%),radial-gradient(circle_at_50%_65%,rgba(99,102,241,0.10),transparent_38%),linear-gradient(135deg,#2d93a8_0%,#54b8c1_55%,#8bd3cf_100%)]" />
-
-          {/* Violet glow */}
-
-          <div className="absolute -left-[220px] -top-[180px] h-[620px] w-[620px] rounded-full bg-violet-400/20 blur-[130px]" />
-
-          {/* Pink glow */}
-
-          <div className="absolute -right-[220px] top-[40px] h-[600px] w-[600px] rounded-full bg-fuchsia-400/15 blur-[140px]" />
-
-          {/* Center atmosphere */}
-
-          <div className="absolute left-[35%] top-[25%] h-[500px] w-[500px] rounded-full bg-indigo-300/10 blur-[150px]" />
-
-          {/* Bottom glow */}
-
-          <div className="absolute -bottom-[300px] left-[25%] h-[650px] w-[650px] rounded-full bg-purple-400/15 blur-[150px]" />
-
-          {/* Premium grid */}
-
-          <div
-            className="absolute inset-0 opacity-[0.18]"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px)
-              `,
-              backgroundSize: "70px 70px",
-              maskImage:
-                "linear-gradient(to bottom, black, transparent 85%)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, black, transparent 85%)",
-            }}
-          />
-
-          {/* Dot pattern left */}
-
-          <div
-            className="absolute left-0 top-[30%] h-52 w-52 opacity-30"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(124,58,237,0.45) 1px, transparent 1px)",
-              backgroundSize: "12px 12px",
-              maskImage:
-                "radial-gradient(circle, black, transparent 70%)",
-              WebkitMaskImage:
-                "radial-gradient(circle, black, transparent 70%)",
-            }}
-          />
-
-          {/* Dot pattern right */}
-
-          <div
-            className="absolute bottom-[18%] right-0 h-56 w-56 opacity-25"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(217,70,239,0.5) 1px, transparent 1px)",
-              backgroundSize: "13px 13px",
-              maskImage:
-                "radial-gradient(circle, black, transparent 70%)",
-              WebkitMaskImage:
-                "radial-gradient(circle, black, transparent 70%)",
-            }}
-          />
-
-          {/* Floating orbs */}
-
-          <div className="absolute left-[7%] top-[46%] h-16 w-16 rounded-full bg-gradient-to-br from-violet-400/30 to-fuchsia-400/10 shadow-[0_0_50px_rgba(139,92,246,0.25)]" />
-
-          <div className="absolute right-[8%] top-[22%] h-20 w-20 rounded-full bg-gradient-to-br from-fuchsia-400/25 to-violet-400/10 shadow-[0_0_60px_rgba(217,70,239,0.25)]" />
-
-          <div className="absolute bottom-[10%] left-[8%] h-24 w-24 rounded-full bg-gradient-to-br from-indigo-400/15 to-violet-400/10 shadow-[0_0_70px_rgba(99,102,241,0.2)]" />
-
-          {/* Light rings */}
-
-          <div className="absolute -left-32 top-[15%] h-[420px] w-[420px] rounded-full border border-violet-300/15" />
-
-          <div className="absolute -left-44 top-[12%] h-[520px] w-[520px] rounded-full border border-violet-300/10" />
-
-          <div className="absolute -right-32 bottom-[12%] h-[430px] w-[430px] rounded-full border border-fuchsia-300/15" />
-
-          <div className="absolute -right-44 bottom-[8%] h-[530px] w-[530px] rounded-full border border-fuchsia-300/10" />
-
-          {/* Tiny particles */}
-
-          <div className="absolute left-[14%] top-[24%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
-
-          <div className="absolute right-[18%] top-[34%] h-1 w-1 rounded-full bg-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.8)]" />
-
-          <div className="absolute left-[20%] bottom-[24%] h-1 w-1 rounded-full bg-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
-
-          <div className="absolute right-[12%] bottom-[30%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
-
-        </div>
-
-        {/* ======================================================
-            HEADER
-        ====================================================== */}
-
-        <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-10">
-
-          <div className="flex items-center gap-3">
-
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-fuchsia-500 text-lg font-black text-white shadow-[0_10px_30px_rgba(124,58,237,0.30)]">
-              D
-
-              <div className="absolute inset-0 rounded-2xl bg-white/20" />
+          {/* NAVBAR */}
+          <header className="relative z-20 mx-auto mt-3 flex max-w-7xl items-center justify-between rounded-[26px] border border-white/20 bg-white/[.09] px-5 py-4 shadow-[0_18px_60px_rgba(0,0,0,.10)] backdrop-blur-xl sm:mt-5 sm:px-7 lg:px-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-lg font-black text-[#159aa5] shadow-[0_12px_30px_rgba(0,0,0,.12)]">
+                D
+              </div>
+              <div>
+                <div className="text-xl font-black tracking-tight text-white">
+                  Dream<span className="text-yellow-300">SMM</span>
+                </div>
+                <div className="text-[9px] font-bold tracking-[.22em] text-white/70">
+                  SOCIAL MEDIA MARKETING
+                </div>
+              </div>
             </div>
 
-            <div>
+            <nav className="hidden items-center gap-8 text-sm font-black text-white/95 md:flex">
+              <a href="#features" className="transition hover:text-yellow-300">Features</a>
+              <a href="#how-it-works" className="transition hover:text-yellow-300">How it works</a>
+              <a href="#reviews" className="transition hover:text-yellow-300">Reviews</a>
+              <a href="#faq" className="transition hover:text-yellow-300">FAQ</a>
+            </nav>
 
-              <div className="text-lg font-black tracking-tight text-slate-950">
-                Dream
-                <span className="bg-gradient-to-r from-[#159aa5] to-[#0f7480] bg-clip-text text-transparent">
-                  SMM
-                </span>
+            <button
+              type="button"
+              onClick={() =>
+                document.getElementById("login-card")?.scrollIntoView({
+                  behavior: "smooth",
+                })
+              }
+              className="dream-shimmer rounded-full border border-white/60 bg-white px-6 py-3 text-sm font-black text-[#0f7480] shadow-[0_12px_30px_rgba(0,0,0,.16)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,.20)]"
+            >
+              Sign in
+            </button>
+          </header>
+
+          {/* MAIN HERO */}
+          <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-5 pb-20 pt-12 sm:px-8 lg:grid-cols-[1.05fr_.95fr] lg:px-10 lg:pt-16">
+            <div className="relative">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/[.12] px-4 py-2 text-[10px] font-black uppercase tracking-[.18em] text-white shadow-lg backdrop-blur-xl">
+                <span className="h-2 w-2 rounded-full bg-yellow-300 shadow-[0_0_12px_rgba(253,224,71,.9)]" />
+                Trusted SMM Panel
               </div>
 
-              <div className="text-[8px] font-bold tracking-[0.2em] text-slate-400">
-                SOCIAL MEDIA PANEL
-              </div>
+              <h1 className="max-w-3xl text-[52px] font-black leading-[.94] tracking-[-.055em] text-white sm:text-6xl lg:text-[78px]">
+                The Best &amp;
+                <span className="block">Cheapest</span>
+                <span className="block text-yellow-300">SMM Panel</span>
+                <span className="mt-2 block">Trusted</span>
+                <span className="block">Worldwide.</span>
+              </h1>
 
-            </div>
-
-          </div>
-
-          <button
-  type="button"
-  onClick={() =>
-    document
-      .getElementById("login-card")
-      ?.scrollIntoView({
-        behavior: "smooth",
-      })
-  }
-  className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#159aa5] to-[#0f7480] px-6 py-3 text-sm font-black text-white shadow-[0_10px_30px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(21,154,165,0.25)]"
->
-  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-  <span className="relative flex items-center gap-1.5">
-    <span>Sign in</span>
-    <span className="text-base transition-transform duration-300 group-hover:translate-x-1">
-      &#8594;
-    </span>
-  </span>
-</button>
-
-        </header>
-
-        {/* ======================================================
-            HERO
-        ====================================================== */}
-
-        <section className="relative z-10 mx-auto max-w-5xl px-4 pb-1 pt-1 text-center sm:px-6">
-
-          <div className="mx-auto mb-5 flex items-center justify-center gap-2">
-
-            <div className="h-px w-10 bg-gradient-to-r from-transparent to-violet-400" />
-
-            <div className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_12px_rgba(139,92,246,0.8)]" />
-
-            <div className="h-px w-10 bg-gradient-to-l from-transparent to-fuchsia-400" />
-
-          </div>
-
-          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-[#159aa5]/30 bg-white/70 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#0f7480] shadow-[0_8px_25px_rgba(124,58,237,0.08)] backdrop-blur-xl">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
-            The Best & Cheapest SMM Panel
-          </div>
-
-          <h1 className="mx-auto max-w-4xl text-[36px] font-black leading-[1.03] tracking-[-0.052em] text-slate-950 sm:text-5xl lg:text-[60px]">
-
-            Trusted by Thousands of Customers Worldwide.
-
-            <span className="mt-2 block text-[#159aa5]">
-              beautifully managed.
-            </span>
-
-          </h1>
-
-          <p className="mx-auto mt-3 max-w-xl text-[13px] font-medium leading-6 text-slate-500 sm:text-sm">
-            One modern workspace for your social media services, orders,
-            balance and support.
-          </p>
-
-        </section>
-
-        {/* ======================================================
-            LOGIN CARD
-        ====================================================== */}
-
-        <section
-          id="login-card"
-          className="relative z-10 mx-auto mt-1 w-full max-w-[480px] px-4 pb-10 pt-4 sm:px-6"
-        >
-
-          <div className="pointer-events-none absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-violet-400/20 blur-[90px]" />
-
-          <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_rgba(15,116,128,0.12)] backdrop-blur-2xl sm:p-8">
-
-            <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-400 to-transparent" />
-
-            {/* LOGIN HEADER */}
-
-            <div className="mb-5 text-center">
-
-              <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-[#0f7480] ring-1 ring-violet-100 shadow-[0_8px_25px_rgba(124,58,237,0.10)]">
-                <ShieldCheck className="h-5 w-5" strokeWidth={2.3} />
-              </div>
-
-              <h2 className="text-[28px] font-black tracking-[-0.045em] text-slate-950">
-                Welcome back
-              </h2>
-
-              <p className="mx-auto mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">
-                One powerful workspace for orders, services, balance and support.
+              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-white/85 sm:text-lg">
+                One premium workspace for social growth — affordable services, lightning-fast delivery,
+                clean ordering and support built for creators, businesses and agencies.
               </p>
 
-            </div>
-
-            {/* GOOGLE */}
-
-            <div className="relative h-[58px] w-full">
-
-              <button
-                type="button"
-                onClick={
-                  handleGoogleLogin
-                }
-                disabled={busy}
-                className="pointer-events-none absolute inset-0 z-0 flex h-[58px] w-full items-center justify-center gap-3 rounded-2xl border border-[#159aa5]/25 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(21,154,165,0.10)] transition disabled:opacity-50"
-              >
-
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-100 bg-white text-xl font-black shadow-sm">
-
-                  <span className="bg-gradient-to-r from-blue-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
-                    G
-                  </span>
-
-                </span>
-
-                <span>
-                  {googleLoading
-                    ? "Signing in with Google..."
-                    : "Continue with Google"}
-                </span>
-
-              </button>
-
-              <div
-                ref={googleButtonRef}
-                onClick={() => {
-                  if (!googleLoading) {
-                    setGoogleLoading(
-                      true
-                    );
-                  }
-                }}
-                className="absolute inset-0 z-10 flex h-[58px] w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
-              />
-
-            </div>
-
-            {/* DIVIDER */}
-
-            <div className="my-5 flex items-center gap-3">
-
-              <div className="h-px flex-1 bg-slate-200" />
-
-              <span className="whitespace-nowrap text-[9px] font-black tracking-[0.18em] text-slate-400">
-                OR CONTINUE WITH EMAIL
-              </span>
-
-              <div className="h-px flex-1 bg-slate-200" />
-
-            </div>
-
-            {/* ERROR */}
-
-            {error && (
-              <div className="mb-4 rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-xs font-bold leading-5 text-red-600 shadow-sm">
-                {error}
-              </div>
-            )}
-
-            {/* EMAIL FORM */}
-
-            <form
-              onSubmit={handleLogin}
-            >
-
-              {/* EMAIL */}
-
-              <div className="mb-4">
-
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-xs font-bold text-slate-700"
-                >
-                  Email address
-                </label>
-
-                <div className="relative">
-
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) =>
-                      setEmail(
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter your email address"
-                    autoComplete="email"
-                    inputMode="email"
-                    required
-                    disabled={busy}
-                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
-                  />
-
-                </div>
-
-              </div>
-
-              {/* PASSWORD */}
-
-              <div className="mb-4">
-
-                <div className="mb-2 flex items-center justify-between">
-
-                  <label
-                    htmlFor="login-password"
-                    className="text-xs font-bold text-slate-700"
-                  >
-                    Password
-                  </label>
-
-                  <button
-                    type="button"
-                    className="text-xs font-bold text-[#0f7480] transition hover:text-[#159aa5]"
-                  >
-                    Forgot password?
-                  </button>
-
-                </div>
-
-                <div className="relative">
-
-                  <input
-                    id="login-password" name="dreamsmm_login_secret"
-                    type={
-                      showPassword
-                        ? "text"
-                        : "password"
-                    }
-                    value={password}
-                    onChange={(e) =>
-                      setPassword(
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter your password"
-                    autoComplete="new-password"
-                    required
-                    disabled={busy}
-                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword(
-                        (value) =>
-                          !value
-                      )
-                    }
-                    disabled={busy}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                     className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-400 transition hover:bg-[#159aa5]/10 hover:text-[#0f7480]"
-                  >
-                    {showPassword
-                      ? "Hide"
-                      : "Show"}
-                  </button>
-
-                </div>
-
-              </div>
-
-
-              <button
-                type="submit"
-                disabled={busy}
-                className="group relative h-[56px] w-full overflow-hidden rounded-[18px] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(21,154,165,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-
-                <span className="relative flex items-center justify-center gap-2">
-  {loading ? "Signing in..." : (
-    <>
-      <span>Sign in</span>
-      <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
-        &#8594;
-      </span>
-    </>
-  )}
-</span>
-
-              </button>
-
-            </form>
-
-            {/* TRUST ROW */}
-
-            <div className="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold uppercase tracking-wide text-slate-400">
-              <span className="inline-flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Secure sign-in
-              </span>
-              <span className="h-3 w-px bg-slate-200" />
-              <span>DreamSMM</span>
-              <span className="h-3 w-px bg-slate-200" />
-              <span>Fast access</span>
-            </div>
-
-            {/* REGISTER */}
-
-            <div className="mt-4 border-t border-slate-200/70 pt-5 text-center">
-
-              <p className="text-sm font-medium text-slate-500">
-
-                Don&apos;t have an account?
-
+              <div className="mt-9 flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={() =>
-                    router.push(
-                      "/register"
-                    )
+                    document.getElementById("login-card")?.scrollIntoView({
+                      behavior: "smooth",
+                    })
                   }
-                  className="ml-1 font-black text-[#0f7480] transition hover:text-[#159aa5]"
+                  className="dream-shimmer rounded-2xl bg-gradient-to-r from-yellow-200 via-yellow-300 to-amber-300 px-7 py-4 text-sm font-black text-slate-950 shadow-[0_18px_45px_rgba(0,0,0,.20)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,.25)]"
                 >
-                  Create your account
+                  Get Started →
                 </button>
+                <a
+                  href="#features"
+                  className="rounded-2xl border border-white/35 bg-white/10 px-7 py-4 text-sm font-black text-white backdrop-blur-md transition hover:bg-white/20"
+                >
+                  Explore Services
+                </a>
+              </div>
 
-              </p>
+              <div className="mt-8 flex flex-wrap gap-6 text-xs font-bold text-white/75">
+                <span>✓ Fast delivery</span>
+                <span>✓ Affordable prices</span>
+                <span>✓ 24/7 support</span>
+              </div>
 
+              <div className="pointer-events-none absolute -left-2 top-[7%] hidden text-4xl sm:block animate-pulse">
+                ✨
+              </div>
             </div>
 
+            {/* LOGIN CARD */}
+            <div id="login-card" className="relative scroll-mt-6">
+              <div className="absolute -inset-5 rounded-[42px] bg-white/10 blur-2xl" />
+
+              <div className="relative overflow-hidden rounded-[34px] border border-white/80 bg-white/[.97] p-6 shadow-[0_35px_100px_rgba(0,55,65,.28)] ring-1 ring-white/50 sm:p-9">
+                <div className="absolute left-1/2 top-0 h-1 w-1/2 -translate-x-1/2 rounded-full bg-[#159aa5]" />
+
+                <div className="mb-6 text-center">
+                  <div className="dream-glow mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e8ffff] to-[#c9f2f1] text-xl font-black text-[#0b8994] shadow-[inset_0_2px_8px_rgba(255,255,255,.9),0_10px_25px_rgba(21,154,165,.12)] ring-1 ring-cyan-100">
+                    D
+                  </div>
+                  <h2 className="text-[30px] font-black tracking-[-.04em] text-slate-950">
+                    Welcome back
+                  </h2>
+                  <p className="mt-2 text-sm font-medium text-slate-500">
+                    Sign in to your DreamSMM account
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-600">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleLogin}>
+                  <label htmlFor="email" className="mb-2 block text-xs font-black text-slate-700">
+                    Email
+                  </label>
+                  <div className="relative mb-4">
+                    <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email address"
+                      autoComplete="email"
+                      required
+                      disabled={busy}
+                      className="h-14 w-full rounded-2xl border border-slate-200/80 bg-slate-50/90 pl-11 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
+                    />
+                  </div>
+
+                  <div className="mb-2 flex items-center justify-between">
+                    <label htmlFor="login-password" className="text-xs font-black text-slate-700">
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setError("Password recovery is not connected yet.")}
+                      className="text-xs font-black text-[#159aa5] hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
+                  <div className="relative mb-5">
+                    <LockKeyhole className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      id="login-password"
+                      name="dreamsmm_login_secret"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      required
+                      disabled={busy}
+                      className="h-14 w-full rounded-2xl border border-slate-200/80 bg-slate-50/90 pl-11 pr-16 text-sm font-semibold text-slate-800 outline-none transition focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      disabled={busy}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-400 transition hover:bg-[#e7f8f8] hover:text-[#159aa5]"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="dream-shimmer group h-14 w-full rounded-2xl bg-gradient-to-r from-[#087f8a] via-[#159aa5] to-[#35b7b2] text-sm font-black text-white shadow-[0_16px_35px_rgba(21,154,165,.28)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_45px_rgba(21,154,165,.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      {loading ? "Signing in..." : "Sign in"}
+                      {!loading && <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />}
+                    </span>
+                  </button>
+                </form>
+
+                <div className="my-5 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-slate-200" />
+                  <span className="text-[9px] font-black tracking-[.18em] text-slate-400">OR</span>
+                  <div className="h-px flex-1 bg-slate-200" />
+                </div>
+
+                {/* REAL GOOGLE BUTTON — keeps existing working Google flow */}
+                <div className="relative h-[56px] overflow-hidden rounded-2xl">
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={busy}
+                    className="pointer-events-none absolute inset-0 z-0 flex h-full w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700"
+                  >
+                    <span className="text-xl font-black">G</span>
+                    <span>{googleLoading ? "Signing in with Google..." : "Continue with Google"}</span>
+                  </button>
+                  <div
+                    ref={googleButtonRef}
+                    className="absolute inset-0 z-10 overflow-hidden rounded-2xl opacity-[0.02]"
+                    onClick={() => {
+                      if (!googleLoading) setGoogleLoading(true);
+                    }}
+                  />
+                </div>
+
+                <div className="mt-5 border-t border-slate-100 pt-5 text-center text-sm font-medium text-slate-500">
+                  Don&apos;t have an account?
+                  <button
+                    type="button"
+                    onClick={() => router.push("/register")}
+                    className="ml-1 font-black text-[#159aa5] hover:underline"
+                  >
+                    Sign up
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* SECURITY */}
-
-          <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">&#10003;</span>
-
-            Protected by secure authentication
-
-          </div>
-
         </section>
 
+        {/* TRUST STRIP */}
+        <div className="relative z-10 mx-auto -mt-1 max-w-6xl px-5 pb-14 sm:px-8">
+          <div className="grid overflow-hidden rounded-3xl border border-white/80 bg-white/95 shadow-[0_24px_70px_rgba(0,0,0,.14)] ring-1 ring-white sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["⚡", "Instant Delivery", "Blazing Fast"],
+              ["🛡️", "Secure & Safe", "100% Protected"],
+              ["👥", "14M+ Orders", "Worldwide Trust"],
+              ["🎧", "24/7 Support", "Always Here"],
+            ].map(([icon, title, sub]) => (
+              <div key={title} className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 last:border-b-0 sm:border-r sm:last:border-r-0 lg:border-b-0">
+                <div className="text-2xl">{icon}</div>
+                <div>
+                  <div className="text-sm font-black text-slate-900">{title}</div>
+                  <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">{sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FEATURES */}
+        <section id="features" className="scroll-mt-10 bg-white px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center">
+              <span className="text-xs font-black uppercase tracking-[.2em] text-[#159aa5]">
+                Why DreamSMM
+              </span>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                Reasons to order SMM services from us
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+                Simple tools, clear pricing and fast service for your everyday social media workflow.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ["✨", "Best quality", "Reliable services and a smooth ordering experience."],
+                ["💳", "Many payment methods", "Convenient ways to add funds to your account."],
+                ["₹", "Affordable services", "Competitive pricing across the service catalog."],
+                ["⚡", "Very quick delivery", "Fast order processing keeps your workflow moving."],
+              ].map(([icon, title, description]) => (
+                <div key={title} className="group relative overflow-hidden rounded-[28px] border border-cyan-100 bg-gradient-to-br from-white to-[#effbfb] p-6 shadow-[0_12px_35px_rgba(15,116,128,.06)] transition duration-300 hover:-translate-y-2 hover:border-cyan-200 hover:shadow-[0_22px_50px_rgba(15,116,128,.14)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#159aa5] text-xl shadow-lg shadow-cyan-100">
+                    {icon}
+                  </div>
+                  <h3 className="mt-5 text-base font-black">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section id="how-it-works" className="scroll-mt-10 bg-[#eaf9f9] px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center">
+              <span className="text-xs font-black uppercase tracking-[.2em] text-[#159aa5]">
+                Simple process
+              </span>
+              <h2 className="mt-3 text-3xl font-black sm:text-4xl">How to use our panel</h2>
+            </div>
+
+            <div className="mt-12 grid gap-5 md:grid-cols-4">
+              {[
+                ["01", "Sign up", "Create your account and log in."],
+                ["02", "Deposit funds", "Add funds using a convenient payment option."],
+                ["03", "Pick SMM services", "Choose a service, target link and quantity."],
+                ["04", "Quick results", "Place the order and track its progress."],
+              ].map(([number, title, description]) => (
+                <div key={number} className="rounded-[26px] border border-white bg-white p-6 shadow-[0_14px_35px_rgba(15,116,128,.08)] ring-1 ring-cyan-100 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(15,116,128,.12)]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#159aa5] text-xs font-black text-white">
+                    {number}
+                  </div>
+                  <h3 className="mt-5 font-black">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* REVIEWS */}
+        <section id="reviews" className="scroll-mt-10 bg-white px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center">
+              <span className="text-xs font-black uppercase tracking-[.2em] text-[#159aa5]">
+                Customer stories
+              </span>
+              <h2 className="mt-3 text-3xl font-black sm:text-4xl">Our customers&apos; stories</h2>
+            </div>
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ["Bayram Koc", "Fast service and an easy panel experience."],
+                ["Ben Cho", "Simple ordering and affordable services."],
+                ["Melissa Hendrick", "Everything is available from one place."],
+                ["Kelly Newsom", "Easy to order and track social media services."],
+              ].map(([name, review]) => (
+                <div key={name} className="rounded-[26px] border border-slate-200/80 bg-white p-6 shadow-[0_14px_35px_rgba(15,23,42,.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(15,23,42,.10)]">
+                  <div className="text-yellow-400">★★★★★</div>
+                  <p className="mt-4 text-sm leading-6 text-slate-500">“{review}”</p>
+                  <p className="mt-5 font-black">{name}</p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[.15em] text-slate-400">Customer</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="scroll-mt-10 bg-[#eaf9f9] px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center">
+              <span className="text-xs font-black uppercase tracking-[.2em] text-[#159aa5]">FAQ</span>
+              <h2 className="mt-3 text-3xl font-black sm:text-4xl">Most Popular Questions</h2>
+            </div>
+
+            <div className="mt-10 space-y-3">
+              {[
+                "What is an SMM panel?",
+                "What SMM services do you sell on your panel?",
+                "Are SMM services on your panel safe to buy?",
+                "How is the mass order feature used?",
+                "How is the Drip-feed feature used?",
+                "What does a “mass order” mean?",
+              ].map((question) => (
+                <details key={question} className="group rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-cyan-100">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black">
+                    {question}
+                    <span className="text-xl text-[#159aa5] transition group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 pr-8 text-sm leading-6 text-slate-500">
+                    Open a support ticket if you need more information about this feature or service.
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="bg-[#159aa5] px-5 py-16 text-center text-white">
+          <h2 className="text-3xl font-black sm:text-4xl">Ready to grow?</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/80">
+            Join DreamSMM and manage your social media orders from one simple workspace.
+          </p>
+          <button
+            type="button"
+            onClick={() => document.getElementById("login-card")?.scrollIntoView({ behavior: "smooth" })}
+            className="mt-6 rounded-2xl bg-yellow-300 px-7 py-4 text-sm font-black text-slate-900 shadow-xl transition hover:-translate-y-1 hover:bg-yellow-200"
+          >
+            Get Started →
+          </button>
+        </section>
+
+        {/* FLOATING CONTACT */}
+        <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3">
+          <a
+            href="https://t.me/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#229ED9] text-xl text-white shadow-xl transition hover:-translate-y-1"
+            aria-label="Telegram"
+          >
+            ✈
+          </a>
+          <a
+            href="https://wa.me/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-xl text-white shadow-xl transition hover:-translate-y-1"
+            aria-label="WhatsApp"
+          >
+            ☎
+          </a>
+        </div>
+
+        <footer className="bg-slate-950 px-5 py-10 text-center text-xs text-slate-400">
+          <div className="text-lg font-black text-white">Dream<span className="text-[#159aa5]">SMM</span></div>
+          <p className="mt-2">© 2026 DreamSMM. All rights reserved.</p>
+          <p className="mt-1">Terms · Privacy · Refund · Contact · DMCA</p>
+        </footer>
       </main>
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
