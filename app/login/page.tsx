@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Script from "next/script";
 import {
@@ -128,6 +128,9 @@ export default function Home() {
     if (busy) return;
 
     setError("");
+    showDashboardSplash();
+    setShowLoginSplash(true);
+    setLoading(true);
 
     try {
       const response = await fetch(
@@ -185,6 +188,7 @@ export default function Home() {
     credential: string
   ) {
     setError("");
+    setShowLoginSplash(true);
     setGoogleLoading(true);
 
     try {
@@ -223,10 +227,9 @@ export default function Home() {
         return;
       }
 
-      showDashboardSplash();
-      setLoading(true);
+      setLoading(false);
       await new Promise((resolve) => setTimeout(resolve, 1200));
-      hideDashboardSplash();
+
       router.replace("/dashboard");
       router.refresh();
       return;
@@ -348,6 +351,7 @@ export default function Home() {
 
   function handleGoogleLogin() {
     setError("");
+    showDashboardSplash();
 
     if (!window.google) {
       setError(
@@ -431,474 +435,484 @@ export default function Home() {
         onLoad={initializeGoogle}
       />
 
-      <main className="min-h-screen overflow-hidden bg-gradient-to-br from-[#168da3] via-[#49b5bd] to-[#a8e5d7] text-slate-900">
+      <main className="relative min-h-screen overflow-hidden bg-[#2d93a8] text-slate-900">
 
-  {/* HEADER */}
-  <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 lg:px-10">
-    <a href="/login" className="flex items-center gap-3">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-xl font-black text-[#168da3] shadow-lg">
-        D
-      </div>
-      <div>
-        <div className="text-xl font-black tracking-tight text-white">DreamSMM</div>
-        <div className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/70">
-          Social Media Marketing
+        {/* ======================================================
+            PREMIUM BACKGROUND
+        ====================================================== */}
+
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
+
+          {/* Base ambient gradient */}
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(139,92,246,0.18),transparent_32%),radial-gradient(circle_at_85%_15%,rgba(217,70,239,0.14),transparent_30%),radial-gradient(circle_at_50%_65%,rgba(99,102,241,0.10),transparent_38%),linear-gradient(135deg,#2d93a8_0%,#54b8c1_55%,#8bd3cf_100%)]" />
+
+          {/* Violet glow */}
+
+          <div className="absolute -left-[220px] -top-[180px] h-[620px] w-[620px] rounded-full bg-violet-400/20 blur-[130px]" />
+
+          {/* Pink glow */}
+
+          <div className="absolute -right-[220px] top-[40px] h-[600px] w-[600px] rounded-full bg-fuchsia-400/15 blur-[140px]" />
+
+          {/* Center atmosphere */}
+
+          <div className="absolute left-[35%] top-[25%] h-[500px] w-[500px] rounded-full bg-indigo-300/10 blur-[150px]" />
+
+          {/* Bottom glow */}
+
+          <div className="absolute -bottom-[300px] left-[25%] h-[650px] w-[650px] rounded-full bg-purple-400/15 blur-[150px]" />
+
+          {/* Premium grid */}
+
+          <div
+            className="absolute inset-0 opacity-[0.18]"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px)
+              `,
+              backgroundSize: "70px 70px",
+              maskImage:
+                "linear-gradient(to bottom, black, transparent 85%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, black, transparent 85%)",
+            }}
+          />
+
+          {/* Dot pattern left */}
+
+          <div
+            className="absolute left-0 top-[30%] h-52 w-52 opacity-30"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(124,58,237,0.45) 1px, transparent 1px)",
+              backgroundSize: "12px 12px",
+              maskImage:
+                "radial-gradient(circle, black, transparent 70%)",
+              WebkitMaskImage:
+                "radial-gradient(circle, black, transparent 70%)",
+            }}
+          />
+
+          {/* Dot pattern right */}
+
+          <div
+            className="absolute bottom-[18%] right-0 h-56 w-56 opacity-25"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(217,70,239,0.5) 1px, transparent 1px)",
+              backgroundSize: "13px 13px",
+              maskImage:
+                "radial-gradient(circle, black, transparent 70%)",
+              WebkitMaskImage:
+                "radial-gradient(circle, black, transparent 70%)",
+            }}
+          />
+
+          {/* Floating orbs */}
+
+          <div className="absolute left-[7%] top-[46%] h-16 w-16 rounded-full bg-gradient-to-br from-violet-400/30 to-fuchsia-400/10 shadow-[0_0_50px_rgba(139,92,246,0.25)]" />
+
+          <div className="absolute right-[8%] top-[22%] h-20 w-20 rounded-full bg-gradient-to-br from-fuchsia-400/25 to-violet-400/10 shadow-[0_0_60px_rgba(217,70,239,0.25)]" />
+
+          <div className="absolute bottom-[10%] left-[8%] h-24 w-24 rounded-full bg-gradient-to-br from-indigo-400/15 to-violet-400/10 shadow-[0_0_70px_rgba(99,102,241,0.2)]" />
+
+          {/* Light rings */}
+
+          <div className="absolute -left-32 top-[15%] h-[420px] w-[420px] rounded-full border border-violet-300/15" />
+
+          <div className="absolute -left-44 top-[12%] h-[520px] w-[520px] rounded-full border border-violet-300/10" />
+
+          <div className="absolute -right-32 bottom-[12%] h-[430px] w-[430px] rounded-full border border-fuchsia-300/15" />
+
+          <div className="absolute -right-44 bottom-[8%] h-[530px] w-[530px] rounded-full border border-fuchsia-300/10" />
+
+          {/* Tiny particles */}
+
+          <div className="absolute left-[14%] top-[24%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
+
+          <div className="absolute right-[18%] top-[34%] h-1 w-1 rounded-full bg-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.8)]" />
+
+          <div className="absolute left-[20%] bottom-[24%] h-1 w-1 rounded-full bg-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
+
+          <div className="absolute right-[12%] bottom-[30%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
+
         </div>
-      </div>
-    </a>
 
-    <nav className="hidden items-center gap-8 text-sm font-bold text-white md:flex">
-      <a href="#features" className="transition hover:text-yellow-300">Features</a>
-      <a href="#how" className="transition hover:text-yellow-300">How it works</a>
-      <a href="#reviews" className="transition hover:text-yellow-300">Reviews</a>
-      <a href="#faq" className="transition hover:text-yellow-300">FAQ</a>
-    </nav>
+        {/* ======================================================
+            HEADER
+        ====================================================== */}
 
-    <a
-      href="#login"
-      className="rounded-full bg-white px-5 py-2.5 text-sm font-black text-[#168da3] shadow-lg transition hover:-translate-y-0.5"
-    >
-      Sign in
-    </a>
-  </header>
+        <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-10">
 
-  {/* HERO */}
-  <section className="relative px-5 pb-20 pt-10 lg:px-10 lg:pb-28 lg:pt-16">
-    <div className="pointer-events-none absolute left-[5%] top-20 text-5xl opacity-30">❤️</div>
-    <div className="pointer-events-none absolute right-[8%] top-28 text-5xl opacity-30">🚀</div>
-    <div className="pointer-events-none absolute bottom-16 left-[12%] text-4xl opacity-25">✨</div>
-    <div className="pointer-events-none absolute bottom-20 right-[15%] text-4xl opacity-25">💬</div>
+          <div className="flex items-center gap-3">
 
-    <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.08fr_0.92fr]">
-
-      {/* HERO TEXT */}
-      <div className="max-w-3xl">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-wide text-white backdrop-blur">
-          ✨ Trusted SMM Panel
-        </div>
-
-        <h1 className="text-5xl font-black leading-[0.98] tracking-[-0.04em] text-white sm:text-6xl lg:text-[76px]">
-          The Best &amp; Cheapest
-          <span className="block text-yellow-300">SMM Panel</span>
-          <span className="block">Trusted Worldwide.</span>
-        </h1>
-
-        <p className="mt-7 max-w-xl text-base font-medium leading-7 text-white/85 sm:text-lg">
-          Grow your social media with affordable services, quick delivery
-          and a simple SMM panel built for creators, businesses and agencies.
-        </p>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <a
-            href="#login"
-            className="rounded-2xl bg-yellow-300 px-7 py-4 text-sm font-black text-slate-900 shadow-xl transition hover:-translate-y-1 hover:bg-yellow-200"
-          >
-            Get Started →
-          </a>
-
-          <a
-            href="#features"
-            className="rounded-2xl border border-white/30 bg-white/15 px-7 py-4 text-sm font-black text-white backdrop-blur transition hover:bg-white/25"
-          >
-            Explore Services
-          </a>
-        </div>
-
-        <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-bold text-white/85">
-          <span>✓ Fast delivery</span>
-          <span>✓ Affordable prices</span>
-          <span>✓ 24/7 support</span>
-        </div>
-      </div>
-
-      {/* LOGIN CARD */}
-      <div id="login" className="relative mx-auto w-full max-w-[440px]">
-        <div className="absolute -inset-5 rounded-[3rem] bg-white/20 blur-xl" />
-
-        <div className="relative rounded-[2rem] border border-white/80 bg-white p-7 shadow-[0_35px_90px_rgba(0,70,90,0.28)] sm:p-9">
-
-          <div className="mb-7 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e5f7f5] text-2xl font-black text-[#168da3]">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-fuchsia-500 text-lg font-black text-white shadow-[0_10px_30px_rgba(124,58,237,0.30)]">
               D
+
+              <div className="absolute inset-0 rounded-2xl bg-white/20" />
             </div>
 
-            <h2 className="text-2xl font-black text-slate-900">
-              Welcome back
-            </h2>
+            <div>
 
-            <p className="mt-1 text-sm font-medium text-slate-500">
-              Sign in to your DreamSMM account
-            </p>
+              <div className="text-lg font-black tracking-tight text-slate-950">
+                Dream
+                <span className="bg-gradient-to-r from-[#159aa5] to-[#0f7480] bg-clip-text text-transparent">
+                  SMM
+                </span>
+              </div>
+
+              <div className="text-[8px] font-bold tracking-[0.2em] text-slate-400">
+                SOCIAL MEDIA PANEL
+              </div>
+
+            </div>
+
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <button
+  type="button"
+  onClick={() =>
+    document
+      .getElementById("login-card")
+      ?.scrollIntoView({
+        behavior: "smooth",
+      })
+  }
+  className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#159aa5] to-[#0f7480] px-6 py-3 text-sm font-black text-white shadow-[0_10px_30px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(21,154,165,0.25)]"
+>
+  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+  <span className="relative flex items-center gap-1.5">
+    <span>Sign in</span>
+    <span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+      &#8594;
+    </span>
+  </span>
+</button>
 
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-700">
-                Email
-              </label>
+        </header>
 
-              <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+        {/* ======================================================
+            HERO
+        ====================================================== */}
 
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-medium outline-none transition focus:border-[#2da7b3] focus:bg-white focus:ring-4 focus:ring-[#2da7b3]/10"
-                />
+        <section className="relative z-10 mx-auto max-w-5xl px-4 pb-1 pt-1 text-center sm:px-6">
+
+          <div className="mx-auto mb-5 flex items-center justify-center gap-2">
+
+            <div className="h-px w-10 bg-gradient-to-r from-transparent to-violet-400" />
+
+            <div className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_12px_rgba(139,92,246,0.8)]" />
+
+            <div className="h-px w-10 bg-gradient-to-l from-transparent to-fuchsia-400" />
+
+          </div>
+
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-[#159aa5]/30 bg-white/70 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#0f7480] shadow-[0_8px_25px_rgba(124,58,237,0.08)] backdrop-blur-xl">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+            The Best & Cheapest SMM Panel
+          </div>
+
+          <h1 className="mx-auto max-w-4xl text-[36px] font-black leading-[1.03] tracking-[-0.052em] text-slate-950 sm:text-5xl lg:text-[60px]">
+
+            Trusted by Thousands of Customers Worldwide.
+
+            <span className="mt-2 block text-[#159aa5]">
+              beautifully managed.
+            </span>
+
+          </h1>
+
+          <p className="mx-auto mt-3 max-w-xl text-[13px] font-medium leading-6 text-slate-500 sm:text-sm">
+            One modern workspace for your social media services, orders,
+            balance and support.
+          </p>
+
+        </section>
+
+        {/* ======================================================
+            LOGIN CARD
+        ====================================================== */}
+
+        <section
+          id="login-card"
+          className="relative z-10 mx-auto mt-1 w-full max-w-[480px] px-4 pb-10 pt-4 sm:px-6"
+        >
+
+          <div className="pointer-events-none absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-violet-400/20 blur-[90px]" />
+
+          <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_rgba(15,116,128,0.12)] backdrop-blur-2xl sm:p-8">
+
+            <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-400 to-transparent" />
+
+            {/* LOGIN HEADER */}
+
+            <div className="mb-5 text-center">
+
+              <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-[#0f7480] ring-1 ring-violet-100 shadow-[0_8px_25px_rgba(124,58,237,0.10)]">
+                <ShieldCheck className="h-5 w-5" strokeWidth={2.3} />
               </div>
+
+              <h2 className="text-[28px] font-black tracking-[-0.045em] text-slate-950">
+                Welcome back
+              </h2>
+
+              <p className="mx-auto mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">
+                One powerful workspace for orders, services, balance and support.
+              </p>
+
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-700">
-                Password
-              </label>
+            {/* GOOGLE */}
 
-              <div className="relative">
-                <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <div className="relative h-[58px] w-full">
 
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-12 text-sm font-medium outline-none transition focus:border-[#2da7b3] focus:bg-white focus:ring-4 focus:ring-[#2da7b3]/10"
-                />
+              <button
+                type="button"
+                onClick={
+                  handleGoogleLogin
+                }
+                disabled={busy}
+                className="pointer-events-none absolute inset-0 z-0 flex h-[58px] w-full items-center justify-center gap-3 rounded-2xl border border-[#159aa5]/25 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(21,154,165,0.10)] transition disabled:opacity-50"
+              >
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#168da3]"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-100 bg-white text-xl font-black shadow-sm">
+
+                  <span className="bg-gradient-to-r from-blue-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
+                    G
+                  </span>
+
+                </span>
+
+                <span>
+                  {googleLoading
+                    ? "Signing in with Google..."
+                    : "Continue with Google"}
+                </span>
+
+              </button>
+
+              <div
+                ref={googleButtonRef}
+                onClick={() => {
+                  if (!googleLoading) {
+                    setGoogleLoading(
+                      true
+                    );
+                  }
+                }}
+                className="absolute inset-0 z-10 flex h-[58px] w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
+              />
+
             </div>
+
+            {/* DIVIDER */}
+
+            <div className="my-5 flex items-center gap-3">
+
+              <div className="h-px flex-1 bg-slate-200" />
+
+              <span className="whitespace-nowrap text-[9px] font-black tracking-[0.18em] text-slate-400">
+                OR CONTINUE WITH EMAIL
+              </span>
+
+              <div className="h-px flex-1 bg-slate-200" />
+
+            </div>
+
+            {/* ERROR */}
 
             {error && (
-              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+              <div className="mb-4 rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-xs font-bold leading-5 text-red-600 shadow-sm">
                 {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={busy}
-              className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#168da3] text-sm font-black text-white shadow-lg shadow-[#168da3]/25 transition hover:-translate-y-0.5 hover:bg-[#117d91] disabled:cursor-not-allowed disabled:opacity-60"
+            {/* EMAIL FORM */}
+
+            <form
+              onSubmit={handleLogin}
             >
-              {busy ? "Signing in..." : "Sign in"}
-              {!busy && <ArrowRight className="h-5 w-5" />}
-            </button>
-          </form>
 
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs font-bold text-slate-400">OR</span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
+              {/* EMAIL */}
 
-          <div
-            ref={googleButtonRef}
-            className="flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl"
-          />
+              <div className="mb-4">
 
-          <p className="mt-6 text-center text-sm font-medium text-slate-500">
-            Don't have an account?{" "}
-            <a
-              href="/register"
-              className="font-black text-[#168da3] hover:underline"
-            >
-              Create account
-            </a>
-          </p>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-xs font-bold text-slate-700"
+                >
+                  Email address
+                </label>
 
-        </div>
-      </div>
-    </div>
-  </section>
+                <div className="relative">
 
-  {/* FEATURES */}
-  <section id="features" className="bg-white px-5 py-20 lg:px-10">
-    <div className="mx-auto max-w-7xl">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) =>
+                      setEmail(
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter your email address"
+                    autoComplete="email"
+                    inputMode="email"
+                    required
+                    disabled={busy}
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
+                  />
 
-      <div className="mx-auto max-w-2xl text-center">
-        <span className="text-xs font-black uppercase tracking-[0.25em] text-[#168da3]">
-          Why choose us
-        </span>
+                </div>
 
-        <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-          Reasons to order SMM services from us
-        </h2>
+              </div>
 
-        <p className="mt-4 text-slate-500">
-          Everything you need for simple and effective social media growth.
-        </p>
-      </div>
+              {/* PASSWORD */}
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["🏆", "Best quality", "Quality-focused services designed for reliable delivery."],
-          ["💳", "Many payment methods", "Choose a payment option that works for you."],
-          ["💰", "Affordable services", "Competitive prices for creators and businesses."],
-          ["⚡", "Very quick delivery", "Orders can start quickly after placing them."],
-        ].map(([icon, title, text]) => (
-          <div
-            key={title}
-            className="rounded-3xl border border-slate-100 bg-slate-50 p-7 transition hover:-translate-y-1 hover:bg-white hover:shadow-xl"
-          >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-3xl shadow-sm">
-              {icon}
-            </div>
+              <div className="mb-4">
 
-            <h3 className="mt-6 text-lg font-black text-slate-900">
-              {title}
-            </h3>
+                <div className="mb-2 flex items-center justify-between">
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              {text}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+                  <label
+                    htmlFor="login-password"
+                    className="text-xs font-bold text-slate-700"
+                  >
+                    Password
+                  </label>
 
-  {/* HOW TO USE */}
-  <section id="how" className="bg-[#f3fbfa] px-5 py-20 lg:px-10">
-    <div className="mx-auto max-w-6xl">
+                  <button
+                    type="button"
+                    className="text-xs font-bold text-[#0f7480] transition hover:text-[#159aa5]"
+                  >
+                    Forgot password?
+                  </button>
 
-      <div className="text-center">
-        <span className="text-xs font-black uppercase tracking-[0.25em] text-[#168da3]">
-          Simple process
-        </span>
+                </div>
 
-        <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">
-          How to use our panel
-        </h2>
-      </div>
+                <div className="relative">
 
-      <div className="mt-12 grid gap-5 md:grid-cols-4">
-        {[
-          ["01", "Sign up", "Create your DreamSMM account."],
-          ["02", "Deposit funds", "Add funds using your preferred payment method."],
-          ["03", "Pick SMM services", "Choose a service, add your link and quantity."],
-          ["04", "Quick results", "Place your order and track its progress."],
-        ].map(([number, title, text]) => (
-          <div
-            key={number}
-            className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e5f7f5] text-sm font-black text-[#168da3]">
-              {number}
-            </div>
+                  <input
+                    id="login-password" name="dreamsmm_login_secret"
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={password}
+                    onChange={(e) =>
+                      setPassword(
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                    required
+                    disabled={busy}
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
+                  />
 
-            <h3 className="mt-5 text-lg font-black text-slate-900">
-              {title}
-            </h3>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword(
+                        (value) =>
+                          !value
+                      )
+                    }
+                    disabled={busy}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                     className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-400 transition hover:bg-[#159aa5]/10 hover:text-[#0f7480]"
+                  >
+                    {showPassword
+                      ? "Hide"
+                      : "Show"}
+                  </button>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              {text}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+                </div>
 
-  {/* CUSTOMER STORIES */}
-  <section id="reviews" className="bg-white px-5 py-20 lg:px-10">
-    <div className="mx-auto max-w-7xl">
+              </div>
 
-      <div className="text-center">
-        <span className="text-xs font-black uppercase tracking-[0.25em] text-[#168da3]">
-          Customer stories
-        </span>
 
-        <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">
-          Our customers' stories
-        </h2>
-      </div>
+              <button
+                type="submit"
+                disabled={busy}
+                className="group relative h-[56px] w-full overflow-hidden rounded-[18px] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(21,154,165,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["Bayram Koc", "Great panel with fast service and an easy ordering experience."],
-          ["Ben Cho", "Simple interface, affordable services and quick delivery."],
-          ["Melissa Hendrick", "Very smooth experience from deposit to delivery."],
-          ["Kelly Newsom", "Easy to use and plenty of services to choose from."],
-        ].map(([name, text]) => (
-          <div
-            key={name}
-            className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
-          >
-            <div className="text-lg tracking-widest text-yellow-400">
-              ★★★★★
-            </div>
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
-            <p className="mt-5 text-sm leading-6 text-slate-600">
-              “{text}”
-            </p>
+                <span className="relative flex items-center justify-center gap-2">
+  {loading ? "Signing in..." : (
+    <>
+      <span>Sign in</span>
+      <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
+        &#8594;
+      </span>
+    </>
+  )}
+</span>
 
-            <div className="mt-6 font-black text-slate-900">
-              {name}
-            </div>
+              </button>
 
-            <div className="mt-1 text-xs font-medium text-slate-400">
-              Customer
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+            </form>
 
-  {/* FAQ */}
-  <section id="faq" className="bg-slate-50 px-5 py-20 lg:px-10">
-    <div className="mx-auto max-w-4xl">
+            {/* TRUST ROW */}
 
-      <div className="text-center">
-        <span className="text-xs font-black uppercase tracking-[0.25em] text-[#168da3]">
-          FAQ
-        </span>
-
-        <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">
-          Most Popular Questions
-        </h2>
-      </div>
-
-      <div className="mt-10 space-y-3">
-        {[
-          "What is an SMM panel?",
-          "What SMM services do you sell on your panel?",
-          "Are SMM services on your panel safe to buy?",
-          "How is the mass order feature used?",
-          "How is the Drip-feed feature used?",
-          "What does a “mass order” mean?",
-        ].map((question) => (
-          <details
-            key={question}
-            className="group rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-sm"
-          >
-            <summary className="cursor-pointer list-none font-bold text-slate-800">
-              <span className="flex items-center justify-between gap-5">
-                {question}
-                <span className="text-2xl font-light text-[#168da3] transition group-open:rotate-45">
-                  +
-                </span>
+            <div className="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Secure sign-in
               </span>
-            </summary>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>DreamSMM</span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>Fast access</span>
+            </div>
 
-            <p className="mt-4 border-t border-slate-100 pt-4 text-sm leading-6 text-slate-500">
-              Contact our support team for complete information about this
-              feature, service or ordering option.
-            </p>
-          </details>
-        ))}
-      </div>
-    </div>
-  </section>
+            {/* REGISTER */}
 
-  {/* CTA */}
-  <section className="bg-white px-5 py-20 lg:px-10">
-    <div className="mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#168da3] to-[#52bdbd] px-7 py-12 text-center shadow-2xl sm:px-12">
-      <div className="text-4xl">🚀</div>
+            <div className="mt-4 border-t border-slate-200/70 pt-5 text-center">
 
-      <h2 className="mt-4 text-3xl font-black text-white sm:text-4xl">
-        Ready to grow your social media?
-      </h2>
+              <p className="text-sm font-medium text-slate-500">
 
-      <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-base">
-        Join DreamSMM and start ordering your social media services today.
-      </p>
+                Don&apos;t have an account?
 
-      <a
-        href="#login"
-        className="mt-7 inline-flex rounded-2xl bg-yellow-300 px-7 py-4 text-sm font-black text-slate-900 shadow-lg transition hover:-translate-y-1 hover:bg-yellow-200"
-      >
-        Get Started Now →
-      </a>
-    </div>
-  </section>
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      "/register"
+                    )
+                  }
+                  className="ml-1 font-black text-[#0f7480] transition hover:text-[#159aa5]"
+                >
+                  Create your account
+                </button>
 
-  {/* FOOTER */}
-  <footer className="bg-[#084f5d] px-5 py-12 text-white lg:px-10">
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between">
+              </p>
 
-      <div>
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white font-black text-[#168da3]">
-            D
+            </div>
+
           </div>
-          <div className="text-xl font-black">DreamSMM</div>
-        </div>
 
-        <p className="mt-3 max-w-md text-sm leading-6 text-white/60">
-          Your social growth, beautifully managed.
-        </p>
-      </div>
+          {/* SECURITY */}
 
-      <div className="text-sm text-white/60 md:text-right">
-        <p>© {new Date().getFullYear()} DreamSMM. All rights reserved.</p>
-        <p className="mt-1">Secure payments • DMCA</p>
-      </div>
-    </div>
-  </footer>
+          <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
 
-  {/* FLOATING CONTACT BUTTONS */}
-  <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3">
-    <a
-      href="#"
-      aria-label="Telegram"
-      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#229ed9] text-xl text-white shadow-xl transition hover:scale-110"
-    >
-      ✈
-    </a>
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">&#10003;</span>
 
-    <a
-      href="#"
-      aria-label="WhatsApp"
-      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25d366] text-xl text-white shadow-xl transition hover:scale-110"
-    >
-      ☎
-    </a>
-  </div>
+            Protected by secure authentication
 
-</main>
+          </div>
+
+        </section>
+
+      </main>
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
