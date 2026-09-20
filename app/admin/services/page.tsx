@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -874,7 +874,7 @@ useEffect(() => {
           </div>
         )}
 
-        <section className="mb-6 rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-blue-50 p-5 shadow-sm">
+        <section className="mb-6 rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50 to-blue-50 p-5 shadow-sm">
           <div className="mb-3">
             <h3 className="text-lg font-semibold">Import from MicoSMM</h3>
             <p className="mt-0.5 text-xs text-slate-500">
@@ -908,7 +908,7 @@ useEffect(() => {
               type="button"
               onClick={fetchProviderService}
               disabled={importing}
-              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-violet-500 disabled:opacity-50"
+              className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-teal-500 disabled:opacity-50"
             >
               {importing ? "Fetching..." : "Fetch Service"}
             </button>
@@ -957,7 +957,7 @@ useEffect(() => {
                 </div>
                 <div className="rounded-lg bg-gray-100 p-3">
                   <p className="text-[10px] text-slate-500">Your Markup</p>
-                  <p className="mt-1 text-sm font-semibold text-violet-700">
+                  <p className="mt-1 text-sm font-semibold text-teal-700">
                     {providerMarkup || "0"}%
                   </p>
                 </div>
@@ -989,7 +989,7 @@ useEffect(() => {
         </section>
 
 
-        <section className="mb-6 rounded-2xl border border-violet-100 bg-violet-50/70 p-5 shadow-sm">
+        <section className="mb-6 rounded-2xl border border-teal-100 bg-teal-50/70 p-5 shadow-sm">
           <div className="mb-3">
             <h3 className="text-lg font-semibold">
               Import from SMMGen
@@ -1027,7 +1027,7 @@ useEffect(() => {
               type="button"
               onClick={fetchSmmgenService}
               disabled={smmgenImporting}
-              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-violet-500 disabled:opacity-50"
+              className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-teal-500 disabled:opacity-50"
             >
               {smmgenImporting ? "Fetching..." : "Fetch Service"}
             </button>
@@ -1062,7 +1062,7 @@ useEffect(() => {
                   type="button"
                   onClick={importSmmgenService}
                   disabled={smmgenImporting}
-                  className="rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-slate-900 transition hover:bg-violet-500 disabled:opacity-50"
+                  className="rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-bold text-slate-900 transition hover:bg-teal-500 disabled:opacity-50"
                 >
                   {smmgenImporting ? "Importing..." : "Add Service"}
                 </button>
@@ -1082,7 +1082,7 @@ useEffect(() => {
                   <p className="text-[10px] text-slate-500">
                     Your Markup
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-violet-700">
+                  <p className="mt-1 text-sm font-semibold text-teal-700">
                     {smmgenMarkup || "0"}%
                   </p>
                 </div>
@@ -1205,7 +1205,7 @@ useEffect(() => {
                   <p className="text-[10px] text-slate-500">
                     Your Markup
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-violet-700">
+                  <p className="mt-1 text-sm font-semibold text-teal-700">
                     {mkapiMarkup || "0"}%
                   </p>
                 </div>
@@ -1350,7 +1350,7 @@ useEffect(() => {
                   <p className="text-[10px] text-slate-500">
                     Your Markup
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-violet-700">
+                  <p className="mt-1 text-sm font-semibold text-teal-700">
                     {vipsmmMarkup || "0"}%
                   </p>
                 </div>
@@ -1727,7 +1727,7 @@ useEffect(() => {
                           </span>
 
                           {service.refill && (
-                            <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400">
+                            <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-400">
                               Refill
                             </span>
                           )}
@@ -1837,7 +1837,7 @@ useEffect(() => {
                           </span>
 
                           {service.refill && (
-                            <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400">
+                            <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-400">
                               Refill
                             </span>
                           )}
@@ -1918,6 +1918,9 @@ useEffect(() => {
     </main>
   );
 }
+
+
+
 
 
 

@@ -39,7 +39,7 @@ export default function Modal({
             onClick={onClose}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-white/[0.06] hover:text-white"
           >
-            ×
+            Ã—
           </button>
         </div>
 
@@ -50,3 +50,5 @@ export default function Modal({
     </div>
   );
 }
+
+

@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSmmGenService } from "@/lib/providers/smmgen";
 
@@ -101,3 +101,6 @@ export async function GET(request: Request) {
     );
   }
 }
+
+
+

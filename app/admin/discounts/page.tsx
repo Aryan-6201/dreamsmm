@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -203,23 +203,23 @@ export default function DiscountsPage() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/50 text-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/50 text-slate-900">
 
       {/* TOP BAR */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-lg font-black text-white shadow-lg shadow-violet-200"
+              className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-lg font-black text-white shadow-lg shadow-teal-200"
             >
               D
             </Link>
 
             <div>
               <p className="text-lg font-black tracking-tight">
-                Dream<span className="text-violet-600">SMM</span>
+                Dream<span className="text-teal-600">SMM</span>
               </p>
               <p className="text-[10px] font-bold uppercase tracking-[.15em] text-slate-400">
                 Admin Console
@@ -229,7 +229,7 @@ export default function DiscountsPage() {
 
           <Link
             href="/admin"
-            className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-black text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+            className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-black text-slate-600 transition hover:bg-teal-50 hover:text-teal-700"
           >
             ← Dashboard
           </Link>
@@ -239,13 +239,13 @@ export default function DiscountsPage() {
       <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
 
         {/* HERO */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-violet-600 to-indigo-700 p-6 text-white shadow-xl shadow-violet-200/70 sm:p-8">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-fuchsia-400/20 blur-3xl" />
-          <div className="absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-indigo-300/20 blur-3xl" />
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-600 to-cyan-700 p-6 text-white shadow-xl shadow-teal-200/70 sm:p-8">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-teal-400/20 blur-xl" />
+          <div className="absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-cyan-300/20 blur-xl" />
 
           <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-violet-100">
+              <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-teal-100">
                 Pricing Control
               </span>
 
@@ -253,14 +253,14 @@ export default function DiscountsPage() {
                 User Service Discounts
               </h1>
 
-              <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-violet-100">
+              <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-teal-100">
                 Give individual customers a special price on specific services
                 without changing the price for everyone else.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-md">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-200">
+            <div className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-sm">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-teal-200">
                 Active discounts
               </p>
               <p className="mt-1 text-2xl font-black">
@@ -274,7 +274,7 @@ export default function DiscountsPage() {
         <section className="mt-7 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
 
           <div className="flex items-start gap-4">
-            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-violet-50 text-xl text-violet-700 ring-1 ring-violet-100">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-teal-50 text-xl text-teal-700 ring-1 ring-teal-100">
               %
             </div>
 
@@ -301,7 +301,7 @@ export default function DiscountsPage() {
                 <select
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 >
                   <option value="">Select customer</option>
 
@@ -336,7 +336,7 @@ export default function DiscountsPage() {
                       value={serviceSearch}
                       onChange={(e) => setServiceSearch(e.target.value)}
                       placeholder="Search service by name, ID or platform..."
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                     />
                   </div>
 
@@ -344,7 +344,7 @@ export default function DiscountsPage() {
                     value={serviceId}
                     onChange={(e) => setServiceId(e.target.value)}
                     
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800 outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   >
                     <option value="">Select service</option>
 
@@ -373,7 +373,7 @@ export default function DiscountsPage() {
                     onClick={() => setType("PERCENTAGE")}
                     className={`rounded-lg px-4 py-2.5 text-sm font-black transition ${
                       type === "PERCENTAGE"
-                        ? "bg-white text-violet-700 shadow-sm"
+                        ? "bg-white text-teal-700 shadow-sm"
                         : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
@@ -385,7 +385,7 @@ export default function DiscountsPage() {
                     onClick={() => setType("FIXED")}
                     className={`rounded-lg px-4 py-2.5 text-sm font-black transition ${
                       type === "FIXED"
-                        ? "bg-white text-violet-700 shadow-sm"
+                        ? "bg-white text-teal-700 shadow-sm"
                         : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
@@ -401,7 +401,7 @@ export default function DiscountsPage() {
                 </label>
 
                 <div className="relative mt-2">
-                  <span className="absolute inset-y-0 left-4 grid place-items-center text-sm font-black text-violet-600">
+                  <span className="absolute inset-y-0 left-4 grid place-items-center text-sm font-black text-teal-600">
                     {type === "PERCENTAGE" ? "%" : "₹"}
                   </span>
 
@@ -413,7 +413,7 @@ export default function DiscountsPage() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder={type === "PERCENTAGE" ? "10" : "5"}
-                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm font-bold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm font-bold outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function DiscountsPage() {
                   type="datetime-local"
                   value={expiresAt}
                   onChange={(e) => setExpiresAt(e.target.value)}
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 />
               </div>
             </div>
@@ -437,7 +437,7 @@ export default function DiscountsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-7 text-sm font-black text-white shadow-lg shadow-teal-200 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saving ? "Saving..." : "Save Discount"}
               </button>
@@ -458,7 +458,7 @@ export default function DiscountsPage() {
             </div>
 
             {message && (
-              <div className="mt-5 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-700">
+              <div className="mt-5 rounded-xl border border-teal-100 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-700">
                 {message}
               </div>
             )}
@@ -480,7 +480,7 @@ export default function DiscountsPage() {
 
             <button
               onClick={loadData}
-              className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-black text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+              className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-black text-slate-600 transition hover:bg-teal-50 hover:text-teal-700"
             >
               ↻ Refresh
             </button>
@@ -492,7 +492,7 @@ export default function DiscountsPage() {
             </div>
           ) : discounts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-2xl text-violet-600">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-2xl text-teal-600">
                 %
               </div>
               <h3 className="mt-4 text-sm font-black text-slate-900">
@@ -520,7 +520,7 @@ export default function DiscountsPage() {
                   {discounts.map((discount) => (
                     <tr
                       key={discount.id}
-                      className="border-b border-slate-100 last:border-0 transition hover:bg-violet-50/30"
+                      className="border-b border-slate-100 last:border-0 transition hover:bg-teal-50/30"
                     >
                       <td className="px-5 py-5">
                         <div className="font-bold text-slate-900">
@@ -541,7 +541,7 @@ export default function DiscountsPage() {
                       </td>
 
                       <td className="px-5 py-5">
-                        <span className="inline-flex rounded-xl bg-violet-50 px-3 py-2 text-sm font-black text-violet-700 ring-1 ring-violet-100">
+                        <span className="inline-flex rounded-xl bg-teal-50 px-3 py-2 text-sm font-black text-teal-700 ring-1 ring-teal-100">
                           {discount.type === "PERCENTAGE"
                             ? `${discount.value}% OFF`
                             : `₹${discount.value} OFF`}
@@ -570,7 +570,7 @@ export default function DiscountsPage() {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => toggleDiscount(discount)}
-                            className="rounded-lg bg-violet-50 px-3 py-2 text-[11px] font-black text-violet-700 transition hover:bg-violet-100"
+                            className="rounded-lg bg-teal-50 px-3 py-2 text-[11px] font-black text-teal-700 transition hover:bg-teal-100"
                           >
                             {discount.enabled ? "Disable" : "Enable"}
                           </button>
@@ -595,6 +595,9 @@ export default function DiscountsPage() {
     </main>
   );
 }
+
+
+
 
 
 

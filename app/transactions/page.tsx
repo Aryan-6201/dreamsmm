@@ -109,7 +109,7 @@ export default function WalletPage() {
         <div className="mx-auto max-w-6xl">
           <section className="relative overflow-hidden rounded-[30px] border border-white/[0.07] bg-gradient-to-br from-emerald-400/[0.10] via-white/[0.025] to-transparent p-6 sm:p-8">
             <div className="absolute -right-20 -top-28 h-72 w-72 rounded-full bg-emerald-400/[0.08] blur-[100px]" />
-            <div className="absolute -bottom-28 left-20 h-56 w-56 rounded-full bg-violet-500/[0.06] blur-[90px]" />
+            <div className="absolute -bottom-28 left-20 h-56 w-56 rounded-full bg-teal-500/[0.06] blur-[90px]" />
 
             <div className="relative">
               <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-emerald-300/60">
@@ -122,7 +122,7 @@ export default function WalletPage() {
                     Available balance
                   </p>
                   <h1 className="mt-1 text-4xl font-black tracking-[-0.05em] text-white">
-                    ₹{balance}
+                    â‚¹{balance}
                   </h1>
                   <p className="mt-2 text-[9px] text-gray-600">
                     Your wallet is updated after approved deposits and completed
@@ -131,21 +131,21 @@ export default function WalletPage() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <Summary label="Total spent" value={`₹${totalSpent}`} />
+                  <Summary label="Total spent" value={`â‚¹${totalSpent}`} />
                   <Summary
                     label="Page deposits"
-                    value={`₹${summary.deposits.toFixed(2)}`}
+                    value={`â‚¹${summary.deposits.toFixed(2)}`}
                   />
                   <Summary
                     label="Page refunds"
-                    value={`₹${summary.refunds.toFixed(2)}`}
+                    value={`â‚¹${summary.refunds.toFixed(2)}`}
                   />
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="mt-5 rounded-[24px] border border-white/[0.07] bg-white/[0.025] p-3 backdrop-blur-xl">
+          <section className="mt-5 rounded-[24px] border border-white/[0.07] bg-white/[0.025] p-3 backdrop-blur-sm">
             <div className="flex gap-2 overflow-x-auto pb-1">
               {filters.map(([value, label]) => (
                 <button
@@ -198,7 +198,7 @@ export default function WalletPage() {
                 onClick={() => setPage((value) => value - 1)}
                 className="rounded-xl border border-white/[0.06] px-4 py-2 text-[8px] font-bold text-gray-500 disabled:opacity-25"
               >
-                ← Previous
+                â† Previous
               </button>
 
               <span className="text-[8px] text-gray-600">
@@ -211,7 +211,7 @@ export default function WalletPage() {
                 onClick={() => setPage((value) => value + 1)}
                 className="rounded-xl border border-white/[0.06] px-4 py-2 text-[8px] font-bold text-gray-500 disabled:opacity-25"
               >
-                Next →
+                Next â†’
               </button>
             </div>
           )}
@@ -228,7 +228,7 @@ function TransactionCard({ transaction }: { transaction: Transaction }) {
 
   const styles: Record<string, string> = {
     DEPOSIT: "border-emerald-400/15 bg-emerald-400/[0.06] text-emerald-300",
-    ORDER: "border-violet-400/15 bg-violet-400/[0.06] text-violet-300",
+    ORDER: "border-teal-400/15 bg-teal-400/[0.06] text-teal-300",
     REFUND: "border-cyan-400/15 bg-cyan-400/[0.06] text-cyan-300",
     BONUS: "border-amber-400/15 bg-amber-400/[0.06] text-amber-300",
     ADJUSTMENT: "border-blue-400/15 bg-blue-400/[0.06] text-blue-300",
@@ -239,7 +239,7 @@ function TransactionCard({ transaction }: { transaction: Transaction }) {
     <article className="group relative overflow-hidden rounded-[24px] border border-white/[0.07] bg-white/[0.025] p-5 transition hover:border-white/[0.12] hover:bg-white/[0.035]">
       <div
         className={`absolute inset-y-0 left-0 w-[2px] ${
-          positive ? "bg-emerald-400/50" : "bg-violet-400/40"
+          positive ? "bg-emerald-400/50" : "bg-teal-400/40"
         }`}
       />
 
@@ -279,7 +279,7 @@ function TransactionCard({ transaction }: { transaction: Transaction }) {
               positive ? "text-emerald-300" : "text-gray-300"
             }`}
           >
-            {positive ? "+" : "-"}₹{transaction.amount}
+            {positive ? "+" : "-"}â‚¹{transaction.amount}
           </p>
 
           <p className="mt-1 text-[7px] uppercase tracking-[0.12em] text-gray-700">
@@ -321,7 +321,7 @@ function Empty() {
   return (
     <div className="rounded-[28px] border border-white/[0.06] bg-white/[0.02] p-12 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-black/20 text-gray-600">
-        ◇
+        â—‡
       </div>
       <h2 className="mt-5 text-sm font-black text-gray-400">
         No transactions yet
@@ -348,15 +348,15 @@ function labelFor(type: string) {
 
 function iconFor(type: string) {
   const icons: Record<string, string> = {
-    DEPOSIT: "＋",
-    ORDER: "−",
-    REFUND: "↩",
-    BONUS: "✦",
-    ADJUSTMENT: "±",
-    WITHDRAWAL: "↑",
+    DEPOSIT: "ï¼‹",
+    ORDER: "âˆ’",
+    REFUND: "â†©",
+    BONUS: "âœ¦",
+    ADJUSTMENT: "Â±",
+    WITHDRAWAL: "â†‘",
   };
 
-  return icons[type] || "•";
+  return icons[type] || "â€¢";
 }
 
 function formatDate(value: string) {
@@ -368,3 +368,5 @@ function formatDate(value: string) {
     minute: "2-digit",
   }).format(new Date(value));
 }
+
+

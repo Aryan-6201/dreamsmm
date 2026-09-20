@@ -1,6 +1,6 @@
 /* =========================================================
-   DREAMSMM — ULTRA PREMIUM ORDERS PAGE
-   Light UI • Responsive • Existing /api/orders compatible
+   DREAMSMM â€” ULTRA PREMIUM ORDERS PAGE
+   Light UI â€¢ Responsive â€¢ Existing /api/orders compatible
 ========================================================= */
 
 "use client";
@@ -169,16 +169,16 @@ export default function OrdersPage() {
           {/* =====================================================
               HERO
           ====================================================== */}
-          <section className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-br from-white via-violet-50/80 to-indigo-50/70 p-5 shadow-[0_20px_70px_rgba(79,70,229,0.10)] sm:p-8">
-            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-300/25 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl" />
+          <section className="relative overflow-hidden rounded-[32px] border border-teal-100 bg-gradient-to-br from-white via-teal-50/80 to-cyan-50/70 p-5 shadow-[0_20px_70px_rgba(79,70,229,0.10)] sm:p-8">
+            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-teal-300/25 blur-xl" />
+            <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-cyan-300/20 blur-xl" />
 
             <div className="relative">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div className="max-w-2xl">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1.5 shadow-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.22em] text-violet-600">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-white/80 px-3 py-1.5 shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.22em] text-teal-600">
                       Order center
                     </span>
                   </div>
@@ -197,17 +197,17 @@ export default function OrdersPage() {
                   <HeroStat
                     label="Showing"
                     value={String(orders.length)}
-                    icon="◌"
+                    icon="â—Œ"
                   />
                   <HeroStat
                     label="Active"
                     value={String(stats.active)}
-                    icon="↗"
+                    icon="â†—"
                   />
                   <HeroStat
                     label="Completed"
                     value={String(stats.completed)}
-                    icon="✓"
+                    icon="âœ“"
                   />
                 </div>
               </div>
@@ -224,14 +224,14 @@ export default function OrdersPage() {
             >
               <div className="relative flex-1">
                 <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400">
-                  ⌕
+                  âŒ•
                 </span>
 
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search order ID, service or target link..."
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-11 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-11 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-300 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 />
 
                 {search && (
@@ -241,14 +241,14 @@ export default function OrdersPage() {
                     className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                     aria-label="Clear search"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
               </div>
 
               <button
                 type="submit"
-                className="h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 text-xs font-black text-white shadow-[0_10px_25px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(99,102,241,0.30)]"
+                className="h-12 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 px-7 text-xs font-black text-white shadow-[0_10px_25px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(99,102,241,0.30)]"
               >
                 Search Orders
               </button>
@@ -269,8 +269,8 @@ export default function OrdersPage() {
                       }}
                       className={`rounded-xl border px-4 py-2.5 text-[10px] font-black transition ${
                         active
-                          ? "border-violet-200 bg-violet-50 text-violet-700 shadow-sm"
-                          : "border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:bg-violet-50/50 hover:text-violet-600"
+                          ? "border-teal-200 bg-teal-50 text-teal-700 shadow-sm"
+                          : "border-slate-200 bg-white text-slate-500 hover:border-teal-200 hover:bg-teal-50/50 hover:text-teal-600"
                       }`}
                     >
                       {label}
@@ -289,25 +289,25 @@ export default function OrdersPage() {
               label="Total orders"
               value={String(pagination.total)}
               description="Across your account"
-              icon="◎"
+              icon="â—Ž"
             />
             <SummaryCard
               label="On this page"
               value={String(orders.length)}
               description="Currently displayed"
-              icon="▦"
+              icon="â–¦"
             />
             <SummaryCard
               label="Active orders"
               value={String(stats.active)}
               description="Pending or processing"
-              icon="↻"
+              icon="â†»"
             />
             <SummaryCard
               label="Page charges"
-              value={`₹${stats.totalCharge.toFixed(2)}`}
+              value={`â‚¹${stats.totalCharge.toFixed(2)}`}
               description="Visible orders only"
-              icon="₹"
+              icon="â‚¹"
             />
           </section>
 
@@ -329,7 +329,7 @@ export default function OrdersPage() {
           <section className="mt-5">
             <div className="mb-3 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
                   Order history
                 </p>
                 <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900">
@@ -387,18 +387,18 @@ export default function OrdersPage() {
                   type="button"
                   disabled={page <= 1}
                   onClick={() => setPage((value) => value - 1)}
-                  className="flex-1 rounded-xl border border-slate-200 px-5 py-2.5 text-[10px] font-black text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
+                  className="flex-1 rounded-xl border border-slate-200 px-5 py-2.5 text-[10px] font-black text-slate-600 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
                 >
-                  ← Previous
+                  â† Previous
                 </button>
 
                 <button
                   type="button"
                   disabled={page >= pagination.totalPages}
                   onClick={() => setPage((value) => value + 1)}
-                  className="flex-1 rounded-xl bg-violet-600 px-5 py-2.5 text-[10px] font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
+                  className="flex-1 rounded-xl bg-teal-600 px-5 py-2.5 text-[10px] font-black text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-30 sm:flex-none"
                 >
-                  Next →
+                  Next â†’
                 </button>
               </div>
             </section>
@@ -430,7 +430,7 @@ function HeroStat({
   return (
     <div className="min-w-[82px] rounded-2xl border border-white/80 bg-white/75 p-3 shadow-sm backdrop-blur">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-black text-violet-500">{icon}</span>
+        <span className="text-xs font-black text-teal-500">{icon}</span>
         <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">
           {label}
         </span>
@@ -459,7 +459,7 @@ function SummaryCard({
   icon: string;
 }) {
   return (
-    <div className="group rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_8px_25px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_14px_35px_rgba(99,102,241,0.08)]">
+    <div className="group rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_8px_25px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-[0_14px_35px_rgba(99,102,241,0.08)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">
@@ -475,7 +475,7 @@ function SummaryCard({
           </p>
         </div>
 
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-600 transition group-hover:bg-violet-100">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-sm font-black text-teal-600 transition group-hover:bg-teal-100">
           {icon}
         </div>
       </div>
@@ -504,8 +504,8 @@ function OrderCard({
     <article
       className={`overflow-hidden rounded-[26px] border bg-white shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition ${
         expanded
-          ? "border-violet-200 shadow-[0_16px_45px_rgba(99,102,241,0.10)]"
-          : "border-slate-200 hover:border-violet-200 hover:shadow-[0_14px_40px_rgba(99,102,241,0.08)]"
+          ? "border-teal-200 shadow-[0_16px_45px_rgba(99,102,241,0.10)]"
+          : "border-slate-200 hover:border-teal-200 hover:shadow-[0_14px_40px_rgba(99,102,241,0.08)]"
       }`}
     >
       <button
@@ -515,7 +515,7 @@ function OrderCard({
         aria-expanded={expanded}
       >
         <div className="flex items-start gap-3 sm:gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-lg font-black text-violet-600 ring-1 ring-violet-100 sm:h-14 sm:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 text-lg font-black text-teal-600 ring-1 ring-teal-100 sm:h-14 sm:w-14">
             {platformIcon(platform)}
           </div>
 
@@ -531,7 +531,7 @@ function OrderCard({
             </div>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
-              <span className="rounded-lg bg-violet-50 px-2 py-1 text-[9px] font-bold text-violet-600">
+              <span className="rounded-lg bg-teal-50 px-2 py-1 text-[9px] font-bold text-teal-600">
                 {platform}
               </span>
 
@@ -547,7 +547,7 @@ function OrderCard({
 
           <div className="hidden shrink-0 text-right sm:block">
             <p className="text-base font-black text-slate-900">
-              ₹{Number(order.charge || 0).toFixed(2)}
+              â‚¹{Number(order.charge || 0).toFixed(2)}
             </p>
 
             <p className="mt-1 text-[9px] font-bold text-slate-400">
@@ -565,7 +565,7 @@ function OrderCard({
             label="Start"
             value={
               order.startCount === null
-                ? "—"
+                ? "â€”"
                 : Number(order.startCount).toLocaleString()
             }
           />
@@ -573,7 +573,7 @@ function OrderCard({
             label="Remaining"
             value={
               order.remains === null
-                ? "—"
+                ? "â€”"
                 : Number(order.remains).toLocaleString()
             }
           />
@@ -595,11 +595,11 @@ function OrderCard({
           <span
             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-black transition ${
               expanded
-                ? "border-violet-200 bg-violet-50 text-violet-600"
+                ? "border-teal-200 bg-teal-50 text-teal-600"
                 : "border-slate-200 bg-white text-slate-400"
             }`}
           >
-            {expanded ? "−" : "+"}
+            {expanded ? "âˆ’" : "+"}
           </span>
         </div>
       </button>
@@ -608,7 +608,7 @@ function OrderCard({
         <div className="border-t border-slate-100 bg-slate-50/60 px-4 pb-5 pt-4 sm:px-5">
           <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
             <div className="rounded-2xl border border-slate-200 bg-white p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-500">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-500">
                 Target link
               </p>
 
@@ -636,8 +636,8 @@ function OrderCard({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-500">
+            <div className="rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50 to-cyan-50 p-4">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-500">
                 Order summary
               </p>
 
@@ -651,7 +651,7 @@ function OrderCard({
                   label="Start count"
                   value={
                     order.startCount === null
-                      ? "—"
+                      ? "â€”"
                       : Number(order.startCount).toLocaleString()
                   }
                   light
@@ -660,19 +660,19 @@ function OrderCard({
                   label="Remaining"
                   value={
                     order.remains === null
-                      ? "—"
+                      ? "â€”"
                       : Number(order.remains).toLocaleString()
                   }
                   light
                 />
 
-                <div className="border-t border-violet-100 pt-3">
+                <div className="border-t border-teal-100 pt-3">
                   <div className="flex items-end justify-between gap-3">
-                    <span className="text-[9px] font-black uppercase tracking-wider text-violet-500">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-teal-500">
                       Charge
                     </span>
-                    <span className="text-xl font-black text-violet-800">
-                      ₹{Number(order.charge || 0).toFixed(2)}
+                    <span className="text-xl font-black text-teal-800">
+                      â‚¹{Number(order.charge || 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -726,7 +726,7 @@ function DetailRow({
     <div className="flex items-center justify-between gap-3">
       <span
         className={`text-[9px] font-bold ${
-          light ? "text-violet-500" : "text-slate-400"
+          light ? "text-teal-500" : "text-slate-400"
         }`}
       >
         {label}
@@ -734,7 +734,7 @@ function DetailRow({
 
       <span
         className={`max-w-[65%] truncate text-right text-[10px] font-black ${
-          light ? "text-violet-800" : "text-slate-700"
+          light ? "text-teal-800" : "text-slate-700"
         }`}
       >
         {value}
@@ -764,7 +764,7 @@ function StatusBadge({ status }: { status: string }) {
     CANCELLED:
       "border-red-200 bg-red-50 text-red-700",
     REFUNDED:
-      "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700",
+      "border-teal-200 bg-teal-50 text-teal-700",
   };
 
   return (
@@ -820,8 +820,8 @@ function LoadingState() {
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
     <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center shadow-sm">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-2xl font-black text-violet-500">
-        ◎
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-2xl font-black text-teal-500">
+        â—Ž
       </div>
 
       <h3 className="mt-5 text-lg font-black text-slate-900">
@@ -844,18 +844,18 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
 function platformIcon(platform: string) {
   const value = platform.toLowerCase();
 
-  if (value.includes("instagram")) return "◎";
-  if (value.includes("youtube")) return "▶";
+  if (value.includes("instagram")) return "â—Ž";
+  if (value.includes("youtube")) return "â–¶";
   if (value.includes("facebook")) return "f";
-  if (value.includes("tiktok")) return "♪";
-  if (value.includes("telegram")) return "➤";
-  if (value.includes("twitter")) return "𝕏";
-  if (value === "x") return "𝕏";
-  if (value.includes("spotify")) return "◉";
+  if (value.includes("tiktok")) return "â™ª";
+  if (value.includes("telegram")) return "âž¤";
+  if (value.includes("twitter")) return "ð•";
+  if (value === "x") return "ð•";
+  if (value.includes("spotify")) return "â—‰";
   if (value.includes("linkedin")) return "in";
-  if (value.includes("reddit")) return "●";
+  if (value.includes("reddit")) return "â—";
 
-  return "✦";
+  return "âœ¦";
 }
 
 /* =========================================================
@@ -877,3 +877,5 @@ function formatDate(value: string) {
     minute: "2-digit",
   }).format(date);
 }
+
+

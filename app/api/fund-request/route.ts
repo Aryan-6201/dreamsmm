@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
     if (parsedAmount < 10) {
       return NextResponse.json(
-        { error: "Minimum deposit is ₹10." },
+        { error: "Minimum deposit is â‚¹10." },
         { status: 400 }
       );
     }
@@ -90,3 +90,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+

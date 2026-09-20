@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import Sidebar from "@/app/components/Sidebar";
 export const dynamic = "force-dynamic";
 function normalize(value: string | null | undefined) {
@@ -134,14 +134,14 @@ const categoryLabel = config?.name
       <div className="min-h-screen lg:ml-[250px]">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
           {/* HERO */}
-          <section className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-br from-white via-violet-50/80 to-indigo-50/70 p-6 shadow-[0_20px_70px_rgba(79,70,229,0.10)] sm:p-8">
-            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-300/25 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl" />
+          <section className="relative overflow-hidden rounded-[32px] border border-teal-100 bg-gradient-to-br from-white via-teal-50/80 to-cyan-50/70 p-6 shadow-[0_20px_70px_rgba(79,70,229,0.10)] sm:p-8">
+            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-teal-300/25 blur-xl" />
+            <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-cyan-300/20 blur-xl" />
 
             <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-violet-600 shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-white/80 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
                   Service Marketplace
                 </div>
 
@@ -167,7 +167,7 @@ const categoryLabel = config?.name
             <div className="flex min-w-max gap-2">
               <a
                 href="#all"
-                className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-[10px] font-black text-violet-700 shadow-sm"
+                className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2.5 text-[10px] font-black text-teal-700 shadow-sm"
               >
                 All Services
               </a>
@@ -176,7 +176,7 @@ const categoryLabel = config?.name
                 <a
                   key={platform.label}
                   href={`#platform-${normalize(platform.label).replace(/\s+/g, "-")}`}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black text-slate-500 shadow-sm transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700"
                 >
                   {titleCase(platform.label)}
                 </a>
@@ -190,7 +190,7 @@ const categoryLabel = config?.name
               id="all"
               className="mt-7 rounded-[28px] border border-dashed border-slate-300 bg-white p-16 text-center shadow-sm"
             >
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-2xl font-black text-violet-500">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-2xl font-black text-teal-500">
                 ⚙️
               </div>
               <h2 className="mt-5 text-xl font-black text-slate-900">
@@ -210,7 +210,7 @@ const categoryLabel = config?.name
                   {/* PLATFORM HEADING */}
                   <div className="mb-5 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-lg font-black text-violet-600 ring-1 ring-violet-100">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-50 text-lg font-black text-teal-600 ring-1 ring-teal-100">
                         {platformIcon(platform.label)}
                       </div>
 
@@ -228,7 +228,7 @@ const categoryLabel = config?.name
                       </div>
                     </div>
 
-                    <span className="hidden rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-violet-600 sm:inline-flex">
+                    <span className="hidden rounded-full border border-teal-100 bg-teal-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-teal-600 sm:inline-flex">
                       Available
                     </span>
                   </div>
@@ -262,13 +262,13 @@ const categoryLabel = config?.name
                           {category.services.map((service) => (
                             <article
                               key={service.id}
-                              className="group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(99,102,241,0.10)]"
+                              className="group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_45px_rgba(99,102,241,0.10)]"
                             >
-                              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-violet-100/50 blur-2xl transition group-hover:bg-violet-200/50" />
+                              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-teal-100/50 blur-lg transition group-hover:bg-teal-200/50" />
 
                               <div className="relative flex items-start justify-between gap-3">
                                 <div className="flex min-w-0 items-center gap-3">
-                                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-xl font-black text-violet-600 ring-1 ring-violet-100">
+                                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 text-xl font-black text-teal-600 ring-1 ring-teal-100">
                                     {platformIcon(service.platform)}
                                   </div>
 
@@ -276,7 +276,7 @@ const categoryLabel = config?.name
                                     <h4 className="truncate text-base font-black text-slate-900">
                                       {service.name}
                                     </h4>
-                                    <p className="mt-1 text-[10px] font-black uppercase tracking-wider text-violet-500">
+                                    <p className="mt-1 text-[10px] font-black uppercase tracking-wider text-teal-500">
                                       {service.platform}
                                     </p>
                                   </div>
@@ -296,11 +296,11 @@ const categoryLabel = config?.name
                               </div>
 
                               <div className="relative mt-5 grid grid-cols-2 gap-3">
-                                <div className="rounded-2xl border border-violet-100 bg-violet-50/70 p-3.5">
-                                  <p className="text-[8px] font-black uppercase tracking-wider text-violet-500">
+                                <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-3.5">
+                                  <p className="text-[8px] font-black uppercase tracking-wider text-teal-500">
                                     Rate / 1K
                                   </p>
-                                  <p className="mt-1.5 text-lg font-black text-violet-800">
+                                  <p className="mt-1.5 text-lg font-black text-teal-800">
                                     ₹{service.rate.toString()}
                                   </p>
                                 </div>
@@ -333,7 +333,7 @@ const categoryLabel = config?.name
 
                               <a
                                 href={`/dashboard?serviceId=${service.id}`}
-                                className="relative mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(99,102,241,0.28)]"
+                                className="relative mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_35px_rgba(99,102,241,0.28)]"
                               >
                                 Order Now
                                 <span className="text-base transition-transform group-hover:translate-x-1">
@@ -394,10 +394,10 @@ const categoryLabel = config?.name
 
 function serviceAccent(index: number) {
   const accents = [
-    "from-violet-50 to-indigo-50",
-    "from-indigo-50 to-blue-50",
-    "from-fuchsia-50 to-violet-50",
-    "from-purple-50 to-pink-50",
+    "from-teal-50 to-cyan-50",
+    "from-cyan-50 to-blue-50",
+    "from-teal-50 to-teal-50",
+    "from-cyan-50 to-pink-50",
   ];
 
   return accents[index % accents.length];
@@ -425,14 +425,14 @@ function serviceTierClass(rate: string) {
   }
 
   if (tier === "Popular") {
-    return "border-violet-200 bg-violet-50 text-violet-700";
+    return "border-teal-200 bg-teal-50 text-teal-700";
   }
 
   if (tier === "Premium") {
-    return "border-indigo-200 bg-indigo-50 text-indigo-700";
+    return "border-cyan-200 bg-cyan-50 text-cyan-700";
   }
 
-  return "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700";
+  return "border-teal-200 bg-teal-50 text-teal-700";
 }
 
 function compactNumber(value: number) {
@@ -510,7 +510,7 @@ function CategoryHeader({
   return (
     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sm font-black text-violet-600 shadow-sm ring-1 ring-violet-100">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sm font-black text-teal-600 shadow-sm ring-1 ring-teal-100">
           {categoryIcon(category)}
         </div>
 
@@ -548,17 +548,17 @@ function PlatformHeader({
   categories: number;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-violet-100 bg-gradient-to-r from-white via-violet-50/70 to-indigo-50/70 p-5 shadow-sm sm:p-6">
-      <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-violet-200/30 blur-3xl" />
+    <div className="relative overflow-hidden rounded-[26px] border border-teal-100 bg-gradient-to-r from-white via-teal-50/70 to-cyan-50/70 p-5 shadow-sm sm:p-6">
+      <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-teal-200/30 blur-xl" />
 
       <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-xl font-black text-violet-600 shadow-sm ring-1 ring-violet-100">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-xl font-black text-teal-600 shadow-sm ring-1 ring-teal-100">
             {platformIcon(platform)}
           </div>
 
           <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
               Platform
             </p>
 
@@ -574,7 +574,7 @@ function PlatformHeader({
 
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-2xl border border-white bg-white/80 px-4 py-3 text-center shadow-sm">
-            <p className="text-lg font-black text-violet-700">
+            <p className="text-lg font-black text-teal-700">
               {count}
             </p>
             <p className="mt-0.5 text-[8px] font-black uppercase tracking-wider text-slate-400">
@@ -583,7 +583,7 @@ function PlatformHeader({
           </div>
 
           <div className="rounded-2xl border border-white bg-white/80 px-4 py-3 text-center shadow-sm">
-            <p className="text-lg font-black text-indigo-700">
+            <p className="text-lg font-black text-cyan-700">
               {categories}
             </p>
             <p className="mt-0.5 text-[8px] font-black uppercase tracking-wider text-slate-400">
@@ -637,15 +637,15 @@ function PremiumServiceCard({
   const tier = serviceTier(String(service.rate));
 
   return (
-    <article className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_50px_rgba(99,102,241,0.11)]">
+    <article className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_50px_rgba(99,102,241,0.11)]">
       <div
-        className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${serviceAccent(index)} opacity-80 blur-3xl transition group-hover:opacity-100`}
+        className={`pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${serviceAccent(index)} opacity-80 blur-xl transition group-hover:opacity-100`}
       />
 
       <div className="relative min-w-0">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="flex min-w-0 max-w-full items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 text-lg font-black text-violet-600 ring-1 ring-violet-100">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 text-lg font-black text-teal-600 ring-1 ring-teal-100">
               {platformIcon(service.platform)}
             </div>
 
@@ -677,7 +677,7 @@ function PremiumServiceCard({
         </div>
 
         <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
-          <p className="text-[10px] font-black uppercase tracking-wider text-violet-500">
+          <p className="text-[10px] font-black uppercase tracking-wider text-teal-500">
             Service overview
           </p>
 
@@ -709,21 +709,21 @@ function PremiumServiceCard({
           />
         </div>
 
-        <div className="mt-3 flex items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/60 px-3.5 py-3">
+        <div className="mt-3 flex items-center justify-between rounded-2xl border border-teal-100 bg-teal-50/60 px-3.5 py-3">
           <div>
-            <p className="text-[8px] font-black uppercase tracking-wider text-violet-500">
+            <p className="text-[8px] font-black uppercase tracking-wider text-teal-500">
               Order range
             </p>
-            <p className="mt-1 text-[10px] font-black text-violet-800">
+            <p className="mt-1 text-[10px] font-black text-teal-800">
               {compactNumber(service.min)} — {compactNumber(service.max)}
             </p>
           </div>
 
           <div className="text-right">
-            <p className="text-[8px] font-black uppercase tracking-wider text-violet-400">
+            <p className="text-[8px] font-black uppercase tracking-wider text-teal-400">
               Platform
             </p>
-            <p className="mt-1 text-[10px] font-black text-violet-800">
+            <p className="mt-1 text-[10px] font-black text-teal-800">
               {titleCase(service.platform)}
             </p>
           </div>
@@ -731,7 +731,7 @@ function PremiumServiceCard({
 
         <a
           href={`/dashboard?serviceId=${service.id}`}
-          className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.30)]"
+          className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 text-xs font-black text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.30)]"
         >
           Order Now
           <span className="text-base transition-transform group-hover:translate-x-1">
@@ -780,7 +780,7 @@ function ServiceFAQ() {
   return (
     <section className="mt-12 rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.045)] sm:p-7">
       <div className="max-w-2xl">
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
           Service guide
         </p>
 
@@ -798,13 +798,13 @@ function ServiceFAQ() {
         {questions.map((item, index) => (
           <details
             key={item.question}
-            className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-violet-200 hover:bg-violet-50/40"
+            className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-teal-200 hover:bg-teal-50/40"
             open={index === 0}
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-xs font-black text-slate-800">
               <span>{item.question}</span>
 
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-600 shadow-sm transition group-open:bg-violet-100">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-teal-600 shadow-sm transition group-open:bg-teal-100">
                 +
               </span>
             </summary>
@@ -821,7 +821,7 @@ function ServiceFAQ() {
 
 function CatalogFooter() {
   return (
-    <section className="mt-8 overflow-hidden rounded-[28px] border border-violet-100 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 p-5 text-white shadow-[0_20px_50px_rgba(79,70,229,0.18)] sm:p-7">
+    <section className="mt-8 overflow-hidden rounded-[28px] border border-teal-100 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 p-5 text-white shadow-[0_20px_50px_rgba(79,70,229,0.18)] sm:p-7">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
@@ -840,7 +840,7 @@ function CatalogFooter() {
 
         <a
           href="/dashboard"
-          className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl bg-white px-6 text-xs font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
+          className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl bg-white px-6 text-xs font-black text-teal-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-teal-50"
         >
           Open Order Panel →
         </a>
@@ -869,9 +869,9 @@ function MarketplaceGuide() {
   ];
 
   return (
-    <section className="mt-12 rounded-[30px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-5 shadow-sm sm:p-7">
+    <section className="mt-12 rounded-[30px] border border-teal-100 bg-gradient-to-br from-teal-50 via-white to-cyan-50 p-5 shadow-sm sm:p-7">
       <div className="max-w-2xl">
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
           How it works
         </p>
 
@@ -891,7 +891,7 @@ function MarketplaceGuide() {
             key={step.number}
             className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
           >
-            <span className="text-[10px] font-black text-violet-500">
+            <span className="text-[10px] font-black text-teal-500">
               {step.number}
             </span>
 
@@ -925,7 +925,7 @@ function TrustStrip() {
           className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
         >
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-sm font-black text-teal-600">
               {icon}
             </div>
 
@@ -956,7 +956,7 @@ function StatCard({
   return (
     <div className="min-w-[118px] rounded-2xl border border-white bg-white/80 px-4 py-4 shadow-sm backdrop-blur">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-black text-violet-600">{icon}</span>
+        <span className="text-sm font-black text-teal-600">{icon}</span>
         <p className="text-[8px] font-black uppercase tracking-wider text-slate-400">
           {label}
         </p>
@@ -981,7 +981,7 @@ function InfoCard({
 }) {
   return (
     <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-base font-black text-violet-600 ring-1 ring-violet-100">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-50 text-base font-black text-teal-600 ring-1 ring-teal-100">
         {icon}
       </div>
 
@@ -994,7 +994,7 @@ function InfoCard({
       {link && linkText && (
         <a
           href={link}
-          className="mt-4 inline-block text-xs font-black text-violet-600 transition hover:text-violet-800"
+          className="mt-4 inline-block text-xs font-black text-teal-600 transition hover:text-teal-800"
         >
           {linkText}
         </a>
@@ -1018,5 +1018,8 @@ function platformIcon(platform: string) {
 
   return "Γ£ª";
 }
+
+
+
 
 

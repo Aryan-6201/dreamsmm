@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -12,21 +12,21 @@ export default async function BlogPage() {
   return (
     <main className="min-h-screen bg-[#faf9ff] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="rounded-3xl bg-gradient-to-br from-violet-700 via-violet-600 to-purple-600 p-8 text-white shadow-xl">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-100">
+        <div className="rounded-3xl bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-600 p-8 text-white shadow-xl">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-teal-100">
             DreamSMM Blog
           </p>
           <h1 className="mt-2 text-3xl font-black sm:text-4xl">
             Tips, Guides & Social Media Growth
           </h1>
-          <p className="mt-3 max-w-2xl text-sm font-medium text-violet-100">
+          <p className="mt-3 max-w-2xl text-sm font-medium text-teal-100">
             Learn more about social media growth, Instagram, YouTube and
             digital marketing.
           </p>
         </div>
 
         {posts.length === 0 ? (
-          <div className="mt-8 rounded-3xl border border-violet-100 bg-white p-12 text-center shadow-sm">
+          <div className="mt-8 rounded-3xl border border-teal-100 bg-white p-12 text-center shadow-sm">
             <div className="text-4xl">✍️</div>
             <h2 className="mt-4 text-xl font-black text-slate-800">
               No articles yet
@@ -40,7 +40,7 @@ export default async function BlogPage() {
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="overflow-hidden rounded-3xl border border-violet-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="overflow-hidden rounded-3xl border border-teal-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 {post.coverImage ? (
                   <img
@@ -49,14 +49,14 @@ export default async function BlogPage() {
                     className="h-48 w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-48 items-center justify-center bg-gradient-to-br from-violet-100 to-purple-100 text-5xl">
+                  <div className="flex h-48 items-center justify-center bg-gradient-to-br from-teal-100 to-cyan-100 text-5xl">
                     📝
                   </div>
                 )}
 
                 <div className="p-6">
                   {post.category && (
-                    <span className="text-xs font-black uppercase tracking-wider text-violet-600">
+                    <span className="text-xs font-black uppercase tracking-wider text-teal-600">
                       {post.category}
                     </span>
                   )}
@@ -73,7 +73,7 @@ export default async function BlogPage() {
 
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="mt-5 inline-flex rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-black text-white transition hover:bg-violet-700"
+                    className="mt-5 inline-flex rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-black text-white transition hover:bg-teal-700"
                   >
                     Read More →
                   </Link>
@@ -86,3 +86,6 @@ export default async function BlogPage() {
     </main>
   );
 }
+
+
+

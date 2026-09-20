@@ -165,7 +165,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full h-12 rounded-xl bg-gradient-to-r from-[#635bff] to-[#8b5cf6] text-white text-sm font-bold shadow-lg shadow-[#635bff]/20 hover:-translate-y-0.5 transition disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Creating account..." : "Create account →"}
+            {loading ? "Creating account..." : "Create account â†’"}
           </button>
 
         </form>
@@ -184,10 +184,12 @@ export default function RegisterPage() {
 
         {/* Security */}
         <p className="text-center text-[10px] text-gray-400 mt-8">
-          🔒 Your connection is protected · DreamSMM
+          ðŸ”’ Your connection is protected Â· DreamSMM
         </p>
 
       </div>
     </main>
   );
 }
+
+

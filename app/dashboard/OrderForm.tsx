@@ -1,4 +1,4 @@
-﻿
+
 
 
 "use client";
@@ -630,7 +630,7 @@ useEffect(() => {
 
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-black text-slate-700">
+          <label className="text-base font-black text-slate-900">
             Platform
           </label>
           <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
@@ -666,8 +666,8 @@ useEffect(() => {
                 }}
                 className={`flex h-11 min-w-0 w-full items-center justify-center gap-1.5 rounded-xl border px-2 text-xs font-black transition-colors ${
                   active
-                    ? "border-violet-600 bg-violet-600 text-white"
-                    : "border-violet-100 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50"
+                    ? "border-teal-600 bg-teal-600 text-white"
+                    : "border-cyan-100 bg-white text-slate-600 hover:border-cyan-300 hover:bg-cyan-50"
                 }`}
                 aria-pressed={active}
                 title={item.label}
@@ -713,7 +713,7 @@ useEffect(() => {
           }
           placeholder="Search"
           aria-label="Search services"
-          className="h-12 w-full rounded-xl border border-violet-100 bg-violet-50 pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
+          className="h-12 w-full rounded-xl border border-cyan-100 bg-cyan-50 pl-11 pr-11 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-cyan-50 focus:ring-2 focus:ring-cyan-100"
         />
 
         {search && (
@@ -734,7 +734,7 @@ useEffect(() => {
       ===================================================== */}
 
       <section>
-        <label className="mb-2 block text-sm font-black text-slate-700">
+        <label className="mb-2 block text-base font-black text-slate-900">
           Category
         </label>
 
@@ -746,7 +746,7 @@ useEffect(() => {
               setServiceOpen(false);
             }}
             aria-expanded={categoryOpen}
-            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(76,29,149,.045)] transition-all duration-200 "border-violet-100 hover:border-violet-200 hover:shadow-[0_10px_28px_rgba(76,29,149,.07)]"`}
+            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(13,148,136,.045)] transition-all duration-200 "border-cyan-100 hover:border-cyan-200 hover:shadow-[0_10px_28px_rgba(13,148,136,.07)]"`}
           >
             <span className="category-main-icon">
               {(() => {
@@ -770,27 +770,27 @@ return BrandIcon ? (
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block min-w-0 max-w-full truncate text-[13px] font-bold leading-5 text-slate-700">
+              <span className="block min-w-0 max-w-full truncate text-[15px] font-medium leading-6 text-slate-600">
                 {category || "Select category"}
               </span>
               {category && (
-                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-600">
                   {categoryServices.length} services available
                 </span>
               )}
             </span>
 
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-violet-50">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-cyan-50">
               <ChevronDown
                 className={`h-4 w-4 text-slate-400 transition-transform ${
-                  categoryOpen ? "rotate-180 text-violet-500" : ""
+                  categoryOpen ? "rotate-180 text-teal-500" : ""
                 }`}
               />
             </span>
           </button>
 
           {categoryOpen && (
-            <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)]">
+            <div className="absolute left-0 right-0 z-[70] mt-2 overflow-hidden rounded-[22px] border border-white/80 bg-gradient-to-br from-white/90 via-cyan-50/75 to-teal-50/60 shadow-[0_18px_50px_rgba(13,148,136,0.16)] backdrop-blur-sm ring-1 ring-cyan-100/60 p-1.5 shadow-[0_20px_50px_rgba(13,148,136,0.14)]">
               <div className="max-h-[420px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                 {filteredCategories.map(
                   (item) => {
@@ -809,8 +809,8 @@ return BrandIcon ? (
                         }
                         className={`flex min-h-[54px] w-full items-center gap-2.5 px-4 text-left transition ${
                           active
-                            ? "bg-violet-600 text-white"
-                            : "text-slate-700 hover:bg-violet-50"
+                            ? "bg-teal-600 text-white"
+                            : "text-slate-700 hover:bg-cyan-50"
                         }`}
                       >
                         <span
@@ -861,7 +861,7 @@ return BrandIcon ? (
                               className={`shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-black ${
                                 active
                                   ? "bg-white/20 text-white"
-                                  : "bg-violet-100 text-violet-700"
+                                  : "bg-cyan-100 text-teal-700"
                               }`}
                             >
                               {config.badge}
@@ -907,7 +907,7 @@ return BrandIcon ? (
       ===================================================== */}
 
       <section>
-        <label className="mb-2 block text-sm font-black text-slate-700">
+        <label className="mb-2 block text-base font-black text-slate-900">
           Service
         </label>
 
@@ -922,13 +922,13 @@ return BrandIcon ? (
               setCategoryOpen(false);
             }}
             aria-expanded={serviceOpen}
-            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(76,29,149,.045)] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
+            className={`group flex min-h-[58px] w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white px-4 text-left shadow-[0_8px_24px_rgba(13,148,136,.045)] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
               serviceOpen
-                ? "border-violet-300 ring-2 ring-violet-100"
-                : "border-violet-100 hover:border-violet-200 hover:shadow-[0_10px_28px_rgba(76,29,149,.07)]"
+                ? "border-cyan-300 ring-2 ring-cyan-100"
+                : "border-cyan-100 hover:border-cyan-200 hover:shadow-[0_10px_28px_rgba(13,148,136,.07)]"
             }`}
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-700">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-sm font-black text-teal-700">
               {selectedService
                 ? (() => {
                     const BrandIcon = getPlatformIcon(
@@ -952,17 +952,17 @@ return BrandIcon ? (
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block min-w-0 max-w-full truncate text-[13px] font-bold leading-5 text-slate-700">
+              <span className="block min-w-0 max-w-full truncate text-[15px] font-medium leading-6 text-slate-600">
                 {selectedService?.name ||
                   (category ? "Select service" : "Select category first")}
               </span>
 
               {selectedService ? (
-                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-600">
                   #{selectedService.id} Â· Min {selectedService.min.toLocaleString()} Â· Max {selectedService.max.toLocaleString()}
                 </span>
               ) : (
-                <span className="block text-[9px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-600">
                   {category
                     ? `${filteredServices.length} services available`
                     : "Choose a category first"}
@@ -970,10 +970,10 @@ return BrandIcon ? (
               )}
             </span>
 
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-violet-50">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition group-hover:bg-cyan-50">
               <ChevronDown
                 className={`h-4 w-4 text-slate-400 transition-transform ${
-                  serviceOpen ? "rotate-180 text-violet-500" : ""
+                  serviceOpen ? "rotate-180 text-teal-500" : ""
                 }`}
               />
             </span>
@@ -981,7 +981,7 @@ return BrandIcon ? (
 
           {serviceOpen &&
             category && (
-              <div className="absolute left-0 right-0 z-[60] mt-2 overflow-hidden rounded-2xl border border-violet-100 bg-white p-1.5 shadow-[0_20px_50px_rgba(91,33,182,0.14)]">
+              <div className="absolute left-0 right-0 z-[60] mt-2 overflow-hidden rounded-[22px] border border-white/80 bg-gradient-to-br from-white/90 via-cyan-50/75 to-teal-50/60 shadow-[0_18px_50px_rgba(13,148,136,0.16)] backdrop-blur-sm ring-1 ring-cyan-100/60 p-1.5 shadow-[0_20px_50px_rgba(13,148,136,0.14)]">
                 <div className="max-h-[440px] overflow-y-auto overscroll-contain py-1 [scrollbar-width:thin]">
                   {filteredServices.map(
                     (service) => {
@@ -1000,8 +1000,8 @@ return BrandIcon ? (
                           }
                           className={`w-full border-b border-slate-100 px-4 py-3.5 text-left transition last:border-b-0 ${
                             active
-                              ? "bg-violet-600 text-white"
-                              : "text-slate-700 hover:bg-violet-50"
+                              ? "bg-teal-600 text-white"
+                              : "text-slate-700 hover:bg-cyan-50"
                           }`}
                         >
                           <div className="flex min-w-0 w-full items-center gap-3">
@@ -1009,7 +1009,7 @@ return BrandIcon ? (
                               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-black ${
                                 active
                                   ? "bg-white/20"
-                                  : "bg-violet-50"
+                                  : "bg-cyan-50"
                               }`}
                             >
                               {(() => {
@@ -1053,7 +1053,7 @@ return BrandIcon ? (
                               className={`w-[68px] max-w-[68px] shrink-0 overflow-hidden rounded-xl px-2.5 py-2 text-right ${
                                 active
                                   ? "bg-white/15 text-white"
-                                  : "bg-violet-50 text-violet-700"
+                                  : "bg-cyan-50 text-teal-700"
                               }`}
                             >
                               <span className="block text-[8px] font-bold uppercase tracking-wider opacity-60">
@@ -1095,9 +1095,9 @@ return BrandIcon ? (
 
       {selectedService && (
         <section>
-          <div className="overflow-hidden rounded-2xl border border-violet-100 bg-white">
-            <div className="flex items-center justify-between border-b border-violet-100/80 px-4 py-3">
-              <span className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-600">
+          <div className="overflow-hidden rounded-[22px] border border-white/80 bg-gradient-to-br from-white/90 via-cyan-50/75 to-teal-50/60 shadow-[0_18px_50px_rgba(13,148,136,0.16)] backdrop-blur-sm ring-1 ring-cyan-100/60">
+            <div className="flex items-center justify-between border-b border-white/70 bg-white/45 px-4 py-3 backdrop-blur-sm">
+              <span className="text-sm font-black uppercase tracking-[0.10em] text-slate-700">
                 Service information
               </span>
               <span className="rounded-md bg-white px-2 py-1 text-[8px] font-bold text-slate-400 shadow-sm">
@@ -1106,7 +1106,7 @@ return BrandIcon ? (
             </div>
 
             <div className="px-4 py-4">
-              <div className="whitespace-pre-wrap break-words text-[11px] font-medium leading-[1.75] text-slate-600">
+              <div className="whitespace-pre-wrap break-words text-[14px] font-medium leading-[1.8] text-slate-600">
                 {selectedService.description?.trim() ||
                   "No additional service information available."}
               </div>
@@ -1121,7 +1121,7 @@ return BrandIcon ? (
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-slate-700">
+          <label className="mb-2 block text-base font-black text-slate-900">
             Link
           </label>
 
@@ -1132,7 +1132,7 @@ return BrandIcon ? (
               setLink(event.target.value)
             }
             placeholder="https://instagram.com/username"
-            className="h-12 w-full rounded-xl border border-violet-100 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-violet-50 focus:ring-2 focus:ring-violet-100"
+            className="h-12 w-full rounded-xl border border-cyan-100 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-cyan-50 focus:ring-2 focus:ring-cyan-100"
           />
         </section>
       )}
@@ -1143,7 +1143,7 @@ return BrandIcon ? (
 
       {selectedService && (
         <section>
-          <label className="mb-2 block text-sm font-black text-slate-700">
+          <label className="mb-2 block text-base font-black text-slate-900">
             Quantity
           </label>
 
@@ -1162,7 +1162,7 @@ return BrandIcon ? (
               quantity &&
               !validQuantity
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                : "border-violet-100 focus:border-violet-300 focus:ring-violet-100"
+                : "border-cyan-100 focus:border-cyan-300 focus:ring-cyan-100"
             }`}
           />
 
@@ -1188,7 +1188,7 @@ return BrandIcon ? (
 
       {selectedService && (
         <section>
-          <div className="flex min-h-[56px] items-center justify-between gap-4 rounded-xl border border-violet-100 bg-white px-4 py-2.5 shadow-[0_8px_24px_rgba(76,29,149,.04)]">
+          <div className="flex min-h-[56px] items-center justify-between gap-4 rounded-xl border border-cyan-100 bg-white px-4 py-2.5 shadow-[0_8px_24px_rgba(13,148,136,.04)]">
   <div>
     <span className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">
       Total charge
@@ -1248,7 +1248,7 @@ return BrandIcon ? (
       !link.trim() ||
       !validQuantity
     }
-    className="h-14 w-full rounded-xl bg-violet-600 text-base font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.30)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(124,58,237,0.38)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-violet-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
+    className="h-14 w-full rounded-xl bg-gradient-to-r from-teal-500 via-cyan-500 to-[#ffd84d] text-base font-black text-slate-900 shadow-[0_10px_28px_rgba(13,148,136,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_14px_32px_rgba(13,148,136,0.30)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-cyan-200 disabled:text-white disabled:opacity-100 disabled:shadow-none"
   >
     {submitting
       ? "Placing Order..."
@@ -1367,6 +1367,11 @@ function getCategoryLucideIcon(icon: string): LucideIcon {
       return Sparkles;
   }
 }
+
+
+
+
+
 
 
 

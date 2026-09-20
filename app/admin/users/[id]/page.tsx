@@ -343,7 +343,7 @@ export default function UserManagementPage() {
               onClick={() =>
                 updateUser("BONUS", amount)
               }
-              className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold hover:bg-purple-500 disabled:opacity-50"
+              className="rounded-xl bg-cyan-600 px-5 py-3 text-sm font-semibold hover:bg-cyan-500 disabled:opacity-50"
             >
               🎁 Give Bonus
             </button>

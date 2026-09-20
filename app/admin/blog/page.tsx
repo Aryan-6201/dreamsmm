@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -213,10 +213,10 @@ export default function AdminBlogPage() {
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-violet-700 via-violet-600 to-purple-600 p-6 text-white shadow-xl shadow-violet-200/50 sm:p-8">
+        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-600 p-6 text-white shadow-xl shadow-teal-200/50 sm:p-8">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-200">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-teal-200">
                 Content Management
               </p>
 
@@ -224,13 +224,13 @@ export default function AdminBlogPage() {
                 Blog
               </h1>
 
-              <p className="mt-2 max-w-xl text-sm font-medium text-violet-100">
+              <p className="mt-2 max-w-xl text-sm font-medium text-teal-100">
                 Create, publish and manage DreamSMM blog posts.
               </p>
             </div>
 
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
-              <p className="text-xs text-violet-200">
+              <p className="text-xs text-teal-200">
                 Total Posts
               </p>
               <p className="text-2xl font-black">
@@ -302,7 +302,7 @@ export default function AdminBlogPage() {
                   }));
                 }}
                 placeholder="How to grow your Instagram account"
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -318,7 +318,7 @@ export default function AdminBlogPage() {
                   updateField("slug", makeSlug(e.target.value))
                 }
                 placeholder="how-to-grow-instagram"
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -334,7 +334,7 @@ export default function AdminBlogPage() {
                   updateField("category", e.target.value)
                 }
                 placeholder="Instagram"
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -351,7 +351,7 @@ export default function AdminBlogPage() {
                 }
                 rows={3}
                 placeholder="A short description shown on the blog listing..."
-                className="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -367,7 +367,7 @@ export default function AdminBlogPage() {
                   updateField("coverImage", e.target.value)
                 }
                 placeholder="https://..."
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -384,7 +384,7 @@ export default function AdminBlogPage() {
                 }
                 rows={14}
                 placeholder="Write your article here..."
-                className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 font-medium outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 font-medium outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
 
               <p className="mt-2 text-xs text-slate-400">
@@ -410,7 +410,7 @@ export default function AdminBlogPage() {
                 }
                 className={`relative h-7 w-12 rounded-full transition ${
                   form.published
-                    ? "bg-violet-600"
+                    ? "bg-teal-600"
                     : "bg-slate-300"
                 }`}
                 aria-label="Toggle published"
@@ -439,7 +439,7 @@ export default function AdminBlogPage() {
               type="button"
               onClick={savePost}
               disabled={saving}
-              className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-teal-200 transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving
                 ? "Saving..."
@@ -491,7 +491,7 @@ export default function AdminBlogPage() {
               {posts.map((post) => (
                 <article
                   key={post.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-slate-200 p-4 transition hover:border-violet-200 hover:bg-violet-50/30 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-4 rounded-2xl border border-slate-200 p-4 transition hover:border-teal-200 hover:bg-teal-50/30 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -512,7 +512,7 @@ export default function AdminBlogPage() {
                       </span>
 
                       {post.category && (
-                        <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-700">
+                        <span className="rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-black text-teal-700">
                           {post.category}
                         </span>
                       )}
@@ -533,7 +533,7 @@ export default function AdminBlogPage() {
                     <button
                       type="button"
                       onClick={() => editPost(post)}
-                      className="rounded-xl border border-violet-200 px-4 py-2 text-sm font-black text-violet-600 hover:bg-violet-50"
+                      className="rounded-xl border border-teal-200 px-4 py-2 text-sm font-black text-teal-600 hover:bg-teal-50"
                     >
                       Edit
                     </button>
@@ -555,3 +555,6 @@ export default function AdminBlogPage() {
     </main>
   );
 }
+
+
+

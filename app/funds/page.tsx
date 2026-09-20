@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 
@@ -129,17 +129,17 @@ export default function FundsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="absolute -bottom-40 -right-20 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-teal-500/20 blur-xl" />
+        <div className="absolute -bottom-40 -right-20 h-96 w-96 rounded-full bg-cyan-500/20 blur-xl" />
       </div>
       <div className="relative mx-auto max-w-5xl">
 <div className="mt-3 grid items-start gap-3 sm:gap-5 lg:grid-cols-[280px_1fr]">
-          <aside className="order-2 rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
+          <aside className="order-2 rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-1 sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
+                <p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-600">
                   Scan & Pay
                 </p>
                 <p className="mt-1 text-lg font-black">UPI Payment</p>
@@ -158,20 +158,20 @@ export default function FundsPage() {
               />
             </div>
 
-            <div className="mt-3 rounded-2xl bg-violet-50 p-2.5 sm:mt-4 sm:p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-violet-500">
+            <div className="mt-3 rounded-2xl bg-teal-50 p-2.5 sm:mt-4 sm:p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-500">
                 UPI ID
               </p>
 
               <div className="mt-2 flex items-center justify-between gap-2">
-                <p className="truncate text-sm font-black text-violet-950">
+                <p className="truncate text-sm font-black text-teal-950">
                   {UPI_ID}
                 </p>
 
                 <button
                   type="button"
                   onClick={copyUpi}
-                  className="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-black text-violet-700 shadow-sm ring-1 ring-violet-100"
+                  className="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-black text-teal-700 shadow-sm ring-1 ring-teal-100"
                 >
                   {copied ? "Copied ✓" : "Copy"}
                 </button>
@@ -179,13 +179,13 @@ export default function FundsPage() {
             </div>
 
             <p className="mt-2 text-center text-xs font-medium text-slate-400 sm:mt-4">
-              Pay exactly <b className="text-violet-700">{displayAmount}</b>
+              Pay exactly <b className="text-teal-700">{displayAmount}</b>
             </p>
           </aside>
 
-          <section className="order-1 overflow-hidden rounded-3xl border border-white/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 lg:order-2">
+          <section className="order-1 overflow-hidden rounded-3xl border border-white/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 lg:order-2">
             <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
-              <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
+              <p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-600">
                 Payment verification
               </p>
 
@@ -230,7 +230,7 @@ export default function FundsPage() {
                     setPaymentMethod(event.target.value);
                     setNotice(null);
                   }}
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 >
                   {PAYMENT_METHODS.map((method) => (
                     <option key={method} value={method}>
@@ -266,7 +266,7 @@ export default function FundsPage() {
                   placeholder="Enter UTR or transaction reference"
                   autoComplete="off"
                   required
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 />
 
                 <p className="mt-1 text-xs font-medium text-slate-400">
@@ -287,7 +287,7 @@ export default function FundsPage() {
 
                 <div className="mt-2 flex gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-violet-600">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-teal-600">
                       ₹
                     </span>
 
@@ -303,14 +303,14 @@ export default function FundsPage() {
                       }}
                       placeholder="0.00"
                       required
-                      className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-lg font-black outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                      className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-lg font-black outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={!validAmount || !validUtr || loading}
-                    className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 text-sm font-black text-white shadow-md shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-7 text-sm font-black text-white shadow-md shadow-teal-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {loading ? "..." : "Pay"}
                   </button>
@@ -327,8 +327,8 @@ export default function FundsPage() {
                       }}
                       className={`rounded-lg border py-2 text-xs font-black transition ${
                         numberAmount === preset
-                          ? "border-violet-600 bg-violet-600 text-white"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:text-violet-700"
+                          ? "border-teal-600 bg-teal-600 text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"
                       }`}
                     >
                       ₹{preset}
@@ -339,7 +339,7 @@ export default function FundsPage() {
               <button
                 type="submit"
                 disabled={!validAmount || !validUtr || loading}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 text-sm font-black text-white shadow-lg shadow-teal-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading ? (
                   <>
@@ -356,10 +356,10 @@ export default function FundsPage() {
           </section>
         </div>
 
-        <section className="mt-6 rounded-3xl border border-white/10 bg-white/95 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
+        <section className="mt-6 rounded-3xl border border-white/10 bg-white/95 p-5 shadow-2xl shadow-black/20 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
+              <p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-600">
                 Help
               </p>
               <h2 className="mt-1 text-xl font-black">Common questions</h2>
@@ -376,7 +376,7 @@ export default function FundsPage() {
                 key={question}
                 className={`overflow-hidden rounded-2xl border ${
                   openFaq === index
-                    ? "border-violet-200 bg-violet-50"
+                    ? "border-teal-200 bg-teal-50"
                     : "border-slate-200"
                 }`}
               >
@@ -390,7 +390,7 @@ export default function FundsPage() {
                   <span>{question}</span>
 
                   <span
-                    className={`text-lg text-violet-600 transition ${
+                    className={`text-lg text-teal-600 transition ${
                       openFaq === index ? "rotate-45" : ""
                     }`}
                   >
@@ -399,7 +399,7 @@ export default function FundsPage() {
                 </button>
 
                 {openFaq === index && (
-                  <p className="border-t border-violet-100 px-4 pb-4 pt-3 text-xs font-medium leading-5 text-slate-600">
+                  <p className="border-t border-teal-100 px-4 pb-4 pt-3 text-xs font-medium leading-5 text-slate-600">
                     {answer}
                   </p>
                 )}
@@ -417,6 +417,9 @@ main { animation: premiumFade .45s ease-out; }
     </main>
   );
 }
+
+
+
 
 
 

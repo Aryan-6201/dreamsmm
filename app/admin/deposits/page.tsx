@@ -113,7 +113,7 @@ export default function AdminDepositsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 text-slate-900">
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-xl">
+      <header className="border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div>
             <h1 className="text-lg font-bold tracking-tight">
@@ -160,7 +160,7 @@ export default function AdminDepositsPage() {
             disabled={loading}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
           >
-            ↻ Refresh
+            â†» Refresh
           </button>
         </div>
 
@@ -170,7 +170,7 @@ export default function AdminDepositsPage() {
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-500">Pending Requests</p>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                ⏳
+                â³
               </div>
             </div>
 
@@ -187,12 +187,12 @@ export default function AdminDepositsPage() {
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-500">Pending Amount</p>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                ₹
+                â‚¹
               </div>
             </div>
 
             <p className="mt-4 text-3xl font-bold">
-              ₹{totalPending.toFixed(2)}
+              â‚¹{totalPending.toFixed(2)}
             </p>
 
             <p className="mt-1 text-xs text-slate-400">
@@ -203,7 +203,7 @@ export default function AdminDepositsPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-500">Payment Method</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
                 UPI
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function AdminDepositsPage() {
             </p>
 
             <p className="mt-1 text-xs text-slate-400">
-              PhonePe · Google Pay · UPI
+              PhonePe Â· Google Pay Â· UPI
             </p>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function AdminDepositsPage() {
               onClick={() => setMessage("")}
               className="ml-4 text-blue-600 hover:text-slate-900"
             >
-              ×
+              Ã—
             </button>
           </div>
         )}
@@ -247,7 +247,7 @@ export default function AdminDepositsPage() {
             <div className="flex items-center gap-3">
               <div className="relative w-full sm:w-72">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  🔎
+                  ðŸ”Ž
                 </span>
                 <input
                   type="search"
@@ -274,7 +274,7 @@ export default function AdminDepositsPage() {
           ) : filteredDeposits.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-14 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-2xl">
-                ✓
+                âœ“
               </div>
 
               <h3 className="mt-4 font-semibold">
@@ -317,7 +317,7 @@ export default function AdminDepositsPage() {
                         </p>
 
                         <p className="mt-2 text-xs text-slate-400">
-                          Request #{deposit.id} ·{" "}
+                          Request #{deposit.id} Â·{" "}
                           {new Date(deposit.createdAt).toLocaleString()}
                         </p>
                       </div>
@@ -330,7 +330,7 @@ export default function AdminDepositsPage() {
                       </p>
 
                       <p className="mt-1 text-2xl font-bold">
-                        ₹{deposit.amount}
+                        â‚¹{deposit.amount}
                       </p>
                     </div>
 
@@ -381,3 +381,5 @@ export default function AdminDepositsPage() {
     </main>
   );
 }
+
+

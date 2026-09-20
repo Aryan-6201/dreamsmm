@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -212,7 +212,7 @@ export default function Sidebar() {
           MOBILE HEADER
       ====================================================== */}
 
-      <header className="fixed inset-x-0 top-0 z-[90] flex h-[70px] items-center justify-between border-b border-violet-100 bg-white/95 px-4 shadow-[0_6px_28px_rgba(76,29,149,.07)] backdrop-blur-xl lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-[90] flex h-[70px] items-center justify-between border-b border-cyan-100 bg-white/95 px-4 shadow-[0_6px_28px_rgba(13,148,136,.10)] backdrop-blur-sm lg:hidden">
 
         <Link
           href="/dashboard"
@@ -223,7 +223,7 @@ export default function Sidebar() {
 
           <div>
             <p className="text-[16px] font-black tracking-[-.035em] text-slate-950">
-              Dream<span className="text-violet-600">SMM</span>
+              Dream<span className="text-teal-600">SMM</span>
             </p>
 
             <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.18em] text-slate-400">
@@ -236,7 +236,7 @@ export default function Sidebar() {
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Open navigation"
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 shadow-sm transition-all duration-200 hover:bg-violet-100 active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-100 bg-teal-50 text-teal-700 shadow-sm transition-all duration-200 hover:bg-teal-100 active:scale-95"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -269,9 +269,9 @@ export default function Sidebar() {
           fixed inset-y-0 left-0 z-[110]
           flex h-screen w-[min(400px,100vw)] max-w-[100vw] flex-col
           overflow-hidden
-          border-r border-violet-100
-          bg-[#faf9ff]
-          shadow-[18px_0_55px_rgba(76,29,149,.10)]
+          border-r border-cyan-100
+          bg-[#f4fcfd]
+          shadow-[18px_0_55px_rgba(13,148,136,.10)]
           transition-transform duration-300
           ease-[cubic-bezier(.22,1,.36,1)]
           sm:w-[400px]
@@ -292,15 +292,15 @@ export default function Sidebar() {
 
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-          <div className="absolute -left-28 -top-28 h-72 w-72 rounded-full bg-violet-200/25 blur-[90px]" />
+          <div className="absolute -left-28 -top-28 h-72 w-72 rounded-full bg-cyan-200/25 blur-[90px]" />
 
-          <div className="absolute -bottom-32 -right-28 h-80 w-80 rounded-full bg-indigo-100/35 blur-[100px]" />
+          <div className="absolute -bottom-32 -right-28 h-80 w-80 rounded-full bg-teal-100/30 blur-[100px]" />
 
           <div
             className="absolute inset-0 opacity-[.04]"
             style={{
               backgroundImage:
-                "radial-gradient(circle,#7c3aed .7px,transparent .7px)",
+                "radial-gradient(circle,#0d9488 .7px,transparent .7px)",
               backgroundSize: "22px 22px",
             }}
           />
@@ -311,7 +311,7 @@ export default function Sidebar() {
             BRAND HEADER
         ==================================================== */}
 
-        <div className="relative flex h-[80px] shrink-0 items-center border-b border-violet-100 bg-white/85 px-4 backdrop-blur-xl">
+        <div className="relative flex h-[80px] shrink-0 items-center border-b border-cyan-100 bg-white/85 px-4 backdrop-blur-sm">
 
           <Link
             href="/dashboard"
@@ -324,7 +324,7 @@ export default function Sidebar() {
             <div className="min-w-0">
 
               <p className="truncate text-[16px] font-black tracking-[-.035em] text-slate-950">
-                Dream<span className="text-violet-600">SMM</span>
+                Dream<span className="text-teal-600">SMM</span>
               </p>
 
               <div className="mt-0.5 flex items-center gap-1.5">
@@ -347,7 +347,7 @@ export default function Sidebar() {
             type="button"
             onClick={() => setMobileOpen(false)}
             aria-label="Close sidebar"
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 lg:hidden"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:hidden"
           >
             <X className="h-5 w-5" />
           </button>
@@ -393,7 +393,7 @@ export default function Sidebar() {
 
           {/* DIVIDER */}
 
-          <div className="my-5 h-px bg-gradient-to-r from-transparent via-violet-200 to-transparent" />
+          <div className="my-5 h-px bg-gradient-to-r from-transparent via-cyan-200 to-transparent" />
 
           {/* TOOLS */}
 
@@ -420,11 +420,11 @@ export default function Sidebar() {
               PREMIUM CARD
           ================================================== */}
 
-          <div className="mt-6 rounded-[20px] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-4 shadow-[0_8px_28px_rgba(76,29,149,.055)]">
+          <div className="mt-6 rounded-[20px] border border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-teal-50 p-4 shadow-[0_8px_28px_rgba(13,148,136,.055)]">
 
             <div className="flex items-center gap-3">
 
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-[0_7px_18px_rgba(109,40,217,.22)]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_7px_18px_rgba(13,148,136,.20)]">
                 <Sparkles className="h-[18px] w-[18px]" />
               </div>
 
@@ -440,7 +440,7 @@ export default function Sidebar() {
 
               </div>
 
-              <Zap className="h-4 w-4 shrink-0 text-violet-500" />
+              <Zap className="h-4 w-4 shrink-0 text-teal-500" />
 
             </div>
 
@@ -452,15 +452,15 @@ export default function Sidebar() {
             BOTTOM ACCOUNT
         ==================================================== */}
 
-        <div className="relative shrink-0 border-t border-violet-100 bg-white/90 p-3 backdrop-blur-xl">
+        <div className="relative shrink-0 border-t border-cyan-100 bg-white/90 p-3 backdrop-blur-sm">
 
           <Link
             href="/account"
             onClick={closeMobile}
-            className="group flex min-h-[52px] items-center gap-3 rounded-xl px-2.5 py-2 transition hover:bg-violet-50"
+            className="group flex min-h-[52px] items-center gap-3 rounded-xl px-2.5 py-2 transition hover:bg-teal-50"
           >
 
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-violet-100 group-hover:text-violet-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-teal-100 group-hover:text-teal-600">
               <UserRound className="h-4 w-4" />
             </div>
 
@@ -476,7 +476,7 @@ export default function Sidebar() {
 
             </div>
 
-            <ChevronRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-500" />
+            <ChevronRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-teal-500" />
 
           </Link>
 
@@ -539,8 +539,8 @@ function NavItem({
 
         ${
           active
-            ? "border border-violet-200 bg-gradient-to-r from-violet-100 via-violet-50 to-white text-violet-800 shadow-[0_7px_22px_rgba(124,58,237,.10)]"
-            : "border border-transparent bg-transparent text-slate-700 hover:border-violet-100 hover:bg-white hover:text-violet-700 hover:shadow-[0_5px_18px_rgba(76,29,149,.045)]"
+            ? "border border-cyan-200 bg-gradient-to-r from-cyan-50 via-white to-[#fffdf0] text-teal-800 shadow-[0_7px_22px_rgba(13,148,136,.10)]"
+            : "border border-transparent bg-transparent text-slate-700 hover:border-cyan-100 hover:bg-white hover:text-teal-700 hover:shadow-[0_5px_18px_rgba(13,148,136,.045)]"
         }
       `}
     >
@@ -548,7 +548,7 @@ function NavItem({
       {/* Active indicator */}
 
       {active && (
-        <span className="absolute left-0 top-2.5 h-7 w-[3px] rounded-r-full bg-gradient-to-b from-violet-600 to-indigo-600" />
+        <span className="absolute left-0 top-2.5 h-7 w-[3px] rounded-r-full bg-gradient-to-b from-[#ffd84d] to-[#f5b800]" />
       )}
 
       {/* Icon */}
@@ -560,8 +560,8 @@ function NavItem({
 
           ${
             active
-              ? "bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-[0_7px_18px_rgba(109,40,217,.22)]"
-              : "bg-slate-50 text-slate-600 group-hover:bg-violet-50 group-hover:text-violet-700"
+              ? "bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_7px_18px_rgba(13,148,136,.20)]"
+              : "bg-slate-50 text-slate-600 group-hover:bg-cyan-50 group-hover:text-teal-700"
           }
         `}
       >
@@ -575,7 +575,7 @@ function NavItem({
           flex-1 text-[14px] font-bold leading-none
           ${
             active
-              ? "text-violet-800"
+              ? "text-teal-800"
               : "text-slate-700"
           }
         `}
@@ -599,8 +599,8 @@ function NavItem({
 
           ${
             active
-              ? "text-violet-500"
-              : "text-slate-300 opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-violet-500"
+              ? "text-teal-500"
+              : "text-slate-300 opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-teal-500"
           }
         `}
       />
@@ -635,17 +635,26 @@ function SectionTitle({
 
 function Brand() {
   return (
-    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white shadow-[0_8px_22px_rgba(109,40,217,.24)]">
+    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-gradient-to-br from-teal-500 via-cyan-500 to-[#ffd84d] text-white shadow-[0_8px_22px_rgba(13,148,136,.24)]">
 
       <span className="relative z-10 text-2xl font-black tracking-tight">D</span>
 
       <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
 
-      <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-400" />
+      <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#ffd84d]" />
 
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 

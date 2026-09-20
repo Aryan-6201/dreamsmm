@@ -1,6 +1,6 @@
 /* =========================================================
-   DREAMSMM — PREMIUM SUPPORT TICKETS
-   Light luxury / violet support workspace
+   DREAMSMM â€” PREMIUM SUPPORT TICKETS
+   Light luxury / aqua support workspace
 ========================================================= */
 
 "use client";
@@ -27,10 +27,10 @@ const filters: Array<[TicketFilter, string]> = [
 ];
 
 const topics = [
-  ["◈", "Order issue", "Delayed, stuck or incorrect order", "Order issue"],
-  ["₹", "Payment help", "Deposit, payment or balance question", "Payment help"],
-  ["✦", "Service question", "Need help with a service", "Service question"],
-  ["◎", "Account support", "Something about your account", "Account support"],
+  ["â—ˆ", "Order issue", "Delayed, stuck or incorrect order", "Order issue"],
+  ["â‚¹", "Payment help", "Deposit, payment or balance question", "Payment help"],
+  ["âœ¦", "Service question", "Need help with a service", "Service question"],
+  ["â—Ž", "Account support", "Something about your account", "Account support"],
 ];
 
 export default function TicketsPage() {
@@ -158,17 +158,17 @@ export default function TicketsPage() {
 
           {/* HERO */}
 
-          <section className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-gradient-to-br from-white via-violet-50 to-indigo-50 p-5 shadow-[0_24px_80px_rgba(79,70,229,0.12)] sm:p-8 lg:p-10">
-            <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-violet-300/30 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl" />
+          <section className="relative overflow-hidden rounded-[34px] border border-teal-100 bg-gradient-to-br from-white via-teal-50 to-cyan-50 p-5 shadow-[0_24px_80px_rgba(79,70,229,0.12)] sm:p-8 lg:p-10">
+            <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-teal-300/30 blur-xl" />
+            <div className="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-cyan-300/20 blur-xl" />
 
             <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/90 px-3.5 py-2 shadow-sm">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[9px] font-black text-white">
+                <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-white/90 px-3.5 py-2 shadow-sm">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-600 text-[9px] font-black text-white">
                     ?
                   </span>
-                  <span className="text-[9px] font-black uppercase tracking-[0.24em] text-violet-600">
+                  <span className="text-[9px] font-black uppercase tracking-[0.24em] text-teal-600">
                     Premium customer care
                   </span>
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -179,7 +179,7 @@ export default function TicketsPage() {
 
                 <h1 className="mt-5 text-3xl font-black tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
                   Support, without the{" "}
-                  <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-teal-500 via-cyan-500 to-cyan-600 bg-clip-text text-transparent">
                     friction.
                   </span>
                 </h1>
@@ -190,17 +190,17 @@ export default function TicketsPage() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-2">
-                  <TrustPill icon="✓" text="Secure support" />
-                  <TrustPill icon="↗" text="Ticket tracking" />
-                  <TrustPill icon="◎" text="Organized history" />
+                  <TrustPill icon="âœ“" text="Secure support" />
+                  <TrustPill icon="â†—" text="Ticket tracking" />
+                  <TrustPill icon="â—Ž" text="Organized history" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
-                <Stat label="Total" value={String(stats.total)} icon="◎" />
+                <Stat label="Total" value={String(stats.total)} icon="â—Ž" />
                 <Stat label="Open" value={String(stats.open)} icon="!" />
-                <Stat label="Active" value={String(stats.active)} icon="↻" />
-                <Stat label="Closed" value={String(stats.closed)} icon="✓" />
+                <Stat label="Active" value={String(stats.active)} icon="â†»" />
+                <Stat label="Closed" value={String(stats.closed)} icon="âœ“" />
               </div>
             </div>
           </section>
@@ -209,7 +209,7 @@ export default function TicketsPage() {
 
           <section className="mt-6">
             <div className="mb-3">
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
                 Quick start
               </p>
               <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900">
@@ -223,14 +223,14 @@ export default function TicketsPage() {
                   key={title}
                   type="button"
                   onClick={() => chooseTopic(subjectValue)}
-                  className="group rounded-[22px] border border-slate-200 bg-white p-4 text-left shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_16px_40px_rgba(99,102,241,0.12)]"
+                  className="group rounded-[22px] border border-slate-200 bg-white p-4 text-left shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-[0_16px_40px_rgba(99,102,241,0.12)]"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-600 ring-1 ring-violet-100 group-hover:bg-violet-100">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-sm font-black text-teal-600 ring-1 ring-teal-100 group-hover:bg-teal-100">
                       {icon}
                     </div>
-                    <span className="text-lg font-black text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-500">
-                      →
+                    <span className="text-lg font-black text-slate-300 transition group-hover:translate-x-1 group-hover:text-teal-500">
+                      â†’
                     </span>
                   </div>
 
@@ -253,15 +253,15 @@ export default function TicketsPage() {
 
             <section
               id="ticket-composer"
-              className="overflow-hidden rounded-[30px] border border-violet-100 bg-white shadow-[0_14px_50px_rgba(15,23,42,0.055)]"
+              className="overflow-hidden rounded-[30px] border border-teal-100 bg-white shadow-[0_14px_50px_rgba(15,23,42,0.055)]"
             >
-              <div className="border-b border-violet-100 bg-gradient-to-r from-violet-50 to-indigo-50 p-5 sm:p-6">
+              <div className="border-b border-teal-100 bg-gradient-to-r from-teal-50 to-cyan-50 p-5 sm:p-6">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-sm font-black text-white shadow-lg shadow-violet-200">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-sm font-black text-white shadow-lg shadow-teal-200">
                     +
                   </div>
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-600">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-600">
                       New conversation
                     </p>
                     <h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">
@@ -292,7 +292,7 @@ export default function TicketsPage() {
                     maxLength={120}
                     placeholder="e.g. Order #1024 is not progressing"
                     required
-                    className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                    className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-300 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
 
@@ -313,20 +313,20 @@ export default function TicketsPage() {
                     rows={8}
                     placeholder="Explain the issue with as much detail as possible..."
                     required
-                    className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm font-medium leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                    className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm font-medium leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-300 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
 
-                <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
+                <div className="rounded-2xl border border-teal-100 bg-teal-50 p-4">
                   <div className="flex items-start gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-xs font-black text-violet-600 shadow-sm">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-xs font-black text-teal-600 shadow-sm">
                       i
                     </span>
                     <div>
-                      <p className="text-[10px] font-black text-violet-800">
+                      <p className="text-[10px] font-black text-teal-800">
                         Help us resolve it faster
                       </p>
-                      <p className="mt-1 text-[9px] font-medium leading-4 text-violet-600/75">
+                      <p className="mt-1 text-[9px] font-medium leading-4 text-teal-600/75">
                         Include your order ID, service name and a clear
                         explanation whenever possible.
                       </p>
@@ -345,12 +345,12 @@ export default function TicketsPage() {
                 <button
                   type="submit"
                   disabled={submitting || !subject.trim() || !message.trim()}
-                  className="group relative flex h-13 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-xs font-black text-white shadow-[0_14px_32px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(99,102,241,0.30)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="group relative flex h-13 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-cyan-600 text-xs font-black text-white shadow-[0_14px_32px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(99,102,241,0.30)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <span>
                     {submitting ? "Creating ticket..." : "Create Support Ticket"}
                   </span>
-                  {!submitting && <span>→</span>}
+                  {!submitting && <span>â†’</span>}
                 </button>
               </form>
             </section>
@@ -361,7 +361,7 @@ export default function TicketsPage() {
               <div className="border-b border-slate-100 p-5 sm:p-6">
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
                       Your support
                     </p>
                     <h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">
@@ -376,7 +376,7 @@ export default function TicketsPage() {
                     type="button"
                     onClick={loadTickets}
                     disabled={loading}
-                    className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-[9px] font-black text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:opacity-40"
+                    className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-[9px] font-black text-slate-500 shadow-sm transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 disabled:opacity-40"
                   >
                     {loading ? "Refreshing..." : "Refresh"}
                   </button>
@@ -385,13 +385,13 @@ export default function TicketsPage() {
                 <div className="mt-4 flex flex-col gap-2">
                   <div className="relative">
                     <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400">
-                      ⌕
+                      âŒ•
                     </span>
                     <input
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       placeholder="Search tickets..."
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-xs font-semibold text-slate-700 outline-none placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-xs font-semibold text-slate-700 outline-none placeholder:text-slate-400 focus:border-teal-300 focus:bg-white focus:ring-4 focus:ring-teal-100"
                     />
                   </div>
 
@@ -403,8 +403,8 @@ export default function TicketsPage() {
                         onClick={() => setFilter(value)}
                         className={`shrink-0 rounded-xl border px-3.5 py-2 text-[9px] font-black transition ${
                           filter === value
-                            ? "border-violet-200 bg-violet-50 text-violet-700 shadow-sm"
-                            : "border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:bg-violet-50/50 hover:text-violet-600"
+                            ? "border-teal-200 bg-teal-50 text-teal-700 shadow-sm"
+                            : "border-slate-200 bg-white text-slate-500 hover:border-teal-200 hover:bg-teal-50/50 hover:text-teal-600"
                         }`}
                       >
                         {label}
@@ -442,15 +442,15 @@ export default function TicketsPage() {
           {/* BENEFITS */}
 
           <section className="mt-5 grid gap-3 sm:grid-cols-3">
-            <Benefit icon="✓" title="Clear communication" text="Keep every issue and support request together." />
-            <Benefit icon="↻" title="Easy follow-up" text="Refresh your ticket history whenever you need." />
-            <Benefit icon="◎" title="Organized support" text="Search and filter instead of hunting through messages." />
+            <Benefit icon="âœ“" title="Clear communication" text="Keep every issue and support request together." />
+            <Benefit icon="â†»" title="Easy follow-up" text="Refresh your ticket history whenever you need." />
+            <Benefit icon="â—Ž" title="Organized support" text="Search and filter instead of hunting through messages." />
           </section>
 
           {/* FAQ */}
 
           <section className="mt-6 rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.045)] sm:p-7">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-500">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-500">
               Support guide
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
@@ -465,8 +465,8 @@ export default function TicketsPage() {
             </div>
           </section>
 
-          <section className="relative mt-6 overflow-hidden rounded-[30px] bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 p-5 text-white shadow-[0_22px_55px_rgba(79,70,229,0.20)] sm:p-7">
-            <div className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+          <section className="relative mt-6 overflow-hidden rounded-[30px] bg-gradient-to-r from-teal-500 via-cyan-500 to-cyan-600 p-5 text-white shadow-[0_22px_55px_rgba(79,70,229,0.20)] sm:p-7">
+            <div className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-white/10 blur-xl" />
             <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">
@@ -489,9 +489,9 @@ export default function TicketsPage() {
                     block: "center",
                   })
                 }
-                className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl bg-white px-6 text-xs font-black text-violet-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-50"
+                className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl bg-white px-6 text-xs font-black text-teal-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-teal-50"
               >
-                Open a Ticket →
+                Open a Ticket â†’
               </button>
             </div>
           </section>
@@ -520,8 +520,8 @@ function TicketCard({
     <article
       className={`overflow-hidden rounded-[24px] border bg-white transition-all ${
         expanded
-          ? "border-violet-200 shadow-[0_14px_40px_rgba(99,102,241,0.09)]"
-          : "border-slate-200 shadow-[0_7px_25px_rgba(15,23,42,0.035)] hover:border-violet-200"
+          ? "border-teal-200 shadow-[0_14px_40px_rgba(99,102,241,0.09)]"
+          : "border-slate-200 shadow-[0_7px_25px_rgba(15,23,42,0.035)] hover:border-teal-200"
       }`}
     >
       <button
@@ -537,7 +537,7 @@ function TicketCard({
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[9px] font-black text-violet-600">
+              <span className="text-[9px] font-black text-teal-600">
                 #{ticket.id}
               </span>
               <StatusBadge status={ticket.status} />
@@ -562,7 +562,7 @@ function TicketCard({
           </div>
 
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-sm font-black text-slate-400">
-            {expanded ? "−" : "+"}
+            {expanded ? "âˆ’" : "+"}
           </span>
         </div>
       </button>
@@ -571,7 +571,7 @@ function TicketCard({
         <div className="border-t border-slate-100 bg-slate-50/60 p-4 sm:p-5">
           <div className="grid gap-3 md:grid-cols-[1fr_220px]">
             <div className="rounded-2xl border border-slate-200 bg-white p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-500">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-500">
                 Conversation
               </p>
               <p className="mt-3 whitespace-pre-wrap text-xs font-medium leading-6 text-slate-600">
@@ -579,8 +579,8 @@ function TicketCard({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-violet-500">
+            <div className="rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50 to-cyan-50 p-4">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-500">
                 Ticket details
               </p>
               <div className="mt-4 space-y-3">
@@ -608,14 +608,14 @@ function statusMeta(status: Ticket["status"]) {
 
   if (status === "IN_PROGRESS") {
     return {
-      icon: "↻",
+      icon: "â†»",
       iconClass: "bg-blue-50 text-blue-600 ring-1 ring-blue-100",
       badge: "border-blue-200 bg-blue-50 text-blue-700",
     };
   }
 
   return {
-    icon: "✓",
+    icon: "âœ“",
     iconClass: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100",
     badge: "border-emerald-200 bg-emerald-50 text-emerald-700",
   };
@@ -635,8 +635,8 @@ function StatusBadge({ status }: { status: Ticket["status"] }) {
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-[9px] font-bold text-violet-500">{label}</span>
-      <span className="max-w-[62%] truncate text-right text-[9px] font-black text-violet-800">
+      <span className="text-[9px] font-bold text-teal-500">{label}</span>
+      <span className="max-w-[62%] truncate text-right text-[9px] font-black text-teal-800">
         {value}
       </span>
     </div>
@@ -655,7 +655,7 @@ function Stat({
   return (
     <div className="min-w-[82px] rounded-2xl border border-white bg-white/85 p-3 shadow-sm">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-black text-violet-600">{icon}</span>
+        <span className="text-xs font-black text-teal-600">{icon}</span>
         <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">
           {label}
         </span>
@@ -668,7 +668,7 @@ function Stat({
 function TrustPill({ icon, text }: { icon: string; text: string }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-xl border border-white bg-white/80 px-3 py-2 text-[9px] font-black text-slate-500 shadow-sm">
-      <span className="text-violet-600">{icon}</span>
+      <span className="text-teal-600">{icon}</span>
       {text}
     </span>
   );
@@ -686,7 +686,7 @@ function Benefit({
   return (
     <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.04)]">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-sm font-black text-violet-600 ring-1 ring-violet-100">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-sm font-black text-teal-600 ring-1 ring-teal-100">
           {icon}
         </div>
         <div>
@@ -702,10 +702,10 @@ function Benefit({
 
 function Faq({ question, answer }: { question: string; answer: string }) {
   return (
-    <details className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-violet-200">
+    <details className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-teal-200">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-xs font-black text-slate-800">
         <span>{question}</span>
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-violet-600 shadow-sm">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-teal-600 shadow-sm">
           +
         </span>
       </summary>
@@ -734,7 +734,7 @@ function Alert({
       }`}
     >
       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white font-black shadow-sm">
-        {good ? "✓" : "!"}
+        {good ? "âœ“" : "!"}
       </span>
       <span className="pt-1">{message}</span>
     </div>
@@ -767,7 +767,7 @@ function Skeleton() {
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
     <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50/60 p-12 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-xl font-black text-violet-500 ring-1 ring-violet-100">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-xl font-black text-teal-500 ring-1 ring-teal-100">
         ?
       </div>
       <h3 className="mt-4 text-sm font-black text-slate-800">
@@ -802,3 +802,5 @@ function formatDate(value: string) {
    LIGHT PREMIUM SUPPORT DESIGN
    Existing API contract intentionally preserved.
 ========================================================= */
+
+

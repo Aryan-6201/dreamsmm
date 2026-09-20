@@ -264,7 +264,7 @@ export default function AdminCategoriesPage() {
             href="/admin"
             className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-gray-300 hover:bg-white/[0.08] hover:text-white"
           >
-            ← Admin
+            â† Admin
           </a>
         </div>
       </header>
@@ -588,8 +588,8 @@ export default function AdminCategoriesPage() {
                       </div>
 
                       <p className="mt-1 text-xs text-gray-600">
-                        {category.platform} ·{" "}
-                        {category.icon} · Order{" "}
+                        {category.platform} Â·{" "}
+                        {category.icon} Â· Order{" "}
                         {category.sortOrder}
                       </p>
                     </div>
@@ -682,3 +682,5 @@ function Field({
     </label>
   );
 }
+
+

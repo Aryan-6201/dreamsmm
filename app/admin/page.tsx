@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -72,12 +72,12 @@ function ActionCard({ href, icon, title, description, badge }: Action) {
   return (
     <Link
       href={href}
-      className="group relative flex min-h-[170px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-950/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2  "
+      className="group relative flex min-h-[170px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm ring-1 ring-slate-100 transition duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl hover:shadow-teal-950/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2  "
     >
-      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-violet-100/70 blur-3xl transition duration-300 group-hover:scale-125 group-hover:bg-fuchsia-100/70 " />
+      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-teal-100/70 blur-xl transition duration-300 group-hover:scale-125 group-hover:bg-teal-100/70 " />
 
       <div className="relative flex items-start justify-between gap-3">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl text-white shadow-lg shadow-violet-200 transition duration-300 group-hover:rotate-3 group-hover:scale-105 ">
+        <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-xl text-white shadow-lg shadow-teal-200 transition duration-300 group-hover:rotate-3 group-hover:scale-105 ">
           {icon}
         </div>
 
@@ -90,13 +90,13 @@ function ActionCard({ href, icon, title, description, badge }: Action) {
 
       <div className="relative mt-auto pt-6">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-black text-slate-900 transition-colors group-hover:text-violet-700  dark:group-hover:text-violet-300">
+          <h3 className="text-sm font-black text-slate-900 transition-colors group-hover:text-teal-700  dark:group-hover:text-teal-300">
             {title}
           </h3>
 
           <span
             aria-hidden="true"
-            className="text-base text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-600 dark:text-slate-600"
+            className="text-base text-slate-300 transition group-hover:translate-x-1 group-hover:text-teal-600 dark:text-slate-600"
           >
             →
           </span>
@@ -234,8 +234,8 @@ export default function AdminDashboard() {
     <main
       className={
         darkMode
-          ? "min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40"
-          : "min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40"
+          ? "min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/40"
+          : "min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/40"
       }
     >
       <div className="min-h-screen text-slate-900 dark:text-slate-100 lg:grid lg:grid-cols-[260px_1fr]">
@@ -254,13 +254,13 @@ export default function AdminDashboard() {
         >
           <div className="flex items-center justify-between px-2">
             <Link href="/admin" className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 font-black text-white shadow-lg shadow-violet-200 ">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 font-black text-white shadow-lg shadow-teal-200 ">
                 D
               </span>
 
               <span>
                 <b className="block text-lg font-black tracking-tight">
-                  Dream<span className="text-violet-600">SMM</span>
+                  Dream<span className="text-teal-600">SMM</span>
                 </b>
                 <small className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-400">
                   Admin console
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition ${
                   item.active
-                    ? "bg-violet-50 text-violet-700  "
+                    ? "bg-teal-50 text-teal-700  "
                     : "text-slate-500 hover:bg-slate-100 hover:text-slate-900   "
                 }`}
               >
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
 
           <div className="mt-auto rounded-2xl bg-slate-50 p-4 ">
             <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 font-black text-violet-700  ">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-teal-100 font-black text-teal-700  ">
                 A
               </span>
 
@@ -320,7 +320,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="mt-4 flex w-full items-center justify-between rounded-xl bg-white px-3 py-2.5 text-xs font-bold text-slate-600 shadow-sm ring-1 ring-slate-200 transition hover:text-violet-700    dark:hover:text-violet-300"
+              className="mt-4 flex w-full items-center justify-between rounded-xl bg-white px-3 py-2.5 text-xs font-bold text-slate-600 shadow-sm ring-1 ring-slate-200 transition hover:text-teal-700    dark:hover:text-teal-300"
             >
               <span>"Appearance"</span>
               <span>"☼"</span>
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
         </aside>
 
         <div className="min-w-0">
-          <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-xl dark:border-white/10 ">
+          <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-sm dark:border-white/10 ">
             <div className="flex h-[72px] items-center gap-3 px-4 sm:px-6 lg:px-8">
               <button
                 className="grid h-10 w-10 place-items-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden  "
@@ -348,7 +348,7 @@ export default function AdminDashboard() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search actions..."
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 dark:border-white/10   dark:focus:border-violet-400"
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-medium outline-none transition placeholder:text-slate-400 focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100 dark:border-white/10   dark:focus:border-teal-400"
                 />
               </div>
 
@@ -375,13 +375,13 @@ export default function AdminDashboard() {
           </header>
 
           <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-violet-600 to-indigo-600 p-6 text-white shadow-xl shadow-violet-200/70 sm:p-8">
-              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-fuchsia-400/20 blur-3xl" />
-              <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-indigo-300/20 blur-3xl" />
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-600 to-cyan-600 p-6 text-white shadow-xl shadow-teal-200/70 sm:p-8">
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-teal-400/20 blur-xl" />
+              <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-cyan-300/20 blur-xl" />
 
               <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
                 <div>
-                  <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-violet-100">
+                  <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-teal-100">
                     Control Center
                   </span>
 
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
                     Good to see you, Administrator.
                   </h1>
 
-                  <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-violet-100">
+                  <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-teal-100">
                     Everything you need to manage DreamSMM is organized in one
                     clear workspace.
                   </p>
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                 <button
                   onClick={loadDashboard}
                   disabled={loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-violet-700 shadow-lg transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-teal-700 shadow-lg transition hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <span aria-hidden="true" className={loading ? "animate-spin" : ""}>
                     ↻
@@ -423,7 +423,7 @@ export default function AdminDashboard() {
                 value={loading ? "—" : stats.users}
                 description="Registered accounts"
                 icon="👥"
-                accent="from-violet-600 to-indigo-500"
+                accent="from-teal-600 to-cyan-500"
               />
 
               <StatCard
@@ -452,34 +452,34 @@ export default function AdminDashboard() {
             </section>
 
             <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Link href="/admin/services" className="group rounded-3xl border border-violet-100 bg-white p-5 shadow-[0_12px_35px_rgba(76,29,149,0.08)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(76,29,149,0.13)]">
+          <Link href="/admin/services" className="group rounded-3xl border border-teal-100 bg-white p-5 shadow-[0_12px_35px_rgba(13,148,136,0.08)] transition-all hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_45px_rgba(13,148,136,0.13)]">
             <div className="flex items-center justify-between">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-xl text-violet-700">⚙</span>
-              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-500">→</span>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-teal-50 text-xl text-teal-700">⚙</span>
+              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-teal-500">→</span>
             </div>
             <h3 className="mt-4 text-lg font-black text-slate-900">Add Service</h3>
             <p className="mt-1 text-sm text-slate-500">Create and manage your SMM services.</p>
           </Link>
 
-          <Link href="/admin/blog" className="group rounded-3xl border border-violet-100 bg-white p-5 shadow-[0_12px_35px_rgba(76,29,149,0.08)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(76,29,149,0.13)]">
+          <Link href="/admin/blog" className="group rounded-3xl border border-teal-100 bg-white p-5 shadow-[0_12px_35px_rgba(13,148,136,0.08)] transition-all hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_45px_rgba(13,148,136,0.13)]">
             <div className="flex items-center justify-between">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-fuchsia-50 text-xl text-fuchsia-700">✎</span>
-              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-fuchsia-500">→</span>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-teal-50 text-xl text-teal-700">✎</span>
+              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-teal-500">→</span>
             </div>
             <h3 className="mt-4 text-lg font-black text-slate-900">Write Blog</h3>
             <p className="mt-1 text-sm text-slate-500">Publish and manage blog posts.</p>
           </Link>
 
-          <Link href="/admin/categories" className="group rounded-3xl border border-violet-100 bg-white p-5 shadow-[0_12px_35px_rgba(76,29,149,0.08)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(76,29,149,0.13)]">
+          <Link href="/admin/categories" className="group rounded-3xl border border-teal-100 bg-white p-5 shadow-[0_12px_35px_rgba(13,148,136,0.08)] transition-all hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_45px_rgba(13,148,136,0.13)]">
             <div className="flex items-center justify-between">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-xl text-indigo-700">▦</span>
-              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-indigo-500">→</span>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-50 text-xl text-cyan-700">▦</span>
+              <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-cyan-500">→</span>
             </div>
             <h3 className="mt-4 text-lg font-black text-slate-900">Categories</h3>
             <p className="mt-1 text-sm text-slate-500">Organize services into categories.</p>
           </Link>
 
-          <Link href="/admin/deposits" className="group rounded-3xl border border-violet-100 bg-white p-5 shadow-[0_12px_35px_rgba(76,29,149,0.08)] transition-all hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(76,29,149,0.13)]">
+          <Link href="/admin/deposits" className="group rounded-3xl border border-teal-100 bg-white p-5 shadow-[0_12px_35px_rgba(13,148,136,0.08)] transition-all hover:-translate-y-1 hover:border-teal-200 hover:shadow-[0_18px_45px_rgba(13,148,136,0.13)]">
             <div className="flex items-center justify-between">
               <span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-xl text-emerald-700">₹</span>
               <span className="text-xl text-slate-300 transition group-hover:translate-x-1 group-hover:text-emerald-500">→</span>
@@ -493,7 +493,7 @@ export default function AdminDashboard() {
               <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm  sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[.14em] text-violet-600 ">
+                    <p className="text-[11px] font-bold uppercase tracking-[.14em] text-teal-600 ">
                       Audience health
                     </p>
                     <h2 className="mt-1 text-lg font-black text-slate-950 ">
@@ -510,13 +510,13 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="mt-8 flex items-end gap-2">
-                  <div className="h-28 flex-1 rounded-t-lg bg-violet-100 " />
-                  <div className="h-20 flex-1 rounded-t-lg bg-violet-200 " />
-                  <div className="h-36 flex-1 rounded-t-lg bg-violet-300 " />
-                  <div className="h-24 flex-1 rounded-t-lg bg-violet-400 " />
-                  <div className="h-40 flex-1 rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500" />
-                  <div className="h-32 flex-1 rounded-t-lg bg-violet-300 " />
-                  <div className="h-44 flex-1 rounded-t-lg bg-violet-200 " />
+                  <div className="h-28 flex-1 rounded-t-lg bg-teal-100 " />
+                  <div className="h-20 flex-1 rounded-t-lg bg-teal-200 " />
+                  <div className="h-36 flex-1 rounded-t-lg bg-teal-300 " />
+                  <div className="h-24 flex-1 rounded-t-lg bg-teal-400 " />
+                  <div className="h-40 flex-1 rounded-t-lg bg-gradient-to-t from-teal-600 to-teal-500" />
+                  <div className="h-32 flex-1 rounded-t-lg bg-teal-300 " />
+                  <div className="h-44 flex-1 rounded-t-lg bg-teal-200 " />
                 </div>
               </div>
 
@@ -568,7 +568,7 @@ export default function AdminDashboard() {
             <section className="mt-10">
               <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[.14em] text-violet-600 ">
+                  <p className="text-[11px] font-bold uppercase tracking-[.14em] text-teal-600 ">
                     Workspace
                   </p>
                   <h2 className="mt-1 text-xl font-black tracking-tight text-slate-950 ">
@@ -582,7 +582,7 @@ export default function AdminDashboard() {
                 {search && (
                   <button
                     onClick={() => setSearch("")}
-                    className="text-xs font-bold text-violet-600 hover:text-violet-800 "
+                    className="text-xs font-bold text-teal-600 hover:text-teal-800 "
                   >
                     Clear search
                   </button>
@@ -642,7 +642,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="flex gap-3">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-violet-50 text-sm ">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-teal-50 text-sm ">
                       👥
                     </span>
                     <div>
@@ -659,8 +659,8 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg shadow-violet-950/10 sm:p-6">
-                <span className="text-[11px] font-bold uppercase tracking-[.14em] text-violet-200">
+              <div className="rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-700 p-5 text-white shadow-lg shadow-teal-950/10 sm:p-6">
+                <span className="text-[11px] font-bold uppercase tracking-[.14em] text-teal-200">
                   Need attention
                 </span>
 
@@ -668,14 +668,14 @@ export default function AdminDashboard() {
                   Keep the panel moving.
                 </h2>
 
-                <p className="mt-2 max-w-md text-sm font-medium leading-6 text-violet-100">
+                <p className="mt-2 max-w-md text-sm font-medium leading-6 text-teal-100">
                   Review pending deposits, check services, and keep your user
                   accounts up to date from the controls above.
                 </p>
 
                 <Link
                   href="/admin/deposits"
-                  className="mt-6 inline-flex rounded-xl bg-white px-4 py-2.5 text-sm font-black text-violet-700 shadow-lg transition hover:bg-violet-50"
+                  className="mt-6 inline-flex rounded-xl bg-white px-4 py-2.5 text-sm font-black text-teal-700 shadow-lg transition hover:bg-teal-50"
                 >
                   Review deposits <span className="ml-2">→</span>
                 </Link>
@@ -687,3 +687,6 @@ export default function AdminDashboard() {
     </main>
   );
 }
+
+
+

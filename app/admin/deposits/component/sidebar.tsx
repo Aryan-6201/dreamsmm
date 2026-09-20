@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const menu = [
-  { name: "Dashboard", href: "/dashboard", icon: "⌂" },
-  { name: "Services", href: "/services", icon: "◈" },
-  { name: "Orders", href: "/orders", icon: "▣" },
-  { name: "Add Funds", href: "/funds", icon: "＋" },
-  { name: "Transactions", href: "/transactions", icon: "↕" },
-  { name: "Tickets", href: "/tickets", icon: "□" },
+  { name: "Dashboard", href: "/dashboard", icon: "âŒ‚" },
+  { name: "Services", href: "/services", icon: "â—ˆ" },
+  { name: "Orders", href: "/orders", icon: "â–£" },
+  { name: "Add Funds", href: "/funds", icon: "ï¼‹" },
+  { name: "Transactions", href: "/transactions", icon: "â†•" },
+  { name: "Tickets", href: "/tickets", icon: "â–¡" },
 ];
 
 export default function Sidebar() {
@@ -104,7 +104,7 @@ export default function Sidebar() {
             </p>
 
             <p className="mt-2 text-xl font-bold text-white">
-              ₹0.00
+              â‚¹0.00
             </p>
 
             <Link
@@ -135,3 +135,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Script from "next/script";
 import {
@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, Sparkles, ShieldCheck, Headphones } from "lucide-react";
+import { Mail, LockKeyhole, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 type GoogleIdApi = {
   initialize: (options: {
@@ -56,6 +56,7 @@ export default function Home() {
 
   const googleButtonRef =
     useRef<HTMLDivElement>(null);
+  const googleInitializedRef = useRef(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,6 +65,8 @@ export default function Home() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const [showLoginSplash, setShowLoginSplash] = useState(false);
 
   const [googleLoading, setGoogleLoading] =
     useState(false);
@@ -77,6 +80,42 @@ export default function Home() {
   const busy =
     loading || googleLoading;
 
+  function hideDashboardSplash() {
+    document.getElementById("dreamsmm-login-splash")?.remove();
+  }
+
+  function showDashboardSplash() {
+    const existing = document.getElementById("dreamsmm-login-splash");
+    if (existing) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "dreamsmm-login-splash";
+    overlay.style.cssText = "position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#08060d;";
+
+    const box = document.createElement("div");
+    box.style.cssText = "width:240px;text-align:center;";
+
+    const logo = document.createElement("div");
+    logo.style.cssText = "margin-bottom:28px;color:#fff;font-size:30px;font-weight:900;letter-spacing:-.04em;";
+    logo.innerHTML = 'Dream<span style="color:#8b5cf6">SMM</span>';
+
+    const track = document.createElement("div");
+    track.style.cssText = "height:4px;width:100%;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.12);";
+
+    const bar = document.createElement("div");
+    bar.style.cssText = "height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#d946ef);transition:width 1.2s ease-out;";
+
+    track.appendChild(bar);
+    box.appendChild(logo);
+    box.appendChild(track);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { bar.style.width = "100%"; });
+    });
+  }
+
   /* ============================================================
      NORMAL EMAIL LOGIN
   ============================================================ */
@@ -89,6 +128,8 @@ export default function Home() {
     if (busy) return;
 
     setError("");
+    showDashboardSplash();
+    setShowLoginSplash(true);
     setLoading(true);
 
     try {
@@ -113,6 +154,8 @@ export default function Home() {
           .catch(() => ({}));
 
       if (!response.ok) {
+        hideDashboardSplash();
+        setShowLoginSplash(false);
         setError(
           data.error ||
             "Invalid email or password."
@@ -120,9 +163,15 @@ export default function Home() {
         return;
       }
 
+      setLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       router.replace("/dashboard");
       router.refresh();
+      return;
     } catch {
+      hideDashboardSplash();
+      setShowLoginSplash(false);
       setError(
         "Unable to connect to the server. Please try again."
       );
@@ -139,6 +188,7 @@ export default function Home() {
     credential: string
   ) {
     setError("");
+    setShowLoginSplash(true);
     setGoogleLoading(true);
 
     try {
@@ -162,6 +212,8 @@ export default function Home() {
           .catch(() => ({}));
 
       if (!response.ok) {
+        hideDashboardSplash();
+        setShowLoginSplash(false);
         console.error(
           "Google backend error:",
           data
@@ -175,9 +227,15 @@ export default function Home() {
         return;
       }
 
+      setLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       router.replace("/dashboard");
       router.refresh();
+      return;
     } catch (err) {
+      hideDashboardSplash();
+      setShowLoginSplash(false);
       console.error(
         "Google login request error:",
         err
@@ -196,6 +254,8 @@ export default function Home() {
   ============================================================ */
 
   function initializeGoogle() {
+    if (googleInitializedRef.current) return true;
+
     if (!window.google) {
       setGoogleReady(false);
       return false;
@@ -279,6 +339,7 @@ export default function Home() {
       }
     );
 
+    googleInitializedRef.current = true;
     setGoogleReady(true);
 
     return true;
@@ -290,6 +351,7 @@ export default function Home() {
 
   function handleGoogleLogin() {
     setError("");
+    showDashboardSplash();
 
     if (!window.google) {
       setError(
@@ -303,7 +365,10 @@ export default function Home() {
       const ready =
         initializeGoogle();
 
-      if (!ready) return;
+      if (!ready) {
+        hideDashboardSplash();
+        return;
+      }
     }
 
     setGoogleLoading(true);
@@ -370,7 +435,7 @@ export default function Home() {
         onLoad={initializeGoogle}
       />
 
-      <main className="relative min-h-screen overflow-hidden bg-[#f8f7ff] text-slate-900">
+      <main className="relative min-h-screen overflow-hidden bg-[#2d93a8] text-slate-900">
 
         {/* ======================================================
             PREMIUM BACKGROUND
@@ -380,23 +445,23 @@ export default function Home() {
 
           {/* Base ambient gradient */}
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(139,92,246,0.18),transparent_32%),radial-gradient(circle_at_85%_15%,rgba(217,70,239,0.14),transparent_30%),radial-gradient(circle_at_50%_65%,rgba(99,102,241,0.10),transparent_38%),linear-gradient(135deg,#faf9ff_0%,#f5f3ff_45%,#faf7ff_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(139,92,246,0.18),transparent_32%),radial-gradient(circle_at_85%_15%,rgba(217,70,239,0.14),transparent_30%),radial-gradient(circle_at_50%_65%,rgba(99,102,241,0.10),transparent_38%),linear-gradient(135deg,#2d93a8_0%,#54b8c1_55%,#8bd3cf_100%)]" />
 
-          {/* Aqua glow */}
+          {/* Violet glow */}
 
-          <div className="absolute -left-[220px] -top-[180px] h-[620px] w-[620px] rounded-full bg-teal-400/20 blur-[130px]" />
+          <div className="absolute -left-[220px] -top-[180px] h-[620px] w-[620px] rounded-full bg-violet-400/20 blur-[130px]" />
 
           {/* Pink glow */}
 
-          <div className="absolute -right-[220px] top-[40px] h-[600px] w-[600px] rounded-full bg-teal-400/15 blur-[140px]" />
+          <div className="absolute -right-[220px] top-[40px] h-[600px] w-[600px] rounded-full bg-fuchsia-400/15 blur-[140px]" />
 
           {/* Center atmosphere */}
 
-          <div className="absolute left-[35%] top-[25%] h-[500px] w-[500px] rounded-full bg-cyan-300/10 blur-[150px]" />
+          <div className="absolute left-[35%] top-[25%] h-[500px] w-[500px] rounded-full bg-indigo-300/10 blur-[150px]" />
 
           {/* Bottom glow */}
 
-          <div className="absolute -bottom-[300px] left-[25%] h-[650px] w-[650px] rounded-full bg-cyan-400/15 blur-[150px]" />
+          <div className="absolute -bottom-[300px] left-[25%] h-[650px] w-[650px] rounded-full bg-purple-400/15 blur-[150px]" />
 
           {/* Premium grid */}
 
@@ -404,8 +469,8 @@ export default function Home() {
             className="absolute inset-0 opacity-[0.18]"
             style={{
               backgroundImage: `
-                linear-gradient(rgba(13,148,136,0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(13,148,136,0.06) 1px, transparent 1px)
+                linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px)
               `,
               backgroundSize: "70px 70px",
               maskImage:
@@ -421,7 +486,7 @@ export default function Home() {
             className="absolute left-0 top-[30%] h-52 w-52 opacity-30"
             style={{
               backgroundImage:
-                "radial-gradient(circle, rgba(13,148,136,0.45) 1px, transparent 1px)",
+                "radial-gradient(circle, rgba(124,58,237,0.45) 1px, transparent 1px)",
               backgroundSize: "12px 12px",
               maskImage:
                 "radial-gradient(circle, black, transparent 70%)",
@@ -447,31 +512,31 @@ export default function Home() {
 
           {/* Floating orbs */}
 
-          <div className="absolute left-[7%] top-[46%] h-16 w-16 rounded-full bg-gradient-to-br from-teal-400/30 to-teal-400/10 shadow-[0_0_50px_rgba(139,92,246,0.25)]" />
+          <div className="absolute left-[7%] top-[46%] h-16 w-16 rounded-full bg-gradient-to-br from-violet-400/30 to-fuchsia-400/10 shadow-[0_0_50px_rgba(139,92,246,0.25)]" />
 
-          <div className="absolute right-[8%] top-[22%] h-20 w-20 rounded-full bg-gradient-to-br from-teal-400/25 to-teal-400/10 shadow-[0_0_60px_rgba(217,70,239,0.25)]" />
+          <div className="absolute right-[8%] top-[22%] h-20 w-20 rounded-full bg-gradient-to-br from-fuchsia-400/25 to-violet-400/10 shadow-[0_0_60px_rgba(217,70,239,0.25)]" />
 
-          <div className="absolute bottom-[10%] left-[8%] h-24 w-24 rounded-full bg-gradient-to-br from-cyan-400/15 to-teal-400/10 shadow-[0_0_70px_rgba(99,102,241,0.2)]" />
+          <div className="absolute bottom-[10%] left-[8%] h-24 w-24 rounded-full bg-gradient-to-br from-indigo-400/15 to-violet-400/10 shadow-[0_0_70px_rgba(99,102,241,0.2)]" />
 
           {/* Light rings */}
 
-          <div className="absolute -left-32 top-[15%] h-[420px] w-[420px] rounded-full border border-teal-300/15" />
+          <div className="absolute -left-32 top-[15%] h-[420px] w-[420px] rounded-full border border-violet-300/15" />
 
-          <div className="absolute -left-44 top-[12%] h-[520px] w-[520px] rounded-full border border-teal-300/10" />
+          <div className="absolute -left-44 top-[12%] h-[520px] w-[520px] rounded-full border border-violet-300/10" />
 
-          <div className="absolute -right-32 bottom-[12%] h-[430px] w-[430px] rounded-full border border-teal-300/15" />
+          <div className="absolute -right-32 bottom-[12%] h-[430px] w-[430px] rounded-full border border-fuchsia-300/15" />
 
-          <div className="absolute -right-44 bottom-[8%] h-[530px] w-[530px] rounded-full border border-teal-300/10" />
+          <div className="absolute -right-44 bottom-[8%] h-[530px] w-[530px] rounded-full border border-fuchsia-300/10" />
 
           {/* Tiny particles */}
 
-          <div className="absolute left-[14%] top-[24%] h-1.5 w-1.5 rounded-full bg-teal-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
+          <div className="absolute left-[14%] top-[24%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
 
-          <div className="absolute right-[18%] top-[34%] h-1 w-1 rounded-full bg-teal-400 shadow-[0_0_15px_rgba(217,70,239,0.8)]" />
+          <div className="absolute right-[18%] top-[34%] h-1 w-1 rounded-full bg-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.8)]" />
 
-          <div className="absolute left-[20%] bottom-[24%] h-1 w-1 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
+          <div className="absolute left-[20%] bottom-[24%] h-1 w-1 rounded-full bg-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
 
-          <div className="absolute right-[12%] bottom-[30%] h-1.5 w-1.5 rounded-full bg-teal-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
+          <div className="absolute right-[12%] bottom-[30%] h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
 
         </div>
 
@@ -483,7 +548,7 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
 
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-cyan-500 to-teal-500 text-lg font-black text-white shadow-[0_10px_30px_rgba(13,148,136,0.30)]">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-fuchsia-500 text-lg font-black text-white shadow-[0_10px_30px_rgba(124,58,237,0.30)]">
               D
 
               <div className="absolute inset-0 rounded-2xl bg-white/20" />
@@ -493,7 +558,7 @@ export default function Home() {
 
               <div className="text-lg font-black tracking-tight text-slate-950">
                 Dream
-                <span className="bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#159aa5] to-[#0f7480] bg-clip-text text-transparent">
                   SMM
                 </span>
               </div>
@@ -507,26 +572,24 @@ export default function Home() {
           </div>
 
           <button
-            type="button"
-            onClick={() =>
-              document
-                .getElementById(
-                  "login-card"
-                )
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                })
-            }
-            className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-teal-600 to-teal-500 px-5 py-2.5 text-xs font-black text-white shadow-[0_10px_30px_rgba(13,148,136,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(13,148,136,0.35)] sm:px-6 sm:py-3 sm:text-sm"
-          >
-
-            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-300 group-hover:translate-x-full" />
-
-            <span className="relative">
-              Sign in &#8594;
-            </span>
-
-          </button>
+  type="button"
+  onClick={() =>
+    document
+      .getElementById("login-card")
+      ?.scrollIntoView({
+        behavior: "smooth",
+      })
+  }
+  className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#159aa5] to-[#0f7480] px-6 py-3 text-sm font-black text-white shadow-[0_10px_30px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(21,154,165,0.25)]"
+>
+  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+  <span className="relative flex items-center gap-1.5">
+    <span>Sign in</span>
+    <span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+      &#8594;
+    </span>
+  </span>
+</button>
 
         </header>
 
@@ -534,62 +597,37 @@ export default function Home() {
             HERO
         ====================================================== */}
 
-        <section className="relative z-10 mx-auto max-w-6xl px-4 pb-3 pt-1 text-center sm:px-6">
+        <section className="relative z-10 mx-auto max-w-5xl px-4 pb-1 pt-1 text-center sm:px-6">
 
           <div className="mx-auto mb-5 flex items-center justify-center gap-2">
 
-            <div className="h-px w-10 bg-gradient-to-r from-transparent to-teal-400" />
+            <div className="h-px w-10 bg-gradient-to-r from-transparent to-violet-400" />
 
-            <div className="h-1.5 w-1.5 rounded-full bg-teal-500 shadow-[0_0_12px_rgba(139,92,246,0.8)]" />
+            <div className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_12px_rgba(139,92,246,0.8)]" />
 
-            <div className="h-px w-10 bg-gradient-to-l from-transparent to-teal-400" />
+            <div className="h-px w-10 bg-gradient-to-l from-transparent to-fuchsia-400" />
 
           </div>
 
-          <h1 className="mx-auto max-w-5xl text-[42px] font-black leading-[0.98] tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-[76px]">
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-[#159aa5]/30 bg-white/70 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#0f7480] shadow-[0_8px_25px_rgba(124,58,237,0.08)] backdrop-blur-xl">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#159aa5] shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+            The Best & Cheapest SMM Panel
+          </div>
 
-            Grow smarter.
+          <h1 className="mx-auto max-w-4xl text-[36px] font-black leading-[1.03] tracking-[-0.052em] text-slate-950 sm:text-5xl lg:text-[60px]">
 
-            <span className="mt-2 block bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
-              Manage everything.
+            Trusted by Thousands of Customers Worldwide.
+
+            <span className="mt-2 block text-[#159aa5]">
+              beautifully managed.
             </span>
 
           </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl text-sm font-medium leading-6 text-slate-500 sm:text-base">
+          <p className="mx-auto mt-3 max-w-xl text-[13px] font-medium leading-6 text-slate-500 sm:text-sm">
             One modern workspace for your social media services, orders,
             balance and support.
           </p>
-
-          {/* FEATURES */}
-
-          <div className="mx-auto mt-7 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-
-            <Feature
-              icon="fast"
-              title="Fast Orders"
-              text="Quick service ordering"
-            />
-
-            <Feature
-              icon="services"
-              title="1000+ Services"
-              text="Large service catalog"
-            />
-
-            <Feature
-              icon="secure"
-              title="Secure"
-              text="Protected account"
-            />
-
-            <Feature
-              icon="support"
-              title="24/7 Support"
-              text="Help when needed"
-            />
-
-          </div>
 
         </section>
 
@@ -599,32 +637,36 @@ export default function Home() {
 
         <section
           id="login-card"
-          className="relative z-10 mx-auto -mt-1 w-full max-w-[500px] px-4 pb-12 pt-5 sm:px-6"
+          className="relative z-10 mx-auto mt-1 w-full max-w-[480px] px-4 pb-10 pt-4 sm:px-6"
         >
 
-          <div className="pointer-events-none absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-teal-400/20 blur-[90px]" />
+          <div className="pointer-events-none absolute left-1/2 top-8 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-violet-400/20 blur-[90px]" />
 
-          <div className="relative overflow-hidden rounded-[30px] border border-white/80 bg-white/75 p-5 shadow-[0_30px_100px_rgba(13,148,136,0.13)] backdrop-blur-sm sm:p-8">
+          <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_rgba(15,116,128,0.12)] backdrop-blur-2xl sm:p-8">
 
-            <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-teal-400 to-transparent" />
+            <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-400 to-transparent" />
 
             {/* LOGIN HEADER */}
 
-            <div className="mb-7 text-center">
+            <div className="mb-5 text-center">
 
-              <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-950">
+              <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-[#0f7480] ring-1 ring-violet-100 shadow-[0_8px_25px_rgba(124,58,237,0.10)]">
+                <ShieldCheck className="h-5 w-5" strokeWidth={2.3} />
+              </div>
+
+              <h2 className="text-[28px] font-black tracking-[-0.045em] text-slate-950">
                 Welcome back
               </h2>
 
-              <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-              Sign in &#8594;
+              <p className="mx-auto mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">
+                One powerful workspace for orders, services, balance and support.
               </p>
 
             </div>
 
             {/* GOOGLE */}
 
-            <div className="relative h-14 w-full">
+            <div className="relative h-[58px] w-full">
 
               <button
                 type="button"
@@ -632,7 +674,7 @@ export default function Home() {
                   handleGoogleLogin
                 }
                 disabled={busy}
-                className="pointer-events-none absolute inset-0 z-0 flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200/80 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(15,23,42,0.05)] transition disabled:opacity-50"
+                className="pointer-events-none absolute inset-0 z-0 flex h-[58px] w-full items-center justify-center gap-3 rounded-2xl border border-[#159aa5]/25 bg-white text-sm font-bold text-slate-700 shadow-[0_5px_20px_rgba(21,154,165,0.10)] transition disabled:opacity-50"
               >
 
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-100 bg-white text-xl font-black shadow-sm">
@@ -660,14 +702,14 @@ export default function Home() {
                     );
                   }
                 }}
-                className="absolute inset-0 z-10 flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
+                className="absolute inset-0 z-10 flex h-[58px] w-full items-center justify-center overflow-hidden rounded-2xl opacity-[0.02]"
               />
 
             </div>
 
             {/* DIVIDER */}
 
-            <div className="my-6 flex items-center gap-3">
+            <div className="my-5 flex items-center gap-3">
 
               <div className="h-px flex-1 bg-slate-200" />
 
@@ -682,7 +724,7 @@ export default function Home() {
             {/* ERROR */}
 
             {error && (
-              <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-600">
+              <div className="mb-4 rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-xs font-bold leading-5 text-red-600 shadow-sm">
                 {error}
               </div>
             )}
@@ -695,7 +737,7 @@ export default function Home() {
 
               {/* EMAIL */}
 
-              <div className="mb-5">
+              <div className="mb-4">
 
                 <label
                   htmlFor="email"
@@ -706,10 +748,6 @@ export default function Home() {
 
                 <div className="relative">
 
-                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-teal-400">
-                    @
-                  </span>
-
                   <input
                     id="email"
                     type="email"
@@ -719,12 +757,12 @@ export default function Home() {
                         e.target.value
                       )
                     }
-                    placeholder="you@example.com"
+                    placeholder="Enter your email address"
                     autoComplete="email"
                     inputMode="email"
                     required
                     disabled={busy}
-                    className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-teal-200 hover:bg-white focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100 disabled:opacity-50"
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
                   />
 
                 </div>
@@ -733,12 +771,12 @@ export default function Home() {
 
               {/* PASSWORD */}
 
-              <div className="mb-5">
+              <div className="mb-4">
 
                 <div className="mb-2 flex items-center justify-between">
 
                   <label
-                    htmlFor="password"
+                    htmlFor="login-password"
                     className="text-xs font-bold text-slate-700"
                   >
                     Password
@@ -746,7 +784,7 @@ export default function Home() {
 
                   <button
                     type="button"
-                    className="text-xs font-bold text-teal-600 transition hover:text-teal-600"
+                    className="text-xs font-bold text-[#0f7480] transition hover:text-[#159aa5]"
                   >
                     Forgot password?
                   </button>
@@ -756,7 +794,7 @@ export default function Home() {
                 <div className="relative">
 
                   <input
-                    id="password"
+                    id="login-password" name="dreamsmm_login_secret"
                     type={
                       showPassword
                         ? "text"
@@ -769,10 +807,10 @@ export default function Home() {
                       )
                     }
                     placeholder="Enter your password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     required
                     disabled={busy}
-                    className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/80 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-teal-200 hover:bg-white focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100 disabled:opacity-50"
+                    className="h-[56px] w-full rounded-[18px] border border-slate-200/90 bg-white/85 pl-11 pr-20 text-sm font-semibold text-slate-900 outline-none transition-all placeholder:text-slate-400 hover:border-[#159aa5]/40 hover:bg-white focus:border-[#159aa5] focus:bg-white focus:ring-4 focus:ring-[#159aa5]/10 disabled:opacity-50"
                   />
 
                   <button
@@ -784,7 +822,8 @@ export default function Home() {
                       )
                     }
                     disabled={busy}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl px-3 py-2 text-[10px] font-black text-slate-400 transition hover:bg-teal-50 hover:text-teal-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                     className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-400 transition hover:bg-[#159aa5]/10 hover:text-[#0f7480]"
                   >
                     {showPassword
                       ? "Hide"
@@ -793,31 +832,48 @@ export default function Home() {
 
                 </div>
 
-              </div>              
+              </div>
+
+
               <button
                 type="submit"
                 disabled={busy}
-                className="group relative h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(13,148,136,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(13,148,136,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative h-[56px] w-full overflow-hidden rounded-[18px] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-500 text-sm font-black text-white shadow-[0_15px_35px_rgba(21,154,165,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(21,154,165,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-300 group-hover:translate-x-full" />
+
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
                 <span className="relative flex items-center justify-center gap-2">
-                  {loading ? "Signing in..." : (
-                    <>
-                      <span>Sign in</span>
-                      <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
-                        &#8594;
-                      </span>
-                    </>
-                  )}
-                </span>
+  {loading ? "Signing in..." : (
+    <>
+      <span>Sign in</span>
+      <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
+        &#8594;
+      </span>
+    </>
+  )}
+</span>
+
               </button>
 
             </form>
 
+            {/* TRUST ROW */}
+
+            <div className="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Secure sign-in
+              </span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>DreamSMM</span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span>Fast access</span>
+            </div>
+
             {/* REGISTER */}
 
-            <div className="mt-6 border-t border-slate-200/70 pt-6 text-center">
+            <div className="mt-4 border-t border-slate-200/70 pt-5 text-center">
 
               <p className="text-sm font-medium text-slate-500">
 
@@ -830,9 +886,9 @@ export default function Home() {
                       "/register"
                     )
                   }
-                  className="ml-1 font-black text-teal-600 transition hover:text-teal-600"
+                  className="ml-1 font-black text-[#0f7480] transition hover:text-[#159aa5]"
                 >
-                  Create account
+                  Create your account
                 </button>
 
               </p>
@@ -847,7 +903,7 @@ export default function Home() {
 
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-500">&#10003;</span>
 
-            Secure DreamSMM workspace
+            Protected by secure authentication
 
           </div>
 
@@ -858,55 +914,13 @@ export default function Home() {
   );
 }
 
-/* ================================================================
-   FEATURE CARD
-================================================================ */
 
-function Feature({
-  icon,
-  title,
-  text,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="group relative overflow-hidden rounded-[22px] border border-white/80 bg-white/65 p-4 shadow-[0_10px_35px_rgba(13,148,136,0.06)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/85 hover:shadow-[0_18px_45px_rgba(13,148,136,0.12)] sm:p-5">
 
-      <div className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-teal-300/20 blur-lg transition-all duration-300 group-hover:bg-teal-400/30" />
 
-      <div className="relative mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/15 to-teal-500/15 text-xl shadow-inner ring-1 ring-teal-200/60 transition-transform duration-300 group-hover:scale-110">
-        {icon === "fast" && (
-          <Zap className="h-7 w-7 text-teal-600" strokeWidth={2.5} />
-        )}
 
-        {icon === "services" && (
-          <Sparkles className="h-7 w-7 text-teal-600" strokeWidth={2.3} />
-        )}
 
-        {icon === "secure" && (
-          <ShieldCheck className="h-7 w-7 text-teal-600" strokeWidth={2.3} />
-        )}
 
-        {icon === "support" && (
-          <Headphones className="h-7 w-7 text-teal-600" strokeWidth={2.3} />
-        )}
-      </div>
 
-      <div className="mt-3 text-xs font-black text-slate-800 sm:text-sm">
-        {title}
-      </div>
-
-      <div className="mt-1 text-[9px] font-medium leading-4 text-slate-400 sm:text-[10px]">
-        {text}
-      </div>
-
-      <div className="mx-auto mt-3 h-0.5 w-5 rounded-full bg-gradient-to-r from-teal-500 to-teal-500 opacity-50 transition-all duration-300 group-hover:w-10 group-hover:opacity-100" />
-
-    </div>
-  );
-}
 
 
 

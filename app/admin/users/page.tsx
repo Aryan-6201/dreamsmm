@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -155,17 +155,17 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/50 text-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/50 text-slate-900">
       <div className="min-h-screen lg:grid lg:grid-cols-[250px_1fr]">
         {/* Sidebar */}
         <aside className="hidden border-r border-slate-200/80 bg-white/90 px-4 py-5 lg:flex lg:h-screen lg:flex-col lg:sticky lg:top-0">
           <Link href="/admin" className="flex items-center gap-3 px-2">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 font-black text-white shadow-lg shadow-violet-200">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 font-black text-white shadow-lg shadow-teal-200">
               D
             </span>
             <span>
               <b className="block text-lg font-black tracking-tight">
-                Dream<span className="text-violet-600">SMM</span>
+                Dream<span className="text-teal-600">SMM</span>
               </b>
               <small className="block text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">
                 Admin console
@@ -188,14 +188,14 @@ export default function AdminUsersPage() {
                     href={item.href}
                     className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition ${
                       active
-                        ? "bg-violet-50 text-violet-700 shadow-sm"
+                        ? "bg-teal-50 text-teal-700 shadow-sm"
                         : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
                     <span
                       className={`grid h-8 w-8 place-items-center rounded-lg text-sm ${
                         active
-                          ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                          ? "bg-teal-600 text-white shadow-md shadow-teal-200"
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
@@ -208,9 +208,9 @@ export default function AdminUsersPage() {
             </nav>
           </div>
 
-          <div className="mt-auto rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-4">
-            <p className="text-xs font-black text-violet-900">Admin tip</p>
-            <p className="mt-1 text-[11px] font-medium leading-5 text-violet-700/70">
+          <div className="mt-auto rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50 to-cyan-50 p-4">
+            <p className="text-xs font-black text-teal-900">Admin tip</p>
+            <p className="mt-1 text-[11px] font-medium leading-5 text-teal-700/70">
               Search users by username, Gmail or user ID to manage accounts faster.
             </p>
           </div>
@@ -218,10 +218,10 @@ export default function AdminUsersPage() {
 
         <section className="min-w-0">
           {/* Topbar */}
-          <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+          <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/85 backdrop-blur-sm">
             <div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-violet-600">
+                <p className="text-[10px] font-black uppercase tracking-[.18em] text-teal-600">
                   DreamSMM / Admin
                 </p>
                 <p className="mt-0.5 text-sm font-bold text-slate-700">
@@ -233,12 +233,12 @@ export default function AdminUsersPage() {
                 <button
                   onClick={loadUsers}
                   disabled={loading}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 disabled:opacity-60 sm:px-4 sm:text-sm"
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:border-teal-200 hover:text-teal-700 disabled:opacity-60 sm:px-4 sm:text-sm"
                 >
                   ↻ <span className="hidden sm:inline">Refresh</span>
                 </button>
 
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-sm font-black text-white shadow-md shadow-violet-200">
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 text-sm font-black text-white shadow-md shadow-teal-200">
                   A
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function AdminUsersPage() {
 
           <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
             {/* Hero */}
-            <div className="overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-700 via-violet-600 to-indigo-700 p-6 text-white shadow-[0_24px_70px_rgba(91,33,182,0.20)] sm:p-8">
+            <div className="overflow-hidden rounded-[28px] bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-700 p-6 text-white shadow-[0_24px_70px_rgba(13,148,136,0.20)] sm:p-8">
               <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
                 <div>
                   <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em]">
@@ -256,7 +256,7 @@ export default function AdminUsersPage() {
                   <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
                     Manage Users
                   </h1>
-                  <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-violet-100">
+                  <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-teal-100">
                     Manage accounts, balances, activity, status and custom discounts
                     from one clean admin workspace.
                   </p>
@@ -273,7 +273,7 @@ export default function AdminUsersPage() {
                       key={String(label)}
                       className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"
                     >
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-violet-100">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-teal-100">
                         {label}
                       </p>
                       <p className="mt-1 text-xl font-black">{value}</p>
@@ -293,7 +293,7 @@ export default function AdminUsersPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search username, Gmail or user ID..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 />
               </div>
 
@@ -305,8 +305,8 @@ export default function AdminUsersPage() {
                       onClick={() => setStatusFilter(status)}
                       className={`rounded-full px-3.5 py-2 text-[11px] font-black transition ${
                         statusFilter === status
-                          ? "bg-violet-600 text-white shadow-md shadow-violet-200"
-                          : "bg-slate-100 text-slate-500 hover:bg-violet-50 hover:text-violet-700"
+                          ? "bg-teal-600 text-white shadow-md shadow-teal-200"
+                          : "bg-slate-100 text-slate-500 hover:bg-teal-50 hover:text-teal-700"
                       }`}
                     >
                       {status === "ALL" ? "All Users" : status}
@@ -323,7 +323,7 @@ export default function AdminUsersPage() {
 
             {/* Message */}
             {message && (
-              <div className="mt-4 rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-700">
+              <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-700">
                 {message}
               </div>
             )}
@@ -341,7 +341,7 @@ export default function AdminUsersPage() {
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="self-start rounded-lg px-3 py-2 text-xs font-black text-violet-600 hover:bg-violet-50"
+                  className="self-start rounded-lg px-3 py-2 text-xs font-black text-teal-600 hover:bg-teal-50"
                 >
                   Clear search
                 </button>
@@ -352,14 +352,14 @@ export default function AdminUsersPage() {
             <section className="mt-4">
               {loading ? (
                 <div className="rounded-2xl border border-slate-200 bg-white p-14 text-center shadow-sm">
-                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-teal-200 border-t-teal-600" />
                   <p className="mt-4 text-sm font-bold text-slate-500">
                     Loading users...
                   </p>
                 </div>
               ) : filteredUsers.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-14 text-center shadow-sm">
-                  <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-xl text-violet-600">
+                  <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-teal-50 text-xl text-teal-600">
                     ⌕
                   </div>
                   <p className="mt-4 font-black text-slate-800">No users found</p>
@@ -372,12 +372,12 @@ export default function AdminUsersPage() {
                   {filteredUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="group rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_16px_40px_rgba(91,33,182,0.08)] sm:p-5"
+                      className="group rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-[0_16px_40px_rgba(13,148,136,0.08)] sm:p-5"
                     >
                       <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
                         {/* User */}
                         <div className="flex min-w-0 flex-1 items-center gap-4">
-                          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 font-black text-violet-700 ring-4 ring-violet-50">
+                          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-teal-100 to-cyan-100 font-black text-teal-700 ring-4 ring-teal-50">
                             {(user.name || user.email || "U").charAt(0).toUpperCase()}
                           </div>
 
@@ -388,7 +388,7 @@ export default function AdminUsersPage() {
                               </p>
 
                               {user.role === "ADMIN" && (
-                                <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-700">
+                                <span className="rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-black text-teal-700">
                                   ADMIN
                                 </span>
                               )}
@@ -473,7 +473,7 @@ export default function AdminUsersPage() {
                                   )
                                 );
                               }}
-                              className="w-20 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-bold text-slate-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                              className="w-20 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-bold text-slate-800 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
                             />
 
                             <span className="text-xs font-bold text-slate-400">%</span>
@@ -483,7 +483,7 @@ export default function AdminUsersPage() {
                               onClick={() =>
                                 updateDiscount(user.id, user.discountPercent)
                               }
-                              className="rounded-lg bg-violet-600 px-3 py-2 text-xs font-black text-white shadow-sm transition hover:bg-violet-700"
+                              className="rounded-lg bg-teal-600 px-3 py-2 text-xs font-black text-white shadow-sm transition hover:bg-teal-700"
                             >
                               Save
                             </button>
@@ -493,7 +493,7 @@ export default function AdminUsersPage() {
                         {/* Action */}
                         <Link
                           href={`/admin/users/${user.id}`}
-                          className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-2.5 text-center text-sm font-black text-violet-700 transition hover:bg-violet-100 xl:self-center"
+                          className="rounded-xl border border-teal-100 bg-teal-50 px-4 py-2.5 text-center text-sm font-black text-teal-700 transition hover:bg-teal-100 xl:self-center"
                         >
                           Manage →
                         </Link>
@@ -509,3 +509,6 @@ export default function AdminUsersPage() {
     </main>
   );
 }
+
+
+
