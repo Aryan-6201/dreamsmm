@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Script from "next/script";
 import {
@@ -164,8 +164,7 @@ export default function Home() {
       }
 
       setLoading(false);
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-
+      hideDashboardSplash();
       router.replace("/dashboard");
       router.refresh();
       return;
@@ -188,6 +187,7 @@ export default function Home() {
     credential: string
   ) {
     setError("");
+    showDashboardSplash();
     setShowLoginSplash(true);
     setGoogleLoading(true);
 
@@ -228,8 +228,7 @@ export default function Home() {
       }
 
       setLoading(false);
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-
+      hideDashboardSplash();
       router.replace("/dashboard");
       router.refresh();
       return;
@@ -486,10 +485,10 @@ export default function Home() {
             />
             <div className="absolute left-[4%] top-[35%] h-24 w-24 rounded-full bg-white/10 blur-xl" />
             <div className="absolute right-[8%] top-[55%] h-32 w-32 rounded-full bg-white/10 blur-xl" />
-            <div className="dream-float absolute left-[7%] top-[28%] text-5xl opacity-50">💜</div>
-            <div className="dream-float-slow absolute right-[8%] top-[31%] rotate-12 text-5xl opacity-60">🚀</div>
-            <div className="absolute left-[4%] bottom-[13%] text-4xl opacity-50 animate-pulse">💬</div>
-            <div className="absolute right-[4%] bottom-[15%] text-4xl opacity-50 animate-pulse">💎</div>
+            <div className="dream-float absolute left-[7%] top-[28%] text-5xl opacity-50">&#x1F4A1;</div>
+            <div className="dream-float-slow absolute right-[8%] top-[31%] rotate-12 text-5xl opacity-60">&#x1F680;</div>
+            <div className="absolute left-[4%] bottom-[13%] text-4xl opacity-50 animate-pulse">&#x1F4AC;</div>
+            <div className="absolute right-[4%] bottom-[15%] text-4xl opacity-50 animate-pulse">&#x1F48E;</div>
           </div>
 
           {/* NAVBAR */}
@@ -545,7 +544,7 @@ export default function Home() {
               </h1>
 
               <p className="mt-6 max-w-xl text-base font-medium leading-7 text-white/85 sm:text-lg">
-                One premium workspace for social growth — affordable services, lightning-fast delivery,
+                One premium workspace for social growth \u2014 affordable services, lightning-fast delivery,
                 clean ordering and support built for creators, businesses and agencies.
               </p>
 
@@ -576,7 +575,7 @@ export default function Home() {
               </div>
 
               <div className="pointer-events-none absolute -left-2 top-[7%] hidden text-4xl sm:block animate-pulse">
-                ✨
+                &#x2728;
               </div>
             </div>
 
@@ -680,7 +679,7 @@ export default function Home() {
                   <div className="h-px flex-1 bg-slate-200" />
                 </div>
 
-                {/* REAL GOOGLE BUTTON — keeps existing working Google flow */}
+                {/* REAL GOOGLE BUTTON \u2014 keeps existing working Google flow */}
                 <div className="relative h-[56px] overflow-hidden rounded-2xl">
                   <button
                     type="button"
@@ -719,10 +718,10 @@ export default function Home() {
         <div className="relative z-10 mx-auto -mt-1 max-w-6xl px-5 pb-14 sm:px-8">
           <div className="grid overflow-hidden rounded-3xl border border-white/80 bg-white/95 shadow-[0_24px_70px_rgba(0,0,0,.14)] ring-1 ring-white sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["⚡", "Instant Delivery", "Blazing Fast"],
-              ["🛡️", "Secure & Safe", "100% Protected"],
-              ["👥", "14M+ Orders", "Worldwide Trust"],
-              ["🎧", "24/7 Support", "Always Here"],
+              ["\u26A1", "Instant Delivery", "Blazing Fast"],
+              ["\uD83D\uDEE1", "Secure & Safe", "100% Protected"],
+              ["\uD83D\uDC65", "14M+ Orders", "Worldwide Trust"],
+              ["\uD83C\uDFA7", "24/7 Support", "Always Here"],
             ].map(([icon, title, sub]) => (
               <div key={title} className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 last:border-b-0 sm:border-r sm:last:border-r-0 lg:border-b-0">
                 <div className="text-2xl">{icon}</div>
@@ -752,10 +751,10 @@ export default function Home() {
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                ["✨", "Best quality", "Reliable services and a smooth ordering experience."],
-                ["💳", "Many payment methods", "Convenient ways to add funds to your account."],
-                ["₹", "Affordable services", "Competitive pricing across the service catalog."],
-                ["⚡", "Very quick delivery", "Fast order processing keeps your workflow moving."],
+                ["\u2728", "Best quality", "Reliable services and a smooth ordering experience."],
+                ["\uD83D\uDCB3", "Many payment methods", "Convenient ways to add funds to your account."],
+                ["\u20B9", "Affordable services", "Competitive pricing across the service catalog."],
+                ["\u26A1", "Very quick delivery", "Fast order processing keeps your workflow moving."],
               ].map(([icon, title, description]) => (
                 <div key={title} className="group relative overflow-hidden rounded-[28px] border border-cyan-100 bg-gradient-to-br from-white to-[#effbfb] p-6 shadow-[0_12px_35px_rgba(15,116,128,.06)] transition duration-300 hover:-translate-y-2 hover:border-cyan-200 hover:shadow-[0_22px_50px_rgba(15,116,128,.14)]">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#159aa5] text-xl shadow-lg shadow-cyan-100">
@@ -817,7 +816,7 @@ export default function Home() {
               ].map(([name, review]) => (
                 <div key={name} className="rounded-[26px] border border-slate-200/80 bg-white p-6 shadow-[0_14px_35px_rgba(15,23,42,.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(15,23,42,.10)]">
                   <div className="text-yellow-400">★★★★★</div>
-                  <p className="mt-4 text-sm leading-6 text-slate-500">“{review}”</p>
+                  <p className="mt-4 text-sm leading-6 text-slate-500">&ldquo;{review}&rdquo;</p>
                   <p className="mt-5 font-black">{name}</p>
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-[.15em] text-slate-400">Customer</p>
                 </div>
@@ -841,7 +840,7 @@ export default function Home() {
                 "Are SMM services on your panel safe to buy?",
                 "How is the mass order feature used?",
                 "How is the Drip-feed feature used?",
-                "What does a “mass order” mean?",
+                "What does a â€œmass orderâ€ mean?",
               ].map((question) => (
                 <details key={question} className="group rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-cyan-100">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black">
@@ -881,7 +880,7 @@ export default function Home() {
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[#229ED9] text-xl text-white shadow-xl transition hover:-translate-y-1"
             aria-label="Telegram"
           >
-            ✈
+            âœˆ
           </a>
           <a
             href="https://wa.me/"
@@ -890,16 +889,28 @@ export default function Home() {
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-xl text-white shadow-xl transition hover:-translate-y-1"
             aria-label="WhatsApp"
           >
-            ☎
+            â˜Ž
           </a>
         </div>
 
         <footer className="bg-slate-950 px-5 py-10 text-center text-xs text-slate-400">
           <div className="text-lg font-black text-white">Dream<span className="text-[#159aa5]">SMM</span></div>
-          <p className="mt-2">© 2026 DreamSMM. All rights reserved.</p>
-          <p className="mt-1">Terms · Privacy · Refund · Contact · DMCA</p>
+          <p className="mt-2">Â© 2026 DreamSMM. All rights reserved.</p>
+          <p className="mt-1">Terms Â· Privacy Â· Refund Â· Contact Â· DMCA</p>
         </footer>
       </main>
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+

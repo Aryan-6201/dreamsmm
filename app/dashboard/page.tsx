@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
@@ -19,6 +19,7 @@ import { verifySession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Sidebar from "@/app/components/Sidebar";
 import OrderForm from "./OrderForm";
+import LoginSplashCleanup from "@/app/components/LoginSplashCleanup";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -75,6 +76,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#e5f5f6] text-slate-900 selection:bg-[#ffd84d] selection:text-slate-900">
+      <LoginSplashCleanup />
 
       {/* =========================================================
           LIGHTWEIGHT PREMIUM BACKGROUND
@@ -178,7 +180,7 @@ export default async function DashboardPage() {
 
             <PremiumStat
               icon={<Wallet className="h-4 w-4" />}
-              value={`₹${balance}`}
+              value={`\u20B9${balance}`}
               label="Available balance"
               tone="aqua"
             />
@@ -444,7 +446,7 @@ export default async function DashboardPage() {
           <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(13,148,136,.035)] backdrop-blur-sm sm:flex-row">
 
             <p>
-              © {new Date().getFullYear()} DreamSMM
+              Â© {new Date().getFullYear()} DreamSMM
             </p>
 
             <div className="flex items-center gap-4">
@@ -631,6 +633,10 @@ function TrustItem({
     </div>
   );
 }
+
+
+
+
 
 
 
