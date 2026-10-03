@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const UPI_ID = "aryan251@ybl";
-const QR_IMAGE = "/qr.jpeg";
+const DEFAULT_UPI_ID = "aryan251@ybl";
+const DEFAULT_QR_IMAGE = "/qr.jpeg";
+const DEFAULT_PAYMENT_NAME = "Aryan";
+const DEFAULT_PAYMENT_DESCRIPTION = "Scan the QR code using any UPI app and complete your payment. After payment, enter the exact UTR / Transaction ID below and submit your deposit request."
 const MIN_AMOUNT = 10;
 const PRESETS = [50, 100, 250, 500, 1000, 2000];
 
@@ -29,10 +31,17 @@ const FAQS = [
 ];
 
 export default function FundsPage() {
+  const [paymentSettings, setPaymentSettings] = useState({
+    payment_upi_id: DEFAULT_UPI_ID,
+    payment_description: DEFAULT_PAYMENT_DESCRIPTION,
+    payment_name: DEFAULT_PAYMENT_NAME,
+    payment_qr: DEFAULT_QR_IMAGE,
+  });
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0]);
   const [utr, setUtr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [copied, setCopied] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [notice, setNotice] = useState<{
@@ -40,6 +49,20 @@ export default function FundsPage() {
     text: string;
   } | null>(null);
 
+  useEffect(() => {
+    fetch("/api/payment-settings", {
+      cache: "no-store",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data?.settings) {
+          setPaymentSettings(data.settings);
+        }
+      })
+      .catch(() => {
+        // Keep default payment settings if the API is unavailable.
+      });
+  }, []);
   const numberAmount = Number(amount);
   const validAmount =
     Number.isFinite(numberAmount) && numberAmount >= MIN_AMOUNT;
@@ -56,7 +79,7 @@ export default function FundsPage() {
 
   async function copyUpi() {
     try {
-      await navigator.clipboard.writeText(UPI_ID);
+      await navigator.clipboard.writeText(paymentSettings.payment_upi_id);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -111,6 +134,9 @@ export default function FundsPage() {
         return;
       }
 
+      setShowSuccessAnimation(true);
+      window.setTimeout(() => setShowSuccessAnimation(false), 3200);
+
       setNotice({
         type: "success",
         text: `Deposit request #${data.deposit.id} submitted. Status: ${data.deposit.status}.`,
@@ -128,77 +154,66 @@ export default function FundsPage() {
     }
   }
 
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
+  const successOverlay = showSuccessAnimation ? (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white p-8 text-center shadow-2xl">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <span className="fund-coin fund-coin-1">₹</span>
+          <span className="fund-coin fund-coin-2">₹</span>
+          <span className="fund-coin fund-coin-3">₹</span>
+          <span className="fund-coin fund-coin-4">₹</span>
+          <span className="fund-coin fund-coin-5">₹</span>
+        </div>
+        <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 fund-success-pop">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-3xl font-black text-white">
+            ✓
+          </div>
+        </div>
+        <p className="relative mt-5 text-xs font-black uppercase tracking-[0.2em] text-emerald-600">Payment Submitted</p>
+        <h2 className="relative mt-2 text-3xl font-black text-slate-950">₹{numberAmount.toLocaleString("en-IN")}</h2>
+        <p className="relative mt-2 text-sm font-medium text-slate-500">Your deposit request has been submitted successfully.</p>
+      </div>
+    </div>
+  ) : null;
+
+  return (    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-4 py-5 text-slate-900 sm:px-6 sm:py-8">
+      <style>{`
+        @keyframes fundSuccessPop {
+          0% { transform: scale(.5); opacity: 0; }
+          70% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fundCoinBurst {
+          0% { transform: translate(0, 20px) scale(.4) rotate(0deg); opacity: 0; }
+          20% { opacity: 1; }
+          100% { transform: translate(var(--coin-x), var(--coin-y)) scale(1) rotate(360deg); opacity: 0; }
+        }
+        .fund-success-pop {
+          animation: fundSuccessPop .55s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .fund-coin {
+          position: absolute;
+          left: 50%;
+          top: 42%;
+          font-size: 24px;
+          font-weight: 900;
+          color: #10b981;
+          animation: fundCoinBurst 1.8s ease-out forwards;
+        }
+        .fund-coin-1 { --coin-x: -130px; --coin-y: -90px; animation-delay: .05s; }
+        .fund-coin-2 { --coin-x: 120px; --coin-y: -100px; animation-delay: .12s; }
+        .fund-coin-3 { --coin-x: -150px; --coin-y: 30px; animation-delay: .18s; }
+        .fund-coin-4 { --coin-x: 145px; --coin-y: 35px; animation-delay: .08s; }
+        .fund-coin-5 { --coin-x: -80px; --coin-y: 105px; animation-delay: .2s; }
+      `}</style>
+      {successOverlay}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-teal-500/20 blur-xl" />
         <div className="absolute -bottom-40 -right-20 h-96 w-96 rounded-full bg-cyan-500/20 blur-xl" />
       </div>
-      <div className="relative mx-auto max-w-5xl">
-<div className="mt-3 grid items-start gap-3 sm:gap-5 lg:grid-cols-[280px_1fr]">
-          <aside className="order-2 rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-1 sm:p-5 lg:order-1 lg:sticky lg:top-5 lg:p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-600">
-                  Scan & Pay
-                </p>
-                <p className="mt-1 text-lg font-black">UPI Payment</p>
-              </div>
-
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-600">
-                Active
-              </span>
-            </div>
-
-            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-2 sm:mt-4 sm:p-3">
-              <img
-                src={QR_IMAGE}
-                alt="UPI payment QR code"
-                className="mx-auto aspect-square w-full max-w-[190px] rounded-xl bg-white object-contain shadow-md sm:max-w-none"
-              />
-            </div>
-
-            <div className="mt-3 rounded-2xl bg-teal-50 p-2.5 sm:mt-4 sm:p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-500">
-                UPI ID
-              </p>
-
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <p className="truncate text-sm font-black text-teal-950">
-                  {UPI_ID}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={copyUpi}
-                  className="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-black text-teal-700 shadow-sm ring-1 ring-teal-100"
-                >
-                  {copied ? "Copied ✓" : "Copy"}
-                </button>
-              </div>
-            </div>
-
-            <p className="mt-2 text-center text-xs font-medium text-slate-400 sm:mt-4">
-              Pay exactly <b className="text-teal-700">{displayAmount}</b>
-            </p>
-          </aside>
-
-          <section className="order-1 overflow-hidden rounded-3xl border border-white/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 lg:order-2">
-            <div className="border-b border-slate-100 px-5 py-5 sm:px-7">
-              <p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-600">
-                Payment verification
-              </p>
-
-              <h2 className="mt-1 text-2xl font-black">
-                Submit your deposit
-              </h2>
-
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                Enter the payment details after completing UPI payment.
-              </p>
-            </div>
-
-            <form onSubmit={submitRequest} className="space-y-5 p-5 sm:p-7">
+          <div className="mt-3 grid items-start gap-4 sm:gap-6 lg:grid-cols-[1fr_1fr]">
+            <section className="order-1 h-[325.43px] w-full max-w-[928.4px] overflow-hidden rounded-3xl border border-white/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 lg:order-1">
+              <form onSubmit={submitRequest} className="space-y-3 p-4 sm:p-5">
               {notice && (
                 <div
                   role="alert"
@@ -230,7 +245,7 @@ export default function FundsPage() {
                     setPaymentMethod(event.target.value);
                     setNotice(null);
                   }}
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
+                  className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 >
                   {PAYMENT_METHODS.map((method) => (
                     <option key={method} value={method}>
@@ -266,7 +281,7 @@ export default function FundsPage() {
                   placeholder="Enter UTR or transaction reference"
                   autoComplete="off"
                   required
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
+                  className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                 />
 
                 <p className="mt-1 text-xs font-medium text-slate-400">
@@ -285,7 +300,7 @@ export default function FundsPage() {
                   </span>
                 </div>
 
-                <div className="mt-2 flex gap-2">
+                <div className="mt-1 flex gap-2">
                   <div className="relative flex-1">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-teal-600">
                       ₹
@@ -303,20 +318,20 @@ export default function FundsPage() {
                       }}
                       placeholder="0.00"
                       required
-                      className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-lg font-black outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
+                      className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-lg font-black outline-none transition focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-100"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={!validAmount || !validUtr || loading}
-                    className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-7 text-sm font-black text-white shadow-md shadow-teal-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="h-10 shrink-0 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-7 text-sm font-black text-white shadow-md shadow-teal-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {loading ? "..." : "Pay"}
                   </button>
                 </div>
 
-                <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+                <div className="mt-1 grid grid-cols-3 gap-2 sm:grid-cols-6">
                   {PRESETS.map((preset) => (
                     <button
                       key={preset}
@@ -331,29 +346,47 @@ export default function FundsPage() {
                           : "border-slate-200 bg-white text-slate-600 hover:border-teal-300 hover:text-teal-700"
                       }`}
                     >
-                      ₹{preset}
+                      {preset}
                     </button>
                   ))}
                 </div>
               </div>
-              <button
-                type="submit"
-                disabled={!validAmount || !validUtr || loading}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 text-sm font-black text-white shadow-lg shadow-teal-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {loading ? (
-                  <>
-                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Submit Deposit Request <span>→</span>
-                  </>
-                )}
-              </button>
             </form>
           </section>
+
+          <aside className="order-2 rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl shadow-black/20 backdrop-blur-sm transition duration-300 lg:order-1 lg:sticky lg:top-5 lg:p-5">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+              <img
+                src={paymentSettings.payment_qr}
+                alt="UPI payment QR code"
+                className="mx-auto block h-auto w-full max-w-[300px] rounded-xl bg-white object-contain shadow-lg sm:max-w-[320px]"
+              />
+            </div>
+
+            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:px-5 sm:py-4">
+              <p className="whitespace-pre-line text-sm font-semibold leading-6 text-slate-600">
+                {paymentSettings.payment_description}
+              </p>
+            </div>
+
+            <div className="mt-3 rounded-2xl bg-teal-50 p-2.5 sm:p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-500">
+                UPI ID
+              </p>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <p className="truncate text-sm font-black text-teal-950">
+                  {paymentSettings.payment_upi_id}
+                </p>
+                <button
+                  type="button"
+                  onClick={copyUpi}
+                  className="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-black text-teal-700 shadow-sm ring-1 ring-teal-100"
+                >
+                  {copied ? "Copied ✓" : "Copy"}
+                </button>
+              </div>
+            </div>
+          </aside>
         </div>
 
         <section className="mt-6 rounded-3xl border border-white/10 bg-white/95 p-5 shadow-2xl shadow-black/20 backdrop-blur-sm">
@@ -407,7 +440,6 @@ export default function FundsPage() {
             ))}
           </div>
         </section>
-      </div>
 
 <style>{`
 @keyframes premiumFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

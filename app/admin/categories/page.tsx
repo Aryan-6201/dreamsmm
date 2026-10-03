@@ -62,6 +62,98 @@ export default function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [draggedCategoryId, setDraggedCategoryId] = useState<number | null>(null);
+  const [orderSaving, setOrderSaving] = useState(false);
+
+  function handleCategoryDragStart(categoryId: number) {
+    setDraggedCategoryId(categoryId);
+  }
+
+  function handleCategoryDragOver(
+    event: React.DragEvent<HTMLDivElement>,
+    targetCategoryId: number
+  ) {
+    event.preventDefault();
+
+    if (
+      draggedCategoryId === null ||
+      draggedCategoryId === targetCategoryId
+    ) {
+      return;
+    }
+
+    setCategories((current) => {
+      const fromIndex = current.findIndex(
+        (category) => category.id === draggedCategoryId
+      );
+      const toIndex = current.findIndex(
+        (category) => category.id === targetCategoryId
+      );
+
+      if (fromIndex === -1 || toIndex === -1) {
+        return current;
+      }
+
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+
+      return next;
+    });
+  }
+
+  function handleCategoryDragEnd() {
+    setDraggedCategoryId(null);
+  }
+
+  async function saveCategoryOrder() {
+    setOrderSaving(true);
+    setMessage("");
+
+    try {
+      for (let index = 0; index < categories.length; index++) {
+        const category = categories[index];
+
+        const response = await fetch("/api/admin/categories", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: category.id,
+            sortOrder: index,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || `Unable to save order for "${category.name}".`
+          );
+        }
+      }
+
+      setCategories((current) =>
+        current.map((category, index) => ({
+          ...category,
+          sortOrder: index,
+        }))
+      );
+
+      setMessage("Category order saved successfully.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to save category order."
+      );
+      await loadCategories();
+    } finally {
+      setOrderSaving(false);
+      setDraggedCategoryId(null);
+    }
+  }
 
   async function loadCategories() {
     try {
@@ -533,14 +625,28 @@ export default function AdminCategoriesPage() {
               <p className="mt-1 text-xs text-gray-600">
                 {categories.length} categories configured.
               </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={saveCategoryOrder}
+                disabled={orderSaving || loading}
+                className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {orderSaving ? "Saving..." : "Save Order"}
+              </button>
+
+              <button
+                type="button"
+                onClick={loadCategories}
+                disabled={orderSaving}
+                className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-400 hover:bg-white/[0.05] hover:text-white disabled:opacity-50"
+              >
+                Refresh
+              </button>
             </div>
 
-            <button
-              onClick={loadCategories}
-              className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-400 hover:bg-white/[0.05] hover:text-white"
-            >
-              Refresh
-            </button>
+            </div>
+
           </div>
 
           {loading ? (
@@ -561,9 +667,25 @@ export default function AdminCategoriesPage() {
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-white/[0.07] bg-[#0b0f18] p-4 sm:flex-row sm:items-center sm:justify-between"
+                  draggable
+                  onDragStart={() =>
+                    handleCategoryDragStart(category.id)
+                  }
+                  onDragOver={(event) =>
+                    handleCategoryDragOver(event, category.id)
+                  }
+                  onDragEnd={handleCategoryDragEnd}
+                  className={`flex cursor-grab flex-col gap-4 rounded-2xl border bg-[#0b0f18] p-4 transition sm:flex-row sm:items-center sm:justify-between ${
+                    draggedCategoryId === category.id
+                      ? "border-blue-500/50 opacity-50"
+                      : "border-white/[0.07] hover:border-blue-500/30"
+                  }`}
                 >
                   <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-8 shrink-0 items-center justify-center text-lg text-gray-500">
+                      ⋮⋮
+                    </div>
+
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-sm font-bold text-blue-400 ${
                         category.glowEnabled
@@ -588,8 +710,7 @@ export default function AdminCategoriesPage() {
                       </div>
 
                       <p className="mt-1 text-xs text-gray-600">
-                        {category.platform} Â·{" "}
-                        {category.icon} Â· Order{" "}
+                        {category.platform} · {category.icon} · Order{" "}
                         {category.sortOrder}
                       </p>
                     </div>
@@ -597,33 +718,37 @@ export default function AdminCategoriesPage() {
 
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() =>
-                        toggleCategory(category)
-                      }
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleCategory(category);
+                      }}
                       className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                         category.enabled
                           ? "bg-emerald-500/10 text-emerald-400"
                           : "bg-red-500/10 text-red-400"
                       }`}
                     >
-                      {category.enabled
-                        ? "Active"
-                        : "Disabled"}
+                      {category.enabled ? "Active" : "Disabled"}
                     </button>
 
                     <button
-                      onClick={() =>
-                        editCategory(category)
-                      }
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        editCategory(category);
+                      }}
                       className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 hover:bg-white/[0.05]"
                     >
                       Edit
                     </button>
 
                     <button
-                      onClick={() =>
-                        deleteCategory(category)
-                      }
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteCategory(category);
+                      }}
                       className="rounded-lg bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/20"
                     >
                       Delete

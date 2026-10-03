@@ -205,6 +205,13 @@ export async function PATCH(
           },
         });
 
+        await tx.balanceCreditEvent.create({
+          data: {
+            userId: id,
+            amount,
+          },
+        });
+
         await tx.adminAction.create({
           data: {
             adminId: admin.id,
@@ -219,7 +226,7 @@ export async function PATCH(
 
       return NextResponse.json({
         success: true,
-        message: `₹${amount.toFixed(2)} added to the user's balance.`,
+        message: `â‚¹${amount.toFixed(2)} added to the user's balance.`,
       });
     }
 
@@ -268,7 +275,7 @@ export async function PATCH(
 
       return NextResponse.json({
         success: true,
-        message: `₹${amount.toFixed(2)} removed from the user's balance.`,
+        message: `â‚¹${amount.toFixed(2)} removed from the user's balance.`,
       });
     }
 
@@ -305,6 +312,13 @@ export async function PATCH(
           },
         });
 
+        await tx.balanceCreditEvent.create({
+          data: {
+            userId: id,
+            amount,
+            eventType: "BONUS",
+          },
+        });
         await tx.adminAction.create({
           data: {
             adminId: admin.id,
@@ -319,7 +333,7 @@ export async function PATCH(
 
       return NextResponse.json({
         success: true,
-        message: `₹${amount.toFixed(2)} bonus added.`,
+        message: `â‚¹${amount.toFixed(2)} bonus added.`,
       });
     }
 

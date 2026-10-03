@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 import { prisma } from "@/lib/prisma";
+import { ensureServiceCategory } from "@/lib/admin/ensure-service-category";
 import { verifySession } from "@/lib/auth";
 import { getSmmGenService } from "@/lib/providers/smmgen";
 
@@ -25,6 +26,15 @@ async function getAdmin() {
   return user;
 }
 
+
+function cleanEncoding(text: string) {
+  return text
+    .replace(/Ã/g, "")
+    .replace(/Â/g, "")
+    .replace(/â€™/g, "'")
+    .replace(/â€“/g, "-")
+    .trim();
+}
 function getPlatform(service: {
   name?: string;
   category?: string;
@@ -94,10 +104,10 @@ export async function POST(request: Request) {
 
     const service = {
       service: String(provider.service),
-      name: provider.name,
+      name: cleanEncoding(provider.name),
       type: provider.type || "",
-      category: provider.category || "",
-      description: provider.description || "",
+      category: cleanEncoding(provider.category || ""),
+      description: cleanEncoding(provider.description || ""),
       rate: String(providerRate),
       min: Number(provider.min),
       max: Number(provider.max),
@@ -159,12 +169,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const created = await prisma.service.create({
+    await ensureServiceCategory(
+  service.category || service.type,
+  "Other"
+);
+
+const created = await prisma.service.create({
       data: {
-        name: service.name,
+        name: cleanEncoding(service.name),
         platform: getPlatform(service),
-        category:
-          service.category || service.type || null,
+        category: cleanEncoding(service.category || service.type || ""),
         description: service.description || null,
         rate: sellingRate,
         min: service.min,
@@ -210,5 +224,9 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+
+
 
 

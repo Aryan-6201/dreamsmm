@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 import { prisma } from "@/lib/prisma";
+import { ensureServiceCategory } from "@/lib/admin/ensure-service-category";
 import { verifySession } from "@/lib/auth";
 import { getMkapiService } from "@/lib/providers/mkapi";
 
@@ -149,7 +150,12 @@ export async function POST(request: Request) {
       service.type ||
       getPlatform(service.name, service.category, service.type);
 
-    const created = await prisma.service.create({
+    await ensureServiceCategory(
+  provider.category || provider.type,
+  "Other"
+);
+
+const created = await prisma.service.create({
       data: {
         name: service.name,
         platform: getPlatform(
@@ -201,6 +207,8 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
 
 
 

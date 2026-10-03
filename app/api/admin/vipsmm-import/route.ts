@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { ensureServiceCategory } from "@/lib/admin/ensure-service-category";
 import { verifySession } from "@/lib/auth";
 import { getVipSmmService } from "@/lib/providers/vipsmm";
 
@@ -193,39 +194,12 @@ export async function POST(request: Request) {
       providerService.refill === "true";
 
     if (existingService) {
-      const service =
-        await prisma.service.update({
-          where: { id: existingService.id },
-          data: {
-            name: providerService.name.trim(),
-            platform,
-            category,
-            description,
-            min,
-            max,
-            refill,
-            providerRate,
-            markupPercent,
-            autoSync,
-            ...(autoSync
-              ? { rate: customerRate }
-              : {}),
-          },
-        });
+      await ensureServiceCategory(
+      providerService.category || providerService.type,
+      "Other"
+    );
 
-      return NextResponse.json({
-        success: true,
-        created: false,
-        updated: true,
-        message: "VIPSMM service updated successfully.",
-        service: {
-          ...service,
-          rate: service.rate.toString(),
-        },
-      });
-    }
-
-    const service =
+    const created =
       await prisma.service.create({
         data: {
           name: providerService.name.trim(),
@@ -244,15 +218,50 @@ export async function POST(request: Request) {
           autoSync,
         },
       });
+    return NextResponse.json({
+        success: true,
+        created: false,
+        updated: true,
+        message: "VIPSMM service updated successfully.",
+        service: {
+          ...providerService,
+          rate: providerService.rate.toString(),
+        },
+      });
+    }
 
+    await ensureServiceCategory(
+      providerService.category || providerService.type,
+      "Other"
+    );
+
+    const created =
+      await prisma.service.create({
+        data: {
+          name: providerService.name.trim(),
+          platform,
+          category,
+          description,
+          rate: customerRate,
+          min,
+          max,
+          enabled: true,
+          refill,
+          providerId,
+          providerName: "VIPSMM",
+          providerRate,
+          markupPercent,
+          autoSync,
+        },
+      });
     return NextResponse.json({
       success: true,
       created: true,
       updated: false,
       message: "VIPSMM service imported successfully.",
       service: {
-        ...service,
-        rate: service.rate.toString(),
+        ...providerService,
+        rate: created.rate.toString(),
       },
     });
   } catch (error) {
@@ -269,6 +278,13 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+
+
+
+
+
 
 
 

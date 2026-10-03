@@ -20,7 +20,8 @@ import { prisma } from "@/lib/prisma";
 import Sidebar from "@/app/components/Sidebar";
 import OrderForm from "./OrderForm";
 import LoginSplashCleanup from "@/app/components/LoginSplashCleanup";
-
+import UserPopup from "@/app/components/UserPopup";
+import BalanceCreditAnimation from "@/app/components/BalanceCreditAnimation";
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("session")?.value;
@@ -75,8 +76,10 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#e5f5f6] text-slate-900 selection:bg-[#ffd84d] selection:text-slate-900">
+    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#eef9fa] text-slate-900 selection:bg-[#ffd84d] selection:text-slate-900">
       <LoginSplashCleanup />
+      <UserPopup />
+      <BalanceCreditAnimation />
 
       {/* =========================================================
           LIGHTWEIGHT PREMIUM BACKGROUND
@@ -86,9 +89,9 @@ export default async function DashboardPage() {
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[#e5f5f6]" />
 
-        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-cyan-300/25 blur-[80px]" />
+        <div className="absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-cyan-300/20 blur-[100px]" />
 
-        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-teal-300/20 blur-[80px]" />
+        <div className="absolute right-0 top-[10%] h-[360px] w-[360px] rounded-full bg-teal-300/15 blur-[100px]" />
 
         <div
           className="absolute inset-0 opacity-[.08]"
@@ -120,46 +123,7 @@ export default async function DashboardPage() {
 
         </div>
 
-        <div className="mx-auto max-w-[1580px] px-4 py-4 sm:px-6 lg:px-8">
-
-          
-
-          {/* =====================================================
-              STATUS BAR
-          ===================================================== */}
-
-          <div className="mt-3 flex items-center justify-between px-1">
-
-            <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[.20em] text-slate-400">
-
-              <span className="relative flex h-1.5 w-1.5">
-
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
-
-                <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
-
-              </span>
-
-              All systems operational
-
-            </div>
-
-            <div className="hidden items-center gap-2 sm:flex">
-
-              <span className="rounded-full border border-white bg-white/60 px-3 py-1.5 text-[8px] font-bold text-slate-400 shadow-sm backdrop-blur-sm">
-                {services.length} active services
-              </span>
-
-              <span className="rounded-full border border-teal-100 bg-teal-50 px-3 py-1.5 text-[8px] font-black text-teal-600">
-                Premium
-              </span>
-
-            </div>
-
-          </div>
-
-          {/* =====================================================
-              STATS
+        <div className="mx-auto max-w-[1580px] px-4 py-4 sm:px-6 lg:px-8">          {/* =====================================================              STATS
           ===================================================== */}
 
           <section className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -193,22 +157,22 @@ export default async function DashboardPage() {
 
           <section
             id="new-order"
-            className="mt-4 grid w-full min-w-0 max-w-full items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,315px)]"
+            className="mt-4 grid w-full min-w-0 max-w-full items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,315px)]"
           >
 
             {/* ===================================================
                 ORDER COMMAND CENTER
             =================================================== */}
 
-            <section className="relative w-full min-w-0 max-w-full overflow-visible rounded-[34px] border border-white bg-white/[.82] shadow-[0_18px_55px_rgba(13,148,136,.07)] backdrop-blur-sm">
+            <section className="relative w-full min-w-0 max-w-full overflow-visible rounded-[32px] border border-white/80 bg-white/90 shadow-[0_25px_80px_rgba(15,23,42,.08)] backdrop-blur-xl backdrop-blur-sm">
 
-              <div className="pointer-events-none absolute -inset-px rounded-[34px] bg-gradient-to-br from-cyan-200/35 via-transparent to-teal-200/25" />
+              <div className="pointer-events-none absolute -inset-px rounded-[32px] bg-gradient-to-br from-cyan-200/30 via-transparent to-teal-200/20" />
 
               {/* Top reflection */}
 
               <div className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
 
-              <div className="relative z-10 p-4 sm:p-6 lg:p-7">
+              <div className="relative z-10 p-5 sm:p-7 lg:p-8">
 
                 <div className="pointer-events-none absolute bottom-0 left-1/2 h-32 w-2/3 -translate-x-1/2 rounded-full bg-teal-400/[.08] blur-[70px]" />
 
@@ -228,7 +192,7 @@ export default async function DashboardPage() {
                   WALLET
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[31px] bg-gradient-to-br from-teal-700 via-cyan-600 to-teal-500 p-5 text-white shadow-[0_20px_60px_rgba(13,148,136,.18)]">
+              <div className="group relative overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 p-6 text-white shadow-[0_25px_80px_rgba(13,148,136,.24)]">
 
                 {/* Glow */}
 
@@ -266,7 +230,7 @@ export default async function DashboardPage() {
                     Available balance
                   </p>
 
-                  <p className="mt-1 text-3xl font-black tracking-[-.045em]">
+                  <p className="mt-1 text-4xl font-black tracking-[-.05em]">
                     ₹{balance}
                   </p>
 
@@ -282,7 +246,7 @@ export default async function DashboardPage() {
 
                   <a
                     href="/funds"
-                    className="group/wallet mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-xs font-black text-teal-700 shadow-[0_10px_30px_rgba(255,255,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-teal-50"
+                    className="group/wallet mt-5 flex h-12 items-center justify-center gap-2 rounded-2xl bg-white text-xs font-black text-teal-700 shadow-[0_12px_35px_rgba(255,255,255,.18)] shadow-[0_10px_30px_rgba(255,255,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-teal-50"
                   >
 
                     <Plus className="h-4 w-4 transition duration-300 group-hover/wallet:rotate-90" />
@@ -301,7 +265,7 @@ export default async function DashboardPage() {
                   QUICK ACTIONS
               ================================================= */}
 
-              <div className="group rounded-[30px] border border-white bg-white/[.72] p-5 shadow-[0_16px_48px_rgba(13,148,136,.06)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(13,148,136,.12)]">
+              <div className="group rounded-[30px] border border-white/80 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,.07)] backdrop-blur-xl backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_32px_90px_rgba(13,148,136,.12)]">
 
                 <div className="flex items-center justify-between">
 
@@ -356,7 +320,7 @@ export default async function DashboardPage() {
                   SUPPORT
               ================================================= */}
 
-              <div className="group relative overflow-hidden rounded-[29px] border border-white bg-white/[.65] p-5 shadow-[0_22px_70px_rgba(13,148,136,.065)] backdrop-blur-sm">
+              <div className="group relative overflow-hidden rounded-[30px] border border-white/80 bg-white/90 p-6 shadow-[0_20px_65px_rgba(15,23,42,.07)] backdrop-blur-xl backdrop-blur-sm">
 
                 <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-cyan-300/20 blur-[55px]" />
 
@@ -364,7 +328,7 @@ export default async function DashboardPage() {
 
                   <div className="flex items-center justify-between">
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-100 to-teal-100 text-teal-600 ring-1 ring-cyan-100">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-100 to-teal-100 shadow-sm text-teal-600 ring-1 ring-cyan-100">
 
                       <Headphones className="h-4 w-4" />
 
@@ -407,7 +371,7 @@ export default async function DashboardPage() {
               TRUST STRIP
           ===================================================== */}
 
-          <section className="mt-4 grid gap-3 sm:grid-cols-3">
+          <section className="mt-6 grid gap-4 sm:grid-cols-3">
 
             <TrustItem
               icon={<Zap className="h-4 w-4" />}
@@ -443,7 +407,7 @@ export default async function DashboardPage() {
 
           </div>
 
-          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white bg-white/[.45] px-4 py-4 text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(13,148,136,.035)] backdrop-blur-sm sm:flex-row">
+          <footer className="mt-3 flex flex-col items-center justify-between gap-3 rounded-2xl border border-white/80 bg-white/65 px-5 py-5 shadow-[0_12px_40px_rgba(15,23,42,.04)] backdrop-blur-xl text-[9px] font-medium text-slate-400 shadow-[0_10px_35px_rgba(13,148,136,.035)] backdrop-blur-sm sm:flex-row">
 
             <p>
               Â© {new Date().getFullYear()} DreamSMM
@@ -492,7 +456,7 @@ export default async function DashboardPage() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition duration-300 hover:scale-110 hover:bg-green-600"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-green-600 text-white shadow-[0_12px_35px_rgba(22,163,74,.30)] transition duration-300 hover:scale-110 hover:bg-green-600"
       >
         <MessageCircle className="h-7 w-7" />
       </a>
@@ -519,7 +483,7 @@ function PremiumStat({
     "bg-white text-slate-900 ring-slate-200";
 
   return (
-    <div className="group relative min-h-[104px] overflow-hidden rounded-[26px] border border-white bg-white/[.86] p-5 shadow-[0_18px_60px_rgba(13,148,136,.075)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(13,148,136,.13)] sm:min-h-[118px] sm:p-6">
+    <div className="group relative min-h-[104px] overflow-hidden rounded-[28px] border border-white/80 bg-white/95 p-5 shadow-[0_18px_60px_rgba(15,23,42,.08)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_75px_rgba(13,148,136,.16)] sm:min-h-[118px] sm:p-6">
 
       <div className="absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent" />
 
@@ -528,7 +492,7 @@ function PremiumStat({
       <div className="relative flex h-full items-center gap-4">
 
         <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${toneClass} ring-1 shadow-sm transition duration-300 group-hover:scale-105 sm:h-16 sm:w-16`}
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-cyan-500 to-cyan-400 text-white ring-1 ring-white/50 shadow-[0_10px_28px_rgba(13,148,136,.20)] transition duration-300 group-hover:scale-110 sm:h-16 sm:w-16`}
         >
           <span className="[&>svg]:h-6 [&>svg]:w-6 sm:[&>svg]:h-7 sm:[&>svg]:w-7">
             {icon}
@@ -537,7 +501,7 @@ function PremiumStat({
 
         <div className="min-w-0 flex-1">
 
-          <p className="truncate text-[25px] font-black leading-tight tracking-[-.04em] text-slate-950 sm:text-[30px]">
+          <p className="truncate text-[27px] font-black leading-tight tracking-[-.045em] text-slate-950 sm:text-[30px]">
             {value}
           </p>
 
@@ -571,7 +535,7 @@ function QuickLink({
   return (
     <a
       href={href}
-      className="group flex items-center gap-3 rounded-2xl border border-slate-100/90 bg-white/[.60] p-3.5 shadow-[0_7px_22px_rgba(13,148,136,.035)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-100 hover:bg-cyan-50/80 hover:shadow-[0_14px_35px_rgba(13,148,136,.09)]"
+      className="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-[0_8px_25px_rgba(15,23,42,.04)] transition duration-300 hover:-translate-y-0.5 hover:border-teal-200 hover:bg-teal-50/70 hover:shadow-[0_14px_35px_rgba(13,148,136,.09)]"
     >
 
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-50 to-teal-50 text-teal-600 shadow-sm ring-1 ring-cyan-100 transition duration-300 group-hover:scale-105">
@@ -610,7 +574,7 @@ function TrustItem({
   text: string;
 }) {
   return (
-    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[22px] border border-white bg-white/[.58] px-4 py-3.5 shadow-[0_12px_40px_rgba(13,148,136,.045)] backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(13,148,136,.08)]">
+    <div className="group relative flex items-center gap-3 overflow-hidden rounded-[24px] border border-white/80 bg-white/75 px-5 py-4 shadow-[0_14px_45px_rgba(15,23,42,.055)] backdrop-blur-xl backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-white/[.78] hover:shadow-[0_18px_50px_rgba(13,148,136,.08)]">
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200 to-transparent opacity-0 transition group-hover:opacity-100" />
 
@@ -633,6 +597,22 @@ function TrustItem({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

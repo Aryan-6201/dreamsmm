@@ -19,13 +19,15 @@ type Action = {
 };
 
 const navigation = [
-  { href: "/admin", icon: "▦", label: "Overview", active: true },
-  { href: "/admin/users", icon: "👥", label: "Users" },
-  { href: "/admin/deposits", icon: "₹", label: "Deposits" },
-  { href: "/admin/services", icon: "⚙", label: "Services" },
+  { href: "/admin", icon: "?", label: "Overview", active: true },
+  { href: "/admin/users", icon: "U", label: "Users" },
+  { href: "/admin/deposits", icon: "?", label: "Deposits" },
+  { href: "/admin/services", icon: "S", label: "Services" },
   { href: "/admin/discounts", icon: "%", label: "Discounts" },
-  { href: "/admin/categories", icon: "✦", label: "Categories" },
-  { href: "/admin/blog", icon: "📝", label: "Blog" },
+  { href: "/admin/categories", icon: "C", label: "Categories" },
+  { href: "/admin/blog", icon: "B", label: "Blog" },
+  { href: "/admin/popups", icon: "P", label: "Popups" },
+  { href: "/admin/settings", icon: "₹", label: "Payment Settings" },
 ];
 
 function StatCard({

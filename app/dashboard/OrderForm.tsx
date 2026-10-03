@@ -74,6 +74,7 @@ export default function OrderForm({
   const [search, setSearch] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [comments, setComments] = useState("");
 
   useEffect(() => {
   async function loadCategoryConfigs() {
@@ -420,9 +421,16 @@ useEffect(() => {
       (service) => service.id === serviceId
     );
   }, [services, serviceId]);
+  const isCustomComments = Boolean(selectedService && `${selectedService.name} ${selectedService.category ?? ""}`.toLowerCase().includes("comment"));
 
-  const quantityNumber =
-    Number(quantity) || 0;
+  const commentCount = comments
+    .split(/\r?\n/)
+    .map((comment) => comment.trim())
+    .filter(Boolean).length;
+
+  const effectiveQuantity = isCustomComments ? commentCount : Number(quantity) || 0;
+
+  const quantityNumber = effectiveQuantity;
 
   const validQuantity =
     !!selectedService &&
@@ -587,6 +595,7 @@ useEffect(() => {
           serviceId: selectedService.id,
           link: link.trim(),
           quantity: quantityNumber,
+          ...(isCustomComments ? { comments } : {}),
         }),
       });
 
@@ -692,7 +701,9 @@ useEffect(() => {
             );
           })}
         </div>
-      </section>
+      
+ 
+          </section>
 
       {/* =====================================================
           SEARCH
@@ -1137,6 +1148,22 @@ return BrandIcon ? (
         </section>
       )}
 
+      {isCustomComments && selectedService && (
+        <section className="space-y-2">
+          <label className="mb-2 block text-base font-black text-slate-900">
+            Comments
+          </label>
+          <textarea
+            value={comments}
+            onChange={(event) => setComments(event.target.value)}
+            placeholder="Write your comments, one per line..."
+            rows={6}
+            className="w-full resize-none rounded-xl border border-cyan-100 bg-white px-4 py-3 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:bg-cyan-50 focus:ring-2 focus:ring-cyan-100"
+          />
+          <p className="text-xs text-slate-400">Enter one comment per line.</p>
+        </section>
+      )}
+
       {/* =====================================================
           QUANTITY
       ===================================================== */}
@@ -1147,11 +1174,17 @@ return BrandIcon ? (
             Quantity
           </label>
 
-          <input
-            type="number"
-            min={selectedService.min}
-            max={selectedService.max}
-            value={quantity}
+          {isCustomComments ? (
+            <div className="flex h-12 items-center justify-between rounded-xl border border-cyan-100 bg-cyan-50 px-4">
+              <span className="text-sm font-bold text-slate-500">Comments count</span>
+              <span className="text-lg font-black text-cyan-600">{commentCount}</span>
+            </div>
+          ) : (
+            <input
+              type="number"
+              min={selectedService.min}
+              max={selectedService.max}
+              value={quantity}
             onChange={(event) =>
               setQuantity(
                 event.target.value
@@ -1164,7 +1197,8 @@ return BrandIcon ? (
                 ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                 : "border-cyan-100 focus:border-cyan-300 focus:ring-cyan-100"
             }`}
-          />
+            />
+          )}
 
           <p className="mt-2 text-[10px] font-medium text-slate-400">
             Min: {selectedService.min.toLocaleString()} - Max: {selectedService.max.toLocaleString()}
@@ -1367,6 +1401,17 @@ function getCategoryLucideIcon(icon: string): LucideIcon {
       return Sparkles;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

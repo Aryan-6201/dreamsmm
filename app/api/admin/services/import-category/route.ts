@@ -1,0 +1,333 @@
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+
+import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth";
+import { ensureServiceCategory } from "@/lib/admin/ensure-service-category";
+
+import { getMicoSmmServices } from "@/lib/providers/micosmm";
+import { getSmmGenServices } from "@/lib/providers/smmgen";
+import { getMkapiServices } from "@/lib/providers/mkapi";
+import { getVipSmmServices } from "@/lib/providers/vipsmm";
+
+type ProviderName = "MicoSMM" | "SMMGen" | "MKAPI" | "VIPSMM";
+
+type ProviderService = {
+  service: string | number;
+  name: string;
+  type?: string;
+  category?: string;
+  description?: string;
+  rate: string | number;
+  min: string | number;
+  max: string | number;
+  refill?: boolean | string;
+};
+
+function cleanEncoding(value: unknown) {
+  return String(value ?? "")
+    .replace(/ÃƒÆ’/g, "")
+    .replace(/Ãƒâ€š/g, "")
+    .replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢/g, "'")
+    .replace(/ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“/g, "-")
+    .trim();
+}
+
+function normalize(value: unknown) {
+  return cleanEncoding(value)
+    .normalize("NFKC")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function getPlatform(service: ProviderService) {
+  const value = `${service.name || ""} ${service.category || ""} ${service.type || ""}`.toLowerCase();
+
+  if (value.includes("instagram") || value.includes(" ig ")) return "Instagram";
+  if (value.includes("youtube")) return "YouTube";
+  if (value.includes("facebook")) return "Facebook";
+  if (value.includes("tiktok")) return "TikTok";
+  if (value.includes("telegram")) return "Telegram";
+  if (value.includes("spotify")) return "Spotify";
+  if (value.includes("reddit")) return "Reddit";
+  if (value.includes("twitter") || value.includes(" x ")) return "X";
+
+  return "Other";
+}
+
+function getProviderRate(provider: ProviderName, service: ProviderService) {
+  const raw = Number(service.rate);
+
+  if (!Number.isFinite(raw) || raw < 0) {
+    throw new Error(`Invalid provider rate for service ${service.service}.`);
+  }
+
+  // SMMGen returns USD per 1K.
+  // Keep the same INR conversion used by the existing SMMGen importer.
+  if (provider === "SMMGen") {
+    return Number((raw * 95.426).toFixed(4));
+  }
+
+  return raw;
+}
+
+function getServices(provider: ProviderName): Promise<ProviderService[]> {
+  switch (provider) {
+    case "MicoSMM":
+      return getMicoSmmServices() as Promise<ProviderService[]>;
+
+    case "SMMGen":
+      return getSmmGenServices() as Promise<ProviderService[]>;
+
+    case "MKAPI":
+      return getMkapiServices() as Promise<ProviderService[]>;
+
+    case "VIPSMM":
+      return getVipSmmServices() as Promise<ProviderService[]>;
+
+    default:
+      throw new Error("Unsupported provider.");
+  }
+}
+
+async function getAdmin() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("session")?.value;
+
+  if (!token) return null;
+
+  const session = await verifySession(token);
+
+  if (!session) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      id: true,
+      role: true,
+    },
+  });
+
+  if (!user || user.role !== "ADMIN") {
+    return null;
+  }
+
+  return user;
+}
+
+export async function POST(request: Request) {
+  try {
+    const admin = await getAdmin();
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Admin access required." },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+
+    const provider = String(body.provider || "").trim() as ProviderName;
+    const action = String(body.action || "import").trim();
+    const selectedCategory = cleanEncoding(body.category);
+    const markupPercent = Number(body.markupPercent);
+    const autoSync = Boolean(body.autoSync);
+
+    const allowedProviders: ProviderName[] = [
+      "MicoSMM",
+      "SMMGen",
+      "MKAPI",
+      "VIPSMM",
+    ];
+
+    if (!allowedProviders.includes(provider)) {
+      return NextResponse.json(
+        { error: "Invalid provider." },
+        { status: 400 }
+      );
+    }
+
+    if (action === "categories") {
+      const services = await getServices(provider);
+
+      const categories = Array.from(
+        new Map(
+          services
+            .map((service) => {
+              const category = cleanEncoding(
+                service.category || service.type || ""
+              );
+
+              return category
+                ? [normalize(category), category] as const
+                : null;
+            })
+            .filter(Boolean) as Array<[string, string]>
+        ).values()
+      ).sort((a, b) => a.localeCompare(b));
+
+      return NextResponse.json({
+        success: true,
+        provider,
+        categories,
+        serviceCount: services.length,
+      });
+    }
+
+    if (!selectedCategory) {
+      return NextResponse.json(
+        { error: "Select a provider category first." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !Number.isFinite(markupPercent) ||
+      markupPercent < 0 ||
+      markupPercent > 1000
+    ) {
+      return NextResponse.json(
+        { error: "Markup must be between 0 and 1000." },
+        { status: 400 }
+      );
+    }
+
+    const allServices = await getServices(provider);
+
+    const matchingServices = allServices.filter((service) => {
+      const category = cleanEncoding(
+        service.category || service.type || ""
+      );
+
+      return normalize(category) === normalize(selectedCategory);
+    });
+
+    if (matchingServices.length === 0) {
+      return NextResponse.json(
+        {
+          error: `No services found in category "${selectedCategory}".`,
+        },
+        { status: 404 }
+      );
+    }
+
+    const localCategory = await ensureServiceCategory(
+      selectedCategory,
+      getPlatform(matchingServices[0])
+    );
+
+    let imported = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    const failures: Array<{
+      providerId: string;
+      name: string;
+      error: string;
+    }> = [];
+
+    for (let index = 0; index < matchingServices.length; index++) {
+      const service = matchingServices[index];
+      const providerId = String(service.service);
+
+      try {
+        const existing = await prisma.service.findFirst({
+          where: {
+            providerName: provider,
+            providerId,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (existing) {
+          skipped++;
+          continue;
+        }
+
+        const providerRate = getProviderRate(provider, service);
+
+        const min = Number(service.min);
+        const max = Number(service.max);
+
+        if (!Number.isInteger(min) || !Number.isInteger(max)) {
+          throw new Error("Invalid service limits.");
+        }
+
+        const sellingRate = Number(
+          (providerRate * (1 + markupPercent / 100)).toFixed(4)
+        );
+
+        await prisma.service.create({
+          data: {
+            name: cleanEncoding(service.name),
+            platform: getPlatform(service),
+            category: localCategory.name,
+            description: cleanEncoding(service.description) || null,
+
+            rate: sellingRate,
+            min,
+            max,
+
+            enabled: true,
+
+            refill:
+              service.refill === true ||
+              service.refill === "true",
+
+            providerId,
+            providerName: provider,
+
+            providerRate,
+            markupPercent,
+
+            autoSync,
+          },
+        });
+
+        imported++;
+      } catch (error) {
+        failed++;
+
+        if (failures.length < 20) {
+          failures.push({
+            providerId,
+            name: cleanEncoding(service.name),
+            error:
+              error instanceof Error
+                ? error.message
+                : "Unknown import error.",
+          });
+        }
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      provider,
+      category: localCategory.name,
+      total: matchingServices.length,
+      imported,
+      skipped,
+      failed,
+      failures,
+    });
+  } catch (error) {
+    console.error("BULK CATEGORY IMPORT ERROR:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to import provider category.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+

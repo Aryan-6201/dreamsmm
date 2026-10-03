@@ -218,6 +218,7 @@ export async function POST(request: Request) {
     const link =
       typeof body.link === "string" ? body.link.trim() : "";
 
+    const comments = typeof body.comments === "string" ? body.comments.trim() : "";
     if (
       !Number.isInteger(serviceId) ||
       serviceId <= 0 ||
@@ -261,7 +262,11 @@ export async function POST(request: Request) {
       );
     }
 
-    if (quantity < service.min || quantity > service.max) {
+    const isCustomComments = service.name.toLowerCase().includes("comment");
+    const commentCount = comments.split(/\r?\n/).map((comment: string) => comment.trim()).filter(Boolean).length;
+    const effectiveQuantity = isCustomComments ? commentCount : quantity;
+
+    if (effectiveQuantity < service.min || effectiveQuantity > service.max) {
       return NextResponse.json(
         {
           error: `Quantity must be between ${service.min} and ${service.max}.`,
@@ -277,7 +282,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const baseCharge = service.rate.mul(quantity).div(1000);
+    const baseCharge = service.rate.mul(effectiveQuantity).div(1000);
 
     const userForDiscount = await prisma.user.findUnique({
       where: {
@@ -398,7 +403,7 @@ export async function POST(request: Request) {
           userId: session.userId,
           serviceId: service.id,
           link,
-          quantity,
+          quantity: effectiveQuantity,
           charge,
           status: "PENDING",
         },
@@ -451,25 +456,26 @@ export async function POST(request: Request) {
         providerResult = await addSmmGenOrder({
           serviceId: service.providerId!,
           link,
-          quantity,
+          quantity: effectiveQuantity,
+          comments: isCustomComments ? comments : undefined,
         });
       } else if (service.providerName?.toUpperCase() === "MKAPI") {
         providerResult = await addMkapiOrder({
           serviceId: service.providerId!,
           link,
-          quantity,
+          quantity: effectiveQuantity,
         });
       } else if (service.providerName?.toUpperCase().startsWith("VIPSMM")) {
         providerResult = await addVipSmmOrder({
           serviceId: service.providerId!,
           link,
-          quantity,
+          quantity: effectiveQuantity,
         });
       } else {
         providerResult = await addMicoSmmOrder({
           serviceId: service.providerId!,
           link,
-          quantity,
+          quantity: effectiveQuantity,
         });
       }
 
@@ -596,6 +602,16 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿const API_URL =
+const API_URL =
   process.env.SMMGEN_API_URL || "https://smmgen.com/api/v2";
 
 const API_KEY: string = process.env.SMMGEN_API_KEY || "";
@@ -79,10 +79,12 @@ export async function getSmmGenService(
 export async function addSmmGenOrder({
   serviceId,
   link,
+  comments,
   quantity,
 }: {
   serviceId: string;
   link: string;
+  comments?: string;
   quantity: number;
 }) {
   const body = new URLSearchParams({
@@ -91,6 +93,7 @@ export async function addSmmGenOrder({
     service: serviceId,
     link,
     quantity: String(quantity),
+    ...(comments ? { comments } : {}),
   });
 
   const data = await smmGenRequest(body);
@@ -161,3 +164,7 @@ export async function getSmmGenBalance() {
         : null,
   };
 }
+
+
+
+

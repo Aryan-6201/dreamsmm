@@ -8,6 +8,7 @@ const menu = [
   { name: "Services", href: "/services", icon: "â—ˆ" },
   { name: "Orders", href: "/orders", icon: "â–£" },
   { name: "Add Funds", href: "/funds", icon: "ï¼‹" },
+  { name: "Payment Settings", href: "/admin/settings", icon: "₹" },
   { name: "Transactions", href: "/transactions", icon: "â†•" },
   { name: "Tickets", href: "/tickets", icon: "â–¡" },
 ];

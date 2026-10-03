@@ -29,6 +29,23 @@ model User {
   tickets              Ticket[]
   transactions         Transaction[]
   userServiceDiscounts UserServiceDiscount[]
+  popupRecipients      PopupRecipient[]
+  popupEvents     PopupEvent[]
+  balanceCreditEvents BalanceCreditEvent[]
+}
+
+model BalanceCreditEvent {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  amount    Decimal  @db.Decimal(12, 2)
+  eventType String   @default("BALANCE")
+  createdAt DateTime @default(now())
+  consumed  Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, consumed])
 }
 
 model Service {
@@ -41,17 +58,17 @@ model Service {
   max                  Int
   enabled              Boolean               @default(true)
   refill               Boolean               @default(false)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  category             String?
-  providerId           String?
-  providerName         String?
-  autoSync             Boolean               @default(false)
-  markupPercent        Decimal?              @db.Decimal(8, 2)
-  providerRate         Decimal?              @db.Decimal(12, 4)
-  averageTime          String?
-  orders               Order[]
-  userServiceDiscounts UserServiceDiscount[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  category              String?
+  providerId            String?
+  providerName          String?
+  autoSync              Boolean               @default(false)
+  markupPercent         Decimal?              @db.Decimal(8, 2)
+  providerRate          Decimal?              @db.Decimal(12, 4)
+  averageTime           String?
+  orders                Order[]
+  userServiceDiscounts  UserServiceDiscount[]
 
   @@index([providerName])
   @@index([providerId])
@@ -135,6 +152,7 @@ model Bonus {
   id        Int      @id @default(autoincrement())
   userId    String
   amount    Decimal  @db.Decimal(12, 2)
+  eventType String   @default("BALANCE")
   reason    String?
   createdBy String?
   createdAt DateTime @default(now())
@@ -233,7 +251,6 @@ model Category {
 
   @@index([platform])
   @@index([enabled])
-  @@index([sortOrder])
 }
 
 model BlogPost {
@@ -254,6 +271,65 @@ model BlogPost {
   @@index([published])
   @@index([category])
   @@index([createdAt])
+}
+
+model Popup {
+  id          Int         @id @default(autoincrement())
+  title       String
+  message     String
+  imageUrl    String?
+  buttonText  String?
+  buttonUrl   String?
+  targetType  PopupTarget @default(ALL)
+  type        PopupType   @default(ANNOUNCEMENT)
+  theme       PopupTheme  @default(CYAN)
+  active      Boolean     @default(true)
+  showOnce    Boolean     @default(true)
+  priority    Int         @default(0)
+  autoClose   Int?
+  expiresAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  recipients PopupRecipient[]
+  events     PopupEvent[]
+
+  @@index([active])
+  @@index([expiresAt])
+  @@index([targetType])
+  @@index([priority])
+  @@index([type])
+}
+
+model PopupRecipient {
+  id          Int       @id @default(autoincrement())
+  popupId     Int
+  userId      String
+  dismissedAt DateTime?
+
+  popup Popup @relation(fields: [popupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([popupId, userId])
+  @@index([userId])
+  @@index([popupId])
+}
+
+model PopupEvent {
+  id        Int            @id @default(autoincrement())
+  popupId   Int
+  userId    String
+  type      PopupEventType
+  createdAt DateTime       @default(now())
+
+  popup Popup @relation(fields: [popupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([popupId])
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([popupId, type])
 }
 
 enum UserRole {
@@ -307,3 +383,32 @@ enum TicketStatus {
   IN_PROGRESS
   CLOSED
 }
+
+enum PopupTarget {
+  ALL
+  SPECIFIC
+}
+
+enum PopupType {
+  ANNOUNCEMENT
+  SUCCESS
+  OFFER
+  WARNING
+  MAINTENANCE
+}
+
+enum PopupTheme {
+  CYAN
+  VIOLET
+  GREEN
+  ORANGE
+  RED
+  DARK
+}
+
+enum PopupEventType {
+  VIEW
+  CLICK
+  DISMISS
+}
+

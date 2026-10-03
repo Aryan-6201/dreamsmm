@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -212,7 +212,7 @@ export default function Sidebar() {
           MOBILE HEADER
       ====================================================== */}
 
-      <header className="fixed inset-x-0 top-0 z-[90] flex h-[70px] items-center justify-between border-b border-cyan-100 bg-white/95 px-4 shadow-[0_6px_28px_rgba(13,148,136,.10)] backdrop-blur-sm lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-[90] flex h-[70px] items-center justify-between border-b border-cyan-100 bg-white/95 px-4 shadow-[0_6px_28px_rgba(13,148,136,.10)] backdrop-blur-md lg:hidden">
 
         <Link
           href="/dashboard"
@@ -236,7 +236,7 @@ export default function Sidebar() {
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Open navigation"
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-100 bg-teal-50 text-teal-700 shadow-sm transition-all duration-200 hover:bg-teal-100 active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-100 bg-teal-50 text-teal-700 shadow-sm transition-all duration-300 hover:bg-teal-100 active:scale-95"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -311,7 +311,7 @@ export default function Sidebar() {
             BRAND HEADER
         ==================================================== */}
 
-        <div className="relative flex h-[80px] shrink-0 items-center border-b border-cyan-100 bg-white/85 px-4 backdrop-blur-sm">
+        <div className="relative flex h-[80px] shrink-0 items-center border-b border-cyan-100 bg-white/85 px-4 backdrop-blur-md">
 
           <Link
             href="/dashboard"
@@ -347,7 +347,7 @@ export default function Sidebar() {
             type="button"
             onClick={() => setMobileOpen(false)}
             aria-label="Close sidebar"
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:hidden"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:hidden"
           >
             <X className="h-5 w-5" />
           </button>
@@ -361,7 +361,7 @@ export default function Sidebar() {
         <nav
           className="
             relative min-h-0 flex-1
-            overflow-y-auto
+            overflow-y-auto scrollbar-thin
             overscroll-contain
             px-3 pb-5 pt-5
             [scrollbar-width:thin]
@@ -375,7 +375,7 @@ export default function Sidebar() {
             Main Menu
           </SectionTitle>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5.5">
 
             {mainItems.map((item) => (
               <NavItem
@@ -401,7 +401,7 @@ export default function Sidebar() {
             Tools
           </SectionTitle>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5.5">
 
             {toolItems.map((item) => (
               <NavItem
@@ -420,11 +420,11 @@ export default function Sidebar() {
               PREMIUM CARD
           ================================================== */}
 
-          <div className="mt-6 rounded-[20px] border border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-teal-50 p-4 shadow-[0_8px_28px_rgba(13,148,136,.055)]">
+          <div className="mt-6 rounded-[26px] border border-white/80 bg-gradient-to-br from-cyan-50 via-white to-teal-50 p-4 shadow-[0_18px_45px_rgba(13,148,136,.12)] shadow-[0_8px_28px_rgba(13,148,136,.055)]">
 
             <div className="flex items-center gap-3">
 
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_7px_18px_rgba(13,148,136,.20)]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_12px_32px_rgba(13,148,136,.22)]">
                 <Sparkles className="h-[18px] w-[18px]" />
               </div>
 
@@ -452,15 +452,15 @@ export default function Sidebar() {
             BOTTOM ACCOUNT
         ==================================================== */}
 
-        <div className="relative shrink-0 border-t border-cyan-100 bg-white/90 p-3 backdrop-blur-sm">
+        <div className="relative shrink-0 border-t border-slate-200/70 bg-white/90 p-3 backdrop-blur-md">
 
           <Link
             href="/account"
             onClick={closeMobile}
-            className="group flex min-h-[52px] items-center gap-3 rounded-xl px-2.5 py-2 transition hover:bg-teal-50"
+            className="group flex min-h-[52px] items-center gap-3 rounded-2xl px-2.5 py-2 transition hover:bg-teal-50"
           >
 
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-teal-100 group-hover:text-teal-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition group-hover:bg-teal-100 group-hover:text-teal-600">
               <UserRound className="h-4 w-4" />
             </div>
 
@@ -483,7 +483,7 @@ export default function Sidebar() {
           <Link
             href="/login"
             onClick={closeMobile}
-            className="group mt-0.5 flex min-h-[44px] items-center gap-3 rounded-xl px-2.5 py-2 transition hover:bg-red-50"
+            className="group mt-0.5 flex min-h-[44px] items-center gap-3 rounded-2xl px-2.5 py-2 transition hover:bg-red-50"
           >
 
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition group-hover:text-red-500">
@@ -533,13 +533,13 @@ function NavItem({
       href={href}
       onClick={onClick}
       className={`
-        group relative flex min-h-[50px] items-center gap-3
-        overflow-hidden rounded-[14px] px-3
-        transition-all duration-200
+        group relative flex min-h-[52px] items-center gap-3
+        overflow-hidden rounded-[16px] px-3
+        transition-all duration-300
 
         ${
           active
-            ? "border border-cyan-200 bg-gradient-to-r from-cyan-50 via-white to-[#fffdf0] text-teal-800 shadow-[0_7px_22px_rgba(13,148,136,.10)]"
+            ? "border border-cyan-200 bg-gradient-to-r from-cyan-50 via-white to-[#fffdf0] text-teal-800 shadow-[0_10px_30px_rgba(13,148,136,.14)]"
             : "border border-transparent bg-transparent text-slate-700 hover:border-cyan-100 hover:bg-white hover:text-teal-700 hover:shadow-[0_5px_18px_rgba(13,148,136,.045)]"
         }
       `}
@@ -556,11 +556,11 @@ function NavItem({
       <span
         className={`
           flex h-10 w-10 shrink-0 items-center justify-center
-          rounded-xl transition-all duration-200
+          rounded-2xl transition-all duration-300
 
           ${
             active
-              ? "bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_7px_18px_rgba(13,148,136,.20)]"
+              ? "bg-gradient-to-br from-teal-500 to-cyan-500 text-white shadow-[0_12px_32px_rgba(13,148,136,.22)]"
               : "bg-slate-50 text-slate-600 group-hover:bg-cyan-50 group-hover:text-teal-700"
           }
         `}
@@ -595,7 +595,7 @@ function NavItem({
 
       <ChevronRight
         className={`
-          h-4 w-4 shrink-0 transition-all duration-200
+          h-4 w-4 shrink-0 transition-all duration-300
 
           ${
             active
@@ -646,6 +646,20 @@ function Brand() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
